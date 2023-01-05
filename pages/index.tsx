@@ -93,9 +93,9 @@ function App() {
     setSongs(_new);
   };
 
-  useEffect(() => {
-    fetchSongs();
-  }, []);
+  // useEffect(() => {
+  //   fetchSongs();
+  // }, []);
 
   const fetchPlaylist = async (address: string) => {
     const playlist = await getPlaylist(address);
