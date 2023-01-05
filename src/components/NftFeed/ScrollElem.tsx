@@ -20,7 +20,7 @@ const ScrollElem = ({ song, onFeedClose }: Props) => {
       sx={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
     >
       <Box p={2}>
-        <Typography align="center" variant="h4">
+        <Typography align="center" variant="h6">
           {song.name}
         </Typography>
       </Box>

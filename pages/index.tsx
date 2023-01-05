@@ -8,6 +8,7 @@ import {
   Tooltip,
   // TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import Box from "@mui/system/Box";
 import { useEffect, useState } from "react";
@@ -38,6 +39,8 @@ import { getEnsName } from "../src/helpers";
 import NftFeed from "../src/components/NftFeed";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Player from "../src/components/Player";
+import { AudioPlayerProvider } from "react-use-audio-player";
 // import { uploadFromUrl } from "./services/storage";
 
 // const predefinedChains = ["ethereum", "polygon", "solana"];
@@ -60,6 +63,9 @@ function App() {
   const { login } = useAuth();
   const [userEnsName, setUserEnsName] = useState<string>();
   const [showFeed, setShowFeed] = useState(false);
+  const isMobile = useMediaQuery((_theme) =>
+    (_theme as any).breakpoints.down("md")
+  );
 
   const router = useRouter();
   // const [newPlaylist, setNewPlaylist] = useState<{
@@ -72,7 +78,7 @@ function App() {
   const [isListNftOpen, setIsListNftOpen] = useState(false);
 
   const onRowClick = () => {
-    setShowFeed(true);
+    setShowFeed(true && isMobile);
   };
   const onFeedClose = () => {
     setShowFeed(false);
@@ -320,8 +326,8 @@ function App() {
             <Box
               sx={{ height: "100vh", overflowY: "auto" }}
               p={2}
-              maxHeight={"80vh"}
-              mb={9}
+              // maxHeight={"80vh"}
+              mb={"70px"}
             >
               <Box
                 display={"flex"}
@@ -515,7 +521,7 @@ function App() {
                   </Box>
                 )}
             </Box>
-            {showFeed && (
+            {showFeed && isMobile && (
               <Box
                 position={"fixed"}
                 zIndex={100}
@@ -548,6 +554,13 @@ function App() {
           onSaveSongPlaylist={onSaveSongPlaylist}
         />
       </Box>
+      {oriSongs && (
+        <Box position={"fixed"} bottom={0} width="100%">
+          <AudioPlayerProvider>
+            <Player songs={oriSongs} />
+          </AudioPlayerProvider>
+        </Box>
+      )}
     </>
   );
 }

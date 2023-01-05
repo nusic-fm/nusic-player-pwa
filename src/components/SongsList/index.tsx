@@ -83,7 +83,7 @@ const SongsList = ({
   return (
     <Box display={"flex"} flexDirection="column">
       {isLoading &&
-        new Array(15)
+        new Array(10)
           .fill("")
           .map((x, i) => (
             <Skeleton key={i} height="61px" sx={{ mx: 4 }} animation="wave" />
