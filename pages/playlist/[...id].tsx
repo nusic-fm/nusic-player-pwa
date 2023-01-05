@@ -25,15 +25,22 @@ import { useWeb3React } from "@web3-react/core";
 import useAuth from "../../src/hooks/useAuth";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { Playlist } from "../../src/models/Playlist";
 
-const Playlist = ({ id }: { id: string }) => {
+const Playlist = ({
+  id,
+  playlistInfo,
+}: {
+  id: string;
+  playlistInfo?: Playlist;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [playlistInfo, setPlaylistInfo] = useState<{
-    name: string;
-    id?: string;
-    likedUsers?: string[];
-    totalLikes?: number;
-  }>({ name: "-- Playlist" });
+  // const [playlistInfo, setPlaylistInfo] = useState<{
+  //   name: string;
+  //   id?: string;
+  //   likedUsers?: string[];
+  //   totalLikes?: number;
+  // }>({ name: "-- Playlist" });
 
   const [userPlaylist, setUserPlaylist] = useState<PlayerSong[]>();
   const router = useRouter();
@@ -44,45 +51,48 @@ const Playlist = ({ id }: { id: string }) => {
   const { account } = useWeb3React();
   const { login } = useAuth();
 
-  const fetchPlaylist = async (address: string) => {
-    console.log({ address });
+  const fetchPlaylistSongs = async () => {
+    // console.log({ address });
     setIsLoading(true);
-    const playlist = await getPlaylist(address);
-    if (playlist) {
-      setIsLiked(playlist.likedUsers?.includes(address) || false);
-      setPlaylistInfo({
-        name: playlist?.name,
-        id: playlist.id,
-      });
-      if (playlist.songs) {
-        const availableSongIds = playlist.songs
-          // .filter((s) => s.isAvailable)
-          .map((s) => s.address);
-        if (availableSongIds.length) {
-          const playlistSongs = await getSongsByIds(availableSongIds);
-          setUserPlaylist(
-            playlistSongs.map((s, i) => ({
-              id: s.id as string,
-              idx: i,
-              name: s.name,
-              musicSrc: s.audioFileUrl,
-              cover: s.artworkUrl,
-              // singer: "",
-            }))
-          );
-        } else {
-          setUserPlaylist([]);
-        }
+    // const playlist = await getPlaylist(address);
+    // if (playlist) {
+    //   setIsLiked(playlist.likedUsers?.includes(address) || false);
+    //   setPlaylistInfo({
+    //     name: playlist?.name,
+    //     id: playlist.id,
+    //   });
+    if (playlistInfo && playlistInfo.songs) {
+      const availableSongIds = playlistInfo.songs
+        // .filter((s) => s.isAvailable)
+        .map((s) => s.address);
+      if (availableSongIds.length) {
+        const playlistSongs = await getSongsByIds(availableSongIds);
+        setUserPlaylist(
+          playlistSongs.map((s, i) => ({
+            id: s.id as string,
+            idx: i,
+            name: s.name,
+            musicSrc: s.audioFileUrl,
+            cover: s.artworkUrl,
+            // singer: "",
+          }))
+        );
+      } else {
+        setUserPlaylist([]);
       }
-    } else {
+    }
+    // }
+    else {
       setIsInvalidId(true);
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    if (id) {
-      fetchPlaylist(id);
+    if (playlistInfo) {
+      fetchPlaylistSongs();
+    } else {
+      setIsInvalidId(true);
     }
   }, [id]);
 
@@ -102,22 +112,6 @@ const Playlist = ({ id }: { id: string }) => {
       </Box>
     );
   }
-
-  // if (isInvalidId) {
-  //   return (
-  //     <Box
-  //       style={{
-  //         minHeight: "100vh",
-  //         background:
-  //           "linear-gradient(0deg, rgba(20,20,61,0.9920561974789917) 0%, rgba(22,22,42,1) 77%)",
-  //       }}
-  //     >
-  //       <Box p={2}>
-  //         <Typography variant="h4">NUSIC</Typography>
-  //       </Box>
-  //     </Box>
-  //   );
-  // }
   const addToPlaylist = async (id: string) => {
     if (account) {
       try {
@@ -144,7 +138,7 @@ const Playlist = ({ id }: { id: string }) => {
           "Unable to Add to the Playlist, please try again later"
         );
       }
-      await fetchPlaylist(account);
+      await fetchPlaylistSongs();
       setSnackbarMessage("Successfully added to the playlist");
     } else setSnackbarMessage("Please connect your account to continue");
   };
@@ -152,8 +146,16 @@ const Playlist = ({ id }: { id: string }) => {
   return (
     <>
       <Head>
-        <title>{playlistInfo.name}</title>
-        <meta property="og:title" content={playlistInfo.name} key="title" />
+        <title>{playlistInfo?.name || "Unnamed Playlist"}</title>
+        <meta
+          property="og:title"
+          content={playlistInfo?.name || "Unnamed Playlist"}
+          key="title"
+        />
+        <meta
+          name="description"
+          content={`Listen to ${playlistInfo?.name || "Unnamed"} Playlist now`}
+        />
       </Head>
       <Box
         style={{
@@ -241,7 +243,9 @@ const Playlist = ({ id }: { id: string }) => {
                     fontWeight: "bold",
                   }}
                 >
-                  <Typography variant="h5">{playlistInfo.name}</Typography>
+                  <Typography variant="h5">
+                    {playlistInfo?.name || "Unnamed Playlist"}
+                  </Typography>
                   <IconButton
                     onClick={() => {
                       if (!account) {
@@ -306,6 +310,11 @@ export async function getServerSideProps(context: any) {
   //     "public, s-maxage=50, stale-while-revalidate=59"
   //   );
   // Pass data to the page via props
+  const _id = id[0];
+  if (_id) {
+    const playlistInfo = await getPlaylist(_id);
+    return { props: { id: id[0], playlistInfo } };
+  }
 
   return { props: { id: id[0] } };
 }

@@ -245,7 +245,8 @@ function App() {
     <>
       <Head>
         <title>NUSIC | Player</title>
-        <meta property="og:title" content={"NUSIC"} key="title" />
+        <meta property="og:title" content="NUSIC | Player" key="title" />
+        <meta name="description" content="Powering the Evolution of Music" />
       </Head>
       <Box
         style={{
@@ -397,7 +398,7 @@ function App() {
                           <IconButton
                             onClick={() => {
                               navigator.clipboard.writeText(
-                                `https://player.nusic.fm/#/playlist/${account}`
+                                `${window.location.href}playlist/${account}`
                               );
                               setSnackbarMessage("Copied to clipboard");
                             }}
