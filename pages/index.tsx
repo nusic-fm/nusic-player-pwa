@@ -9,9 +9,9 @@ import {
   // TextField,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import Box from "@mui/system/Box";
 import { useEffect, useState } from "react";
-import styles from "react-jinke-music-player/assets/index.module.css";
+// import styles from "react-jinke-music-player/assets/index.module.css";
 import {
   addSongToDb,
   getSongs,
@@ -32,7 +32,8 @@ import ArrowLeftRoundedIcon from "@mui/icons-material/SwitchLeftRounded";
 import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
 import ShareTwoToneIcon from "@mui/icons-material/ShareTwoTone";
 import ListNFT from "../src/components/ListNFT";
-import { CancelOutlined, SaveRounded } from "@mui/icons-material";
+import SaveRounded from "@mui/icons-material/SaveRounded";
+import CancelOutlined from "@mui/icons-material/CancelOutlined";
 import { getEnsName } from "../src/helpers";
 import NftFeed from "../src/components/NftFeed";
 import { useRouter } from "next/router";
