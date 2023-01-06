@@ -3,6 +3,7 @@ import { Song } from "../../models/Song";
 import AudioPlayer from "../AudioPlayer";
 import VideoPlayer from "../VideoPlayer";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 
 type Props = { song: Song; onFeedClose: () => void };
 
@@ -19,17 +20,31 @@ const ScrollElem = ({ song, onFeedClose }: Props) => {
       boxSizing="border-box"
       sx={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
     >
-      <Box p={2}>
-        <Typography align="center" variant="h6">
-          {song.name}
-        </Typography>
-      </Box>
-      <Box display="flex" justifyContent={"center"} flexBasis="80%">
+      <Box
+        display="flex"
+        justifyContent={"center"}
+        alignItems="center"
+        flexBasis="40%"
+      >
         {song.format === "audio" ? (
           <AudioPlayer song={song} />
         ) : (
           <VideoPlayer song={song} />
         )}
+      </Box>
+      <Box
+        p={4}
+        display="flex"
+        justifyContent={"space-between"}
+        width="100%"
+        alignItems={"center"}
+      >
+        <Typography align="center" variant="h6" noWrap width={"70%"}>
+          {song.name}
+        </Typography>
+        <IconButton>
+          <FavoriteOutlinedIcon htmlColor="#c3c3c3" />
+        </IconButton>
       </Box>
       <Box>
         <IconButton onClick={onFeedClose}>

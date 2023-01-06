@@ -13,7 +13,7 @@ export interface Song {
 
 export interface SongDoc extends Song {
   id: string;
-  idx?: number;
+  idx: number;
 }
 
 export interface PlayerSong extends ReactJkMusicPlayerAudioListProps {

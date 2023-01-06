@@ -23,8 +23,10 @@ const getSongs = async (): Promise<SongDoc[]> => {
   );
   const querySnapshots = await getDocs(q);
   const songs: SongDoc[] = [];
+  let i = 0;
   querySnapshots.forEach((doc) => {
-    songs.push({ ...(doc.data() as Song), id: doc.id });
+    i++;
+    songs.push({ ...(doc.data() as Song), idx: i, id: doc.id });
   });
   const sortArray = [
     "mmmCherry - Wildest Dreams (NUSIC Intro V1)",
@@ -38,24 +40,44 @@ const getSongs = async (): Promise<SongDoc[]> => {
     "Golden Ticket: Bandit",
     "Crypto Boy",
   ];
-  return songs.sort(
-    (a, b) => sortArray.indexOf(a.name) - sortArray.indexOf(b.name)
-  );
+  return songs
+    .sort((a, b) => sortArray.indexOf(a.name) - sortArray.indexOf(b.name))
+    .map((s, i) => ({ ...s, idx: i }));
 };
 
 const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {
-  const q = query(
-    collection(db, "songs"),
-    where(documentId(), "in", songIds)
-    // orderBy("audioFileUrl", "asc"),
-    // limit(15)
-  );
-  const querySnapshots = await getDocs(q);
-  const songs: SongDoc[] = [];
-  querySnapshots.forEach((doc) => {
-    songs.push({ ...(doc.data() as Song), id: doc.id });
-  });
-  return songs.sort((a, b) => songIds.indexOf(a.id) - songIds.indexOf(b.id));
+  // const q = query(
+  //   collection(db, "songs"),
+  //   where(documentId(), "in", songIds)
+  //   // orderBy("audioFileUrl", "asc"),
+  //   // limit(15)
+  // );
+  // const querySnapshots = await getDocs(q);
+  // const songs: SongDoc[] = [];
+  // let i =0;
+  // querySnapshots.forEach((doc) => {
+  //   i++;
+  //   songs.push({ ...(doc.data() as Song), id: doc.id, idx: i });
+  // });
+  // return songs.sort((a, b) => songIds.indexOf(a.id) - songIds.indexOf(b.id)).map((s,i) => ({...s, idx: i}));
+  const ids = songIds;
+  const batches: SongDoc[] = [];
+  while (ids.length) {
+    // firestore limits batches to 10
+    const batch = ids.splice(0, 10);
+    const q = query(collection(db, "songs"), where(documentId(), "in", batch));
+    const querySnapshots = await getDocs(q);
+    const songs: SongDoc[] = [];
+    let i = 0;
+    querySnapshots.forEach((doc) => {
+      i++;
+      songs.push({ ...(doc.data() as Song), id: doc.id, idx: i });
+    });
+    batches.push(...songs);
+  }
+  return batches
+    .sort((a, b) => songIds.indexOf(a.id) - songIds.indexOf(b.id))
+    .map((s, i) => ({ ...s, idx: i }));
 };
 
 const addSongToDb = async (song: Song) => {

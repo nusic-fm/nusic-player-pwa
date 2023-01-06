@@ -3,6 +3,7 @@ import {
   Chip,
   Grid,
   IconButton,
+  Skeleton,
   Snackbar,
   TextField,
   Tooltip,
@@ -24,40 +25,44 @@ import {
   addToPlaylistDb,
   changePlaylistName,
   getPlaylist,
+  getPlaylists,
   removeToPlaylistDb,
 } from "../src/services/db/playlists.service";
 import SongsList from "../src/components/SongsList";
 import { PlayerSong, Song, SongDoc } from "../src/models/Song";
-import ArrowRightRoundedIcon from "@mui/icons-material/SwitchRightRounded";
-import ArrowLeftRoundedIcon from "@mui/icons-material/SwitchLeftRounded";
-import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
-import ShareTwoToneIcon from "@mui/icons-material/ShareTwoTone";
+// import ArrowRightRoundedIcon from "@mui/icons-material/SwitchRightRounded";
+// import ArrowLeftRoundedIcon from "@mui/icons-material/SwitchLeftRounded";
+// import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
+// import ShareTwoToneIcon from "@mui/icons-material/ShareTwoTone";
 import ListNFT from "../src/components/ListNFT";
-import SaveRounded from "@mui/icons-material/SaveRounded";
-import CancelOutlined from "@mui/icons-material/CancelOutlined";
+// import SaveRounded from "@mui/icons-material/SaveRounded";
+// import CancelOutlined from "@mui/icons-material/CancelOutlined";
 import { getEnsName } from "../src/helpers";
 import NftFeed from "../src/components/NftFeed";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import Player from "../src/components/Player";
-import { AudioPlayerProvider } from "react-use-audio-player";
+// import Player from "../src/components/Player";
+// import { AudioPlayerProvider } from "react-use-audio-player";
+import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
 // import { uploadFromUrl } from "./services/storage";
+// import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import Image from "next/image";
+import { Playlist } from "../src/models/Playlist";
+import { useAudioPlayer } from "react-use-audio-player";
 
 // const predefinedChains = ["ethereum", "polygon", "solana"];
 
 function App() {
-  const [songs, setSongs] = useState<PlayerSong[]>([]);
-  const [oriSongs, setOriSongs] = useState<SongDoc[]>();
+  const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<SongDoc[]>(
+    []
+  );
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylistIdx, setSelectedPlaylistIdx] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isCustomPlaylistMode, setIsCustomPlaylistMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  // const [playlistInfo, setPlaylistInfo] = useState<{
-  //   name: string;
-  //   id: string;
-  // }>();
   const [playlistName, setPlaylistName] = useState("Unnamed Playlist");
-
-  const [userPlaylist, setUserPlaylist] = useState<PlayerSong[]>();
+  const { playing, stop } = useAudioPlayer();
 
   const { account } = useWeb3React();
   const { login } = useAuth();
@@ -87,24 +92,31 @@ function App() {
   const fetchSongs = async () => {
     setIsLoading(true);
     const _songs = await getSongs();
-    setOriSongs(_songs.map((s, i) => ({ ...s, idx: i })));
-    const _new = _songs.map((song, i) => ({
-      name: song.name,
-      musicSrc: song.audioFileUrl,
-      cover: song.artworkUrl,
-      // singer: `#${song.openseaName.split("#")[1]}`,
-      id: song.id,
-      idx: i,
-    }));
+    setSelectedPlaylistSongs(_songs);
     setIsLoading(false);
-    setSongs(_new);
+  };
+
+  const fetchPlaylists = async () => {
+    const playlists = await getPlaylists();
+    setPlaylists(playlists);
   };
 
   useEffect(() => {
-    fetchSongs();
+    fetchPlaylists();
   }, []);
 
+  useEffect(() => {
+    if (playing) stop();
+    setSelectedPlaylistSongs([]);
+    if (selectedPlaylistIdx) {
+      fetchPlaylist(playlists[selectedPlaylistIdx - 1].id);
+    } else {
+      fetchSongs();
+    }
+  }, [selectedPlaylistIdx]);
+
   const fetchPlaylist = async (address: string) => {
+    setIsLoading(true);
     const playlist = await getPlaylist(address);
     if (playlist) {
       // setPlaylistInfo({
@@ -137,18 +149,17 @@ function App() {
       // setNewPlaylist(newPlaylistObj);
       if (availableSongIds.length) {
         const playlistSongs = await getSongsByIds(availableSongIds);
-        setUserPlaylist(
+        setSelectedPlaylistSongs(
           playlistSongs.map((s, i) => ({
+            ...s,
             idx: i,
-            id: s.id,
-            name: s.name,
-            musicSrc: s.audioFileUrl,
-            cover: s.artworkUrl,
-            // singer: s.artist,
           }))
         );
+      } else {
+        setSelectedPlaylistSongs([]);
       }
     }
+    setIsLoading(false);
   };
   // const onSavePlaylist = async () => {
   //   if (account) {
@@ -186,15 +197,12 @@ function App() {
       }
     }
   };
-  const fetchEnsName = async (address: string) => {
-    const userEns = await getEnsName(address);
-    if (userEns) {
-      setUserEnsName(userEns);
-    }
-  };
+  const fetchEnsName = async (address: string) =>
+    getEnsName(address).then((userEns) => userEns && setUserEnsName(userEns));
+
   useEffect(() => {
     if (account) {
-      fetchPlaylist(account);
+      // fetchPlaylist(account);
       fetchEnsName(account);
     }
   }, [account]);
@@ -264,7 +272,8 @@ function App() {
         <Box p={2}>
           <Grid container alignItems={"center"} rowSpacing={4}>
             <Grid item xs={8} md={5}>
-              <Typography variant="h4">NUSIC Player</Typography>
+              {/* <Typography variant="h4">NUSIC</Typography> */}
+              <Image src="/nusic-white.png" alt="" width={140} height={42} />
             </Grid>
             <Grid item xs={0} md={4}>
               {/* <TextField
@@ -321,9 +330,178 @@ function App() {
           </Grid>
         </Box>
         <Grid container>
-          <Grid item xs={0} md={3}></Grid>
-          <Grid item xs={12} md={6} sx={{ position: "relative" }}>
-            <Box
+          <Grid item xs={0} md={2}></Grid>
+          <Grid item xs={12} md={8} sx={{ position: "relative" }}>
+            <Box p={2} mb={"70px"}>
+              <Box>
+                {/* <Box
+                  my={"2rem"}
+                  py={"2rem"}
+                  sx={{ bgcolor: "primary.main" }}
+                  borderRadius="6px"
+                >
+                  <Box display={"flex"} justifyContent="center" pb={2}>
+                    <Image
+                      src="/nusic-white.png"
+                      alt=""
+                      width={200}
+                      height={60}
+                    />
+                  </Box>
+                  <Typography
+                    align="center"
+                    variant="h6"
+                    fontFamily={"BenchNine"}
+                  >
+                    POWERING THE EVOLUTION OF MUSIC
+                  </Typography>
+                </Box> */}
+                <Typography
+                  align="center"
+                  fontFamily={"Nunito"}
+                  variant="h5"
+                  textTransform="capitalize"
+                >
+                  {`THE WEB3 PLATFORM FOR MUSIC CREATORS, LABELS & COLLECTORS`.toLowerCase()}
+                </Typography>
+                <Typography
+                  align="center"
+                  fontFamily={"Nunito"}
+                  variant="h6"
+                  sx={{ mt: 2 }}
+                  textTransform="capitalize"
+                >
+                  {`STREAM, PLAYLIST, MINT, COLLECT`.toLowerCase()}
+                </Typography>
+                <Typography
+                  align="center"
+                  fontFamily={"Nunito"}
+                  variant="h6"
+                  sx={{ mt: 2 }}
+                  textTransform="capitalize"
+                >
+                  {`EARN $NUSIC TOKENS FOR EVERY STREAM`.toLowerCase()}
+                </Typography>
+                <Typography
+                  align="center"
+                  fontFamily={"Nunito"}
+                  variant="h6"
+                  sx={{ mt: 2 }}
+                  textTransform="capitalize"
+                >
+                  {`FIAT AND CRYPTO PAYMENTS`.toLowerCase()}
+                </Typography>
+                <Typography
+                  align="center"
+                  fontFamily={"Nunito"}
+                  variant="h6"
+                  sx={{ mt: 2 }}
+                  textTransform="capitalize"
+                >
+                  {`ONBOARD YOUR NON CRYPTO NATIVE AUDIENCE TO THE FUTURE OF MUSIC`.toLowerCase()}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  background:
+                    "linear-gradient(0deg, rgba(58,180,164,0.1) 0%, rgba(253,235,29,0.11) 48%, rgba(149,252,69,0.1) 100%)",
+                }}
+                borderRadius="6px"
+                // m={2}
+                mt={6}
+                p={2}
+              >
+                <Typography
+                  variant="h5"
+                  textTransform={"capitalize"}
+                  fontFamily={"Nunito"}
+                >
+                  Top Playlist
+                </Typography>
+                <Box display={"flex"} gap={2} flexWrap="wrap" my={4}>
+                  <Box
+                    sx={{
+                      background:
+                        selectedPlaylistIdx === 0
+                          ? "rgba(255,255,255,0.8)"
+                          : "rgba(255,255,255,0.6)",
+                    }}
+                    p={1}
+                    pr={2.5}
+                    borderRadius="6px"
+                    display={"flex"}
+                    // gap={1}
+                    alignItems="center"
+                  >
+                    <IconButton onClick={() => setSelectedPlaylistIdx(0)}>
+                      {<PlayCircleRounded htmlColor="black" />}
+                    </IconButton>
+                    <Typography color="black" align="center">
+                      Welcome to NUSIC
+                    </Typography>
+                  </Box>
+                  {playlists.map((p, i) => (
+                    <Box
+                      key={i}
+                      sx={{
+                        background:
+                          selectedPlaylistIdx - 1 === i
+                            ? "rgba(255,255,255,0.8)"
+                            : "rgba(255,255,255,0.6)",
+                      }}
+                      p={1}
+                      pr={2.5}
+                      borderRadius="6px"
+                      display={"flex"}
+                      // gap={1}
+                      alignItems="center"
+                    >
+                      <IconButton onClick={() => setSelectedPlaylistIdx(i + 1)}>
+                        <PlayCircleRounded htmlColor="black" />
+                      </IconButton>
+                      <Typography color="black" align="center">
+                        {p.name}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+                {/* <Typography
+                  variant="h5"
+                  textTransform={"capitalize"}
+                  fontFamily={"Nunito"}
+                >
+                  My Playlist
+                </Typography>
+                <Box display={"flex"} gap={2} flexWrap="wrap" my={4}>
+                  <Box
+                    sx={{ background: "rgba(255,255,255,0.8)" }}
+                    p={1}
+                    pr={2.5}
+                    borderRadius="6px"
+                    display={"flex"}
+                    // gap={1}
+                    alignItems="center"
+                  >
+                    <IconButton>
+                      <FavoriteOutlinedIcon color="error" />
+                    </IconButton>
+                    <Typography color="black" align="center">
+                      Logesh's Mix of the Year
+                    </Typography>
+                  </Box>
+                </Box> */}
+                {selectedPlaylistSongs && (
+                  <SongsList
+                    isLoading={isLoading}
+                    songs={selectedPlaylistSongs}
+                    addToPlaylist={addToPlaylist}
+                    showAddToPlaylist
+                    onRowClick={onRowClick}
+                  />
+                )}
+              </Box>
+            </Box>
+            {/* <Box
               sx={{ height: "100vh", overflowY: "auto" }}
               p={2}
               // maxHeight={"80vh"}
@@ -431,24 +609,9 @@ function App() {
                       Welcome to NUSIC
                     </Typography>
                   )}
-                  {/* <IconButton size="small" sx={{ ml: 1 }} onClick={() => {}}>
-                  <EditTwoToneIcon sx={{ width: "18px", height: "18px" }} />
-                </IconButton> */}
                 </Box>
                 <Box>
                   <Box display={"flex"} gap={2}>
-                    {/* {isEditMode && (
-                    <Button
-                      onClick={() => {
-                        setIsEditMode(false);
-                        // if (account) fetchPlaylist(account);
-                      }}
-                      color="info"
-                      size="small"
-                    >
-                      Cancel
-                    </Button>
-                  )} */}
                     <Button
                       disabled={isEditMode}
                       onClick={() => {
@@ -473,9 +636,6 @@ function App() {
                         )
                       }
                     >
-                      {/* {isCustomPlaylistMode && isEditMode
-                      ? `Save`
-                      : `Switch Playlist`} */}
                       {!userPlaylist && !isCustomPlaylistMode
                         ? "Create Playlist"
                         : "Switch Playlist"}
@@ -532,6 +692,20 @@ function App() {
                 {oriSongs && (
                   <NftFeed songs={oriSongs} onFeedClose={onFeedClose} />
                 )}
+              </Box>
+            )} */}
+            {showFeed && isMobile && selectedPlaylistSongs && (
+              <Box
+                position={"fixed"}
+                zIndex={100}
+                top={0}
+                height="100vh"
+                width="100%"
+              >
+                <NftFeed
+                  songs={selectedPlaylistSongs}
+                  onFeedClose={onFeedClose}
+                />
               </Box>
             )}
           </Grid>

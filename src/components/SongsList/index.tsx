@@ -16,7 +16,7 @@ import PlayCircleOutlinedIcon from "@mui/icons-material/PlayCircleOutlined";
 //   ReactJkMusicPlayerInstance,
 // } from "react-jinke-music-player";
 import { useEffect, useState } from "react";
-import { PlayerSong } from "../../models/Song";
+import { PlayerSong, SongDoc } from "../../models/Song";
 import { incrementStreamCount } from "../../services/db/songs.service";
 import Image from "next/image";
 import { AudioPlayerProvider, useAudioPlayer } from "react-use-audio-player";
@@ -24,7 +24,7 @@ import Player from "../Player";
 
 type Props = {
   isLoading: boolean;
-  songs: PlayerSong[];
+  songs: SongDoc[];
   addToPlaylist?: (id: string) => void;
   removeToPlaylist?: (id: string) => void;
   showAddToPlaylist?: boolean;
@@ -46,7 +46,7 @@ const SongsList = ({
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [timer, setTimer] = useState<NodeJS.Timeout>();
   const [prevStreamId, setPrevStreamId] = useState<string>();
-  const [selectedSong, setSelectedSong] = useState<PlayerSong>();
+  const [selectedSong, setSelectedSong] = useState<SongDoc>();
   const [isPlaylistActionLoading, setIsPlaylistAcitonLoading] = useState(false);
   const [songIndex, setSongIndex] = useState(0);
   const {
@@ -111,6 +111,14 @@ const SongsList = ({
     else onAudioPause();
   }, [playing]);
 
+  if (songs.length === 0) {
+    return (
+      <Box>
+        <Typography>No Songs Available</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box display={"flex"} flexDirection="column">
       {isLoading &&
@@ -132,8 +140,12 @@ const SongsList = ({
           alignItems={"center"}
           sx={{
             borderRadius: "6px",
+            background: songIndex === song.idx ? "rgba(255,255,255,0.4)" : "",
             ":hover": {
-              background: "rgba(0,0,0,0.3)",
+              background:
+                songIndex === song.idx
+                  ? "rgba(255,255,255,0.4)"
+                  : "rgba(0,0,0,0.3)",
             },
           }}
           justifyContent="space-between"
@@ -168,10 +180,10 @@ const SongsList = ({
                         else pause();
                       }}
                       sx={{
-                        background: "black",
+                        background: "transparent",
                         borderRadius: "4px",
                         ":hover": {
-                          background: "black",
+                          background: "transparent",
                         },
                       }}
                     >
@@ -198,7 +210,7 @@ const SongsList = ({
                 </Typography>
               </Box>
               <img
-                src={song.cover as string}
+                src={song.artworkUrl as string}
                 width={40}
                 height={40}
                 style={{ borderRadius: "4px" }}
@@ -207,9 +219,6 @@ const SongsList = ({
             </Box>
             <Box>
               <Typography textTransform={"capitalize"}>{song.name}</Typography>
-              {/* <Typography variant="caption" color="#c4c4c4">
-                {song.openseaName}
-              </Typography> */}
             </Box>
           </Box>
           <Box>

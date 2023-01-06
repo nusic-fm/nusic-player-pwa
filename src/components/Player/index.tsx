@@ -17,10 +17,10 @@ import {
 import { useEffect, useState } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 import { styled, useTheme } from "@mui/material/styles";
-import { PlayerSong } from "../../models/Song";
+import { PlayerSong, SongDoc } from "../../models/Song";
 
 type Props = {
-  songs: PlayerSong[];
+  songs: SongDoc[];
   songIndexProps: [number, (val: number) => void];
 };
 
@@ -50,7 +50,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
   const isMobile = useMediaQuery(() => theme.breakpoints.down("md"));
 
   useEffect(() => {
-    const src = songs[songIndex].musicSrc;
+    const src = songs[songIndex].audioFileUrl;
     if (!src) return;
     load({
       src,
@@ -83,7 +83,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
         gap={2}
       >
         <img
-          src={songs[songIndex].cover}
+          src={songs[songIndex].artworkUrl}
           alt=""
           width={"40px"}
           height="40px"

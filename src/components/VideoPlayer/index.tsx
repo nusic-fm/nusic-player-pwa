@@ -35,6 +35,8 @@ const VideoPlayer = ({ song }: Props) => {
     <Box
       width="100%"
       height="100%"
+      display="flex"
+      alignItems="center"
       ref={(r: any) => ref(r)}
       onClick={() => togglePauseOrPlay()}
     >

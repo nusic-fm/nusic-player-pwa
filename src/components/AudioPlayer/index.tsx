@@ -65,6 +65,8 @@ const AudioPlaer = ({ song }: Props) => {
       height="100%"
       ref={(r) => ref(r as any)}
       onClick={() => togglePlayPause()}
+      display="flex"
+      alignItems="center"
     >
       <Box
         width={"100%"}

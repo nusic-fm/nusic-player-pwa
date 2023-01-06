@@ -1,14 +1,35 @@
 import {
   arrayRemove,
   arrayUnion,
+  collection,
   doc,
   getDoc,
+  getDocs,
   increment,
+  limit,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { Playlist, PlayListSong } from "../../models/Playlist";
+import { SongDoc, Song } from "../../models/Song";
 import { db } from "../firebase.service";
+
+const getPlaylists = async (): Promise<Playlist[]> => {
+  const q = query(
+    collection(db, "playlists"),
+    where("totalLikes", ">", 0),
+    // orderBy("audioFileUrl", "asc"),
+    limit(5)
+  );
+  const querySnapshots = await getDocs(q);
+  const playlists: Playlist[] = [];
+  querySnapshots.forEach((doc) => {
+    playlists.push({ ...(doc.data() as Playlist), id: doc.id });
+  });
+  return playlists;
+};
 
 const getPlaylist = async (id: string): Promise<Playlist | null> => {
   const d = doc(db, "playlists", id);
@@ -79,6 +100,7 @@ const addLikeDb = async (playlistAddress: string, userAddress: string) => {
 };
 
 export {
+  getPlaylists,
   getPlaylist,
   savePlaylist,
   addToPlaylistDb,
