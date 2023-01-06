@@ -36,10 +36,7 @@ const Player = ({ songs }: Props) => {
     volume,
     load,
     error,
-  } = useAudioPlayer({
-    html5: true,
-    autoPlay: true,
-  });
+  } = useAudioPlayer();
   const { duration, seek, percentComplete, position } = useAudioPosition();
 
   useEffect(() => {
@@ -49,7 +46,14 @@ const Player = ({ songs }: Props) => {
   const isMobile = useMediaQuery(() => theme.breakpoints.down("md"));
 
   useEffect(() => {
-    load({ src: songs[songIndex].audioFileUrl });
+    const src = songs[songIndex].audioFileUrl;
+    if (!src) return;
+    load({
+      src,
+      html5: true,
+      autoplay: playing,
+      format: ["wav", "mp3", "mp4"],
+    });
   }, [songIndex]);
 
   return (
@@ -80,7 +84,9 @@ const Player = ({ songs }: Props) => {
           flexDirection="column"
           width={"calc(100% - 40px)"}
         >
-          <Typography noWrap>{songs[songIndex].name}</Typography>
+          <Typography noWrap fontSize={"italic"}>
+            {songs[songIndex].name}
+          </Typography>
           <Slider
             value={localPosition}
             max={duration}
@@ -95,7 +101,7 @@ const Player = ({ songs }: Props) => {
               seek(val as number);
             }}
             min={0}
-            step={1}
+            // step={1}
             sx={{
               pl: 0.5,
               width: "100%",
