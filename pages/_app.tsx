@@ -8,6 +8,7 @@ import { CssBaseline } from "@mui/material";
 import theme from "../src/theme";
 import { Web3ReactProvider } from "@web3-react/core";
 import { ethers } from "ethers";
+import { AudioPlayerProvider } from "react-use-audio-player";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -45,7 +46,9 @@ export default function MyApp(props: MyAppProps) {
         <CssBaseline />
         {/* <Header /> */}
         <Web3ReactProvider getLibrary={getLibrary}>
-          <Component {...pageProps} />
+          <AudioPlayerProvider>
+            <Component {...pageProps} />
+          </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}
       </ThemeProvider>

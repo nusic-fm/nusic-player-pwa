@@ -554,13 +554,6 @@ function App() {
           onSaveSongPlaylist={onSaveSongPlaylist}
         />
       </Box>
-      {oriSongs && (
-        <Box position={"fixed"} bottom={0} width="100%">
-          <AudioPlayerProvider>
-            <Player songs={oriSongs} />
-          </AudioPlayerProvider>
-        </Box>
-      )}
     </>
   );
 }

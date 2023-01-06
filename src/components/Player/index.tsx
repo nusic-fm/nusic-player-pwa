@@ -17,12 +17,16 @@ import {
 import { useEffect, useState } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 import { styled, useTheme } from "@mui/material/styles";
+import { PlayerSong } from "../../models/Song";
 
-type Props = { songs: any };
+type Props = {
+  songs: PlayerSong[];
+  songIndexProps: [number, (val: number) => void];
+};
 
-const Player = ({ songs }: Props) => {
+const Player = ({ songs, songIndexProps }: Props) => {
+  const [songIndex, setSongIndex] = songIndexProps;
   const theme = useTheme();
-  const [songIndex, setSongIndex] = useState(0);
   const [localPosition, setLocalPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -46,7 +50,7 @@ const Player = ({ songs }: Props) => {
   const isMobile = useMediaQuery(() => theme.breakpoints.down("md"));
 
   useEffect(() => {
-    const src = songs[songIndex].audioFileUrl;
+    const src = songs[songIndex].musicSrc;
     if (!src) return;
     load({
       src,
@@ -55,7 +59,13 @@ const Player = ({ songs }: Props) => {
       format: ["wav", "mp3", "mp4"],
       onend: () => setSongIndex(songIndex + 1),
     });
+    // onPlayIndexChange(songs[songIndex].idx);
   }, [songIndex]);
+
+  // useEffect(() => {
+  //   if (playing) onAudioPlay({ id: songs[songIndex].id });
+  //   else onAudioPause();
+  // }, [playing]);
 
   return (
     <Box
@@ -73,7 +83,7 @@ const Player = ({ songs }: Props) => {
         gap={2}
       >
         <img
-          src={songs[songIndex].artworkUrl}
+          src={songs[songIndex].cover}
           alt=""
           width={"40px"}
           height="40px"

@@ -15,10 +15,12 @@ import PlayCircleOutlinedIcon from "@mui/icons-material/PlayCircleOutlined";
 // import ReactJkMusicPlayer, {
 //   ReactJkMusicPlayerInstance,
 // } from "react-jinke-music-player";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlayerSong } from "../../models/Song";
 import { incrementStreamCount } from "../../services/db/songs.service";
 import Image from "next/image";
+import { AudioPlayerProvider, useAudioPlayer } from "react-use-audio-player";
+import Player from "../Player";
 
 type Props = {
   isLoading: boolean;
@@ -37,7 +39,7 @@ const SongsList = ({
   removeToPlaylist,
   onRowClick,
 }: Props) => {
-  const [playIndex, setPlayIndex] = useState(0);
+  // const [playIndex, setPlayIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(true);
   const [audioIns, setAudioIns] = useState<any>();
   const [showPopover, setShowPopover] = useState(false);
@@ -46,6 +48,15 @@ const SongsList = ({
   const [prevStreamId, setPrevStreamId] = useState<string>();
   const [selectedSong, setSelectedSong] = useState<PlayerSong>();
   const [isPlaylistActionLoading, setIsPlaylistAcitonLoading] = useState(false);
+  const [songIndex, setSongIndex] = useState(0);
+  const {
+    // loading,
+    playing,
+    // ready,
+    // togglePlayPause,
+    play,
+    pause,
+  } = useAudioPlayer();
 
   const resetTimer = (isPlay: boolean = false, playId?: string) => {
     if (timer) {
@@ -57,7 +68,7 @@ const SongsList = ({
           // Increase Stream
           setPrevStreamId(playId);
           if (playId) incrementStreamCount(playId);
-          console.log(`Streamed: ${songs[playIndex].name}`);
+          console.log(`Streamed: ${songs[songIndex].name}`);
         }, 10_000)
       );
     }
@@ -80,6 +91,26 @@ const SongsList = ({
       setShowPopover(false);
     }
   };
+
+  const onAudioPlay = (id: string) => {
+    if (id === prevStreamId) {
+      resetTimer();
+    } else {
+      resetTimer(true, id);
+    }
+    setIsPaused(false);
+  };
+
+  const onAudioPause = () => {
+    resetTimer();
+    setIsPaused(true);
+  };
+
+  useEffect(() => {
+    if (playing) onAudioPlay(songs[songIndex].id);
+    else onAudioPause();
+  }, [playing]);
+
   return (
     <Box display={"flex"} flexDirection="column">
       {isLoading &&
@@ -91,7 +122,7 @@ const SongsList = ({
       {songs.map((song, i) => (
         <Box
           boxShadow={
-            playIndex === song.idx
+            songIndex === song.idx
               ? "rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px"
               : ""
           }
@@ -109,9 +140,10 @@ const SongsList = ({
           width="100%"
           onClick={() => {
             onRowClick && onRowClick();
-            // if (song.idx === playIndex) {
-            //   return;
-            // }
+            if (song.idx === songIndex) {
+              return;
+            }
+            setSongIndex(song.idx);
             // if (audioIns?.updatePlayIndex) audioIns.updatePlayIndex(song.idx);
             // setPlayIndex(i);
           }}
@@ -119,7 +151,7 @@ const SongsList = ({
           <Box display="flex" alignItems={"center"} gap={2}>
             <Box display="flex" alignItems={"center"} gap={2}>
               <Box position={"relative"} mr={1} width="24px">
-                {playIndex === song.idx && (
+                {songIndex === song.idx && (
                   <Box
                     sx={{
                       position: "absolute",
@@ -132,8 +164,8 @@ const SongsList = ({
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (isPaused) audioIns?.play();
-                        else audioIns?.pause();
+                        if (isPaused) play();
+                        else pause();
                       }}
                       sx={{
                         background: "black",
@@ -230,6 +262,11 @@ const SongsList = ({
         responsive={false}
         // mobileMediaQuery='(min-width: 1024px)'
       /> */}
+      {songs?.length > 0 && (
+        <Box position={"fixed"} bottom={0} width="100%" left={0}>
+          <Player songs={songs} songIndexProps={[songIndex, setSongIndex]} />
+        </Box>
+      )}
       <Popover
         open={showPopover}
         onClose={() => setShowPopover(false)}
