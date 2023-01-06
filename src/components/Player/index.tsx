@@ -27,17 +27,17 @@ const Player = ({ songs }: Props) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const {
-    loading,
+    // loading,
     playing,
-    ready,
+    // ready,
     togglePlayPause,
-    play,
-    pause,
+    // play,
+    // pause,
     volume,
     load,
-    error,
+    // error,
   } = useAudioPlayer();
-  const { duration, seek, percentComplete, position } = useAudioPosition();
+  const { duration, seek, position } = useAudioPosition();
 
   useEffect(() => {
     if (!isDragging) setLocalPosition(position);
@@ -51,8 +51,9 @@ const Player = ({ songs }: Props) => {
     load({
       src,
       html5: true,
-      autoplay: playing,
+      autoplay: true,
       format: ["wav", "mp3", "mp4"],
+      onend: () => setSongIndex(songIndex + 1),
     });
   }, [songIndex]);
 
@@ -103,7 +104,7 @@ const Player = ({ songs }: Props) => {
             min={0}
             // step={1}
             sx={{
-              pl: 0.5,
+              ml: 0.5,
               width: "100%",
               color:
                 theme.palette.mode === "dark" ? "#fff" : "rgba(0,0,0,0.87)",
