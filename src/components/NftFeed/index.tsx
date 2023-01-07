@@ -1,4 +1,7 @@
 import { Box } from "@mui/material";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useAudioPlayer } from "react-use-audio-player";
 // import { useSpring, animated } from "react-spring";
 // import useGesture from "../../hooks/useGesture";
 // import useScan from "../../hooks/useScan";
@@ -6,9 +9,13 @@ import { Box } from "@mui/material";
 import { SongDoc } from "../../models/Song";
 import ScrollElem from "./ScrollElem";
 
-type Props = { songs: SongDoc[]; onFeedClose: () => void };
+type Props = {
+  songs: SongDoc[];
+  onFeedClose: () => void;
+  addToPlaylist: (songId: string) => Promise<void>;
+};
 
-const NftFeed = ({ songs, onFeedClose }: Props) => {
+const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
   // const [currentPostIndex, setCurrentPostIndex, scan] = useScan(songs);
 
   // const [, height] = useWindowSize();
@@ -90,6 +97,29 @@ const NftFeed = ({ songs, onFeedClose }: Props) => {
   // const renderables = elements.filter((element) => !!element);
 
   // const renders = renderables.map((r) => <ScrollElem key={r.name} song={r} />);
+
+  const [songIndex, setSongIdx] = useState(0);
+  const { load, playing } = useAudioPlayer();
+
+  useEffect(() => {
+    const src = songs[songIndex].audioFileUrl;
+    if (!src) return;
+    console.log("loading: ", src);
+    load({
+      src,
+      html5: true,
+      autoplay: true,
+      format: ["wav", "mp3", "mp4"],
+      // onend: () => setSongIndex(songIndex + 1),
+    });
+    // onPlayIndexChange(songs[songIndex].idx);
+  }, [songIndex]);
+
+  const inView = (index: number) => {
+    if (songIndex === index) return;
+    setSongIdx(index);
+  };
+
   return (
     <Box
       width="100%"
@@ -103,7 +133,14 @@ const NftFeed = ({ songs, onFeedClose }: Props) => {
         sx={{ overflowY: "auto", scrollSnapType: "y mandatory" }}
       >
         {songs.map((s) => (
-          <ScrollElem key={s.name} song={s} onFeedClose={onFeedClose} />
+          <ScrollElem
+            key={s.name}
+            song={s}
+            onFeedClose={onFeedClose}
+            inView={inView}
+            isPlaying={songIndex === s.idx && playing}
+            addToPlaylist={addToPlaylist}
+          />
         ))}
       </Box>
     </Box>

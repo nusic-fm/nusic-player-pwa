@@ -84,6 +84,7 @@ function App() {
   const [isListNftOpen, setIsListNftOpen] = useState(false);
 
   const onRowClick = () => {
+    stop();
     setShowFeed(true && isMobile);
   };
   const onFeedClose = () => {
@@ -219,7 +220,7 @@ function App() {
           "Unable to Add to the Playlist, please try again later"
         );
       }
-      await fetchPlaylist(account);
+      // await fetchPlaylist(account);
       setSnackbarMessage("Successfully added to the playlist");
     } else setSnackbarMessage("Please connect your account to continue");
   };
@@ -740,6 +741,7 @@ function App() {
                 <NftFeed
                   songs={selectedPlaylistSongs}
                   onFeedClose={onFeedClose}
+                  addToPlaylist={addToPlaylist}
                 />
               </Box>
             )}

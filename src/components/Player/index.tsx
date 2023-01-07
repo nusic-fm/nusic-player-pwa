@@ -16,8 +16,9 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
-import { styled, useTheme } from "@mui/material/styles";
-import { PlayerSong, SongDoc } from "../../models/Song";
+import { useTheme } from "@mui/material/styles";
+import { SongDoc } from "../../models/Song";
+import SeekBar from "../SeekBar";
 
 type Props = {
   songs: SongDoc[];
@@ -98,7 +99,19 @@ const Player = ({ songs, songIndexProps }: Props) => {
           <Typography noWrap fontSize={"italic"}>
             {songs[songIndex].name}
           </Typography>
-          <Slider
+          <SeekBar
+            value={localPosition}
+            max={duration}
+            onChange={(e, newPosition) => {
+              setIsDragging(true);
+              setLocalPosition(newPosition as number);
+            }}
+            onChangeCommitted={(e, val) => {
+              setIsDragging(false);
+              seek(val as number);
+            }}
+          />
+          {/* <Slider
             value={localPosition}
             max={duration}
             color="secondary"
@@ -142,7 +155,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
                 opacity: 0.28,
               },
             }}
-          />
+          /> */}
         </Box>
       </Box>
       <Box display={"flex"} alignItems="center" gap={2}>

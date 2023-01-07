@@ -1,15 +1,20 @@
 import { Box } from "@mui/material";
-import React, { useEffect, useRef } from "react";
-import { useState } from "react";
+import { useEffect, useRef } from "react";
+import { useAudioPlayer } from "react-use-audio-player";
 import { useInViewport } from "../../hooks/useInViewport";
-import { Song } from "../../models/Song";
+import { SongDoc } from "../../models/Song";
 
-type Props = { song: Song };
+type Props = {
+  song: SongDoc;
+  inView: (index: number) => void;
+  isPlaying: boolean;
+};
 
-const VideoPlayer = ({ song }: Props) => {
+const VideoPlayer = ({ song, inView, isPlaying }: Props) => {
   const { isInViewport, ref } = useInViewport(song.name);
+  const { pause, togglePlayPause } = useAudioPlayer();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     if (isPlaying) {
@@ -21,15 +26,17 @@ const VideoPlayer = ({ song }: Props) => {
 
   useEffect(() => {
     if (isInViewport) {
-      setIsPlaying(true);
+      inView(song.idx);
+      // setIsPlaying(true);
     } else {
-      setIsPlaying(false);
+      // pause();
+      // setIsPlaying(false);
     }
   }, [isInViewport]);
 
-  const togglePauseOrPlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+  // const togglePauseOrPlay = () => {
+  //   setIsPlaying(!isPlaying);
+  // };
 
   return (
     <Box
@@ -38,7 +45,7 @@ const VideoPlayer = ({ song }: Props) => {
       display="flex"
       alignItems="center"
       ref={(r: any) => ref(r)}
-      onClick={() => togglePauseOrPlay()}
+      onClick={() => togglePlayPause()}
     >
       <Box
         width={"100%"}
@@ -53,6 +60,8 @@ const VideoPlayer = ({ song }: Props) => {
           width="260px"
           height="260px"
           src={song.audioFileUrl}
+          // autoPlay
+          muted
           // controls
           poster={song.artworkUrl}
         ></video>

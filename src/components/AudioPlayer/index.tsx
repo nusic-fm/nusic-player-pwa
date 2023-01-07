@@ -4,10 +4,11 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { Box } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useInViewport } from "../../hooks/useInViewport";
-import { Song } from "../../models/Song";
+import { SongDoc } from "../../models/Song";
 import { keyframes } from "@emotion/react";
+import { useAudioPlayer } from "react-use-audio-player";
 
 const roteteImage = keyframes`
   from {
@@ -19,45 +20,43 @@ const roteteImage = keyframes`
   }
 `;
 
-type Props = { song: Song };
+type Props = {
+  song: SongDoc;
+  inView: (index: number) => void;
+  isPlaying: boolean;
+};
 
-const AudioPlaer = ({ song }: Props) => {
-  const audioRef = useRef(new Audio(song.audioFileUrl));
+const AudioPlaer = ({ song, inView, isPlaying }: Props) => {
+  // const audioRef = useRef(new Audio(song.audioFileUrl));
   const { isInViewport, ref } = useInViewport(song.name);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
   const animationRef = useRef<HTMLImageElement>(null);
+  const { togglePlayPause, pause } = useAudioPlayer();
 
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
+  // const togglePlayPause = () => {
+  //   setIsPlaying(!isPlaying);
+  // };
   useEffect(() => {
     if (isPlaying) {
       if (animationRef.current)
         animationRef.current.style.animationPlayState = "running";
-      audioRef.current.play();
+      // audioRef.current.play();
     } else {
       if (animationRef.current)
         animationRef.current.style.animationPlayState = "paused";
-      audioRef.current.pause();
+      // audioRef.current.pause();
     }
   }, [isPlaying]);
 
   useEffect(() => {
     if (isInViewport) {
-      setIsPlaying(true);
+      inView(song.idx);
+      // setIsPlaying(true);
     } else {
-      setIsPlaying(false);
+      // pause();
+      // setIsPlaying(false);
     }
   }, [isInViewport]);
-
-  useEffect(() => {
-    // Pause and clean up on unmount
-    return () => {
-      audioRef.current.pause();
-      // TODO
-      // clearInterval(intervalRef.current);
-    };
-  }, []);
 
   return (
     <Box
