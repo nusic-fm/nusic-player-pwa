@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import styles from "react-jinke-music-player/assets/index.module.css";
+// import styles from "react-jinke-music-player/assets/index.module.css";
 import { getSongsByIds } from "../../src/services/db/songs.service";
 import {
   addLikeDb,
@@ -9,7 +9,7 @@ import {
   removeToPlaylistDb,
 } from "../../src/services/db/playlists.service";
 import SongsList from "../../src/components/SongsList";
-import { PlayerSong } from "../../src/models/Song";
+import { SongDoc } from "../../src/models/Song";
 import {
   Button,
   Chip,
@@ -42,7 +42,7 @@ const Playlist = ({
   //   totalLikes?: number;
   // }>({ name: "-- Playlist" });
 
-  const [userPlaylist, setUserPlaylist] = useState<PlayerSong[]>();
+  const [userPlaylist, setUserPlaylist] = useState<SongDoc[]>();
   const router = useRouter();
   const [isInvalidId, setIsInvalidId] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -67,16 +67,7 @@ const Playlist = ({
         .map((s) => s.address);
       if (availableSongIds.length) {
         const playlistSongs = await getSongsByIds(availableSongIds);
-        setUserPlaylist(
-          playlistSongs.map((s, i) => ({
-            id: s.id as string,
-            idx: i,
-            name: s.name,
-            musicSrc: s.audioFileUrl,
-            cover: s.artworkUrl,
-            // singer: "",
-          }))
-        );
+        setUserPlaylist(playlistSongs);
       } else {
         setUserPlaylist([]);
       }

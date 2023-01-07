@@ -111,7 +111,7 @@ const SongsList = ({
     else onAudioPause();
   }, [playing]);
 
-  if (songs.length === 0) {
+  if (songs.length === 0 && !isLoading) {
     return (
       <Box>
         <Typography>No Songs Available</Typography>
@@ -180,10 +180,10 @@ const SongsList = ({
                         else pause();
                       }}
                       sx={{
-                        background: "transparent",
+                        background: "black",
                         borderRadius: "4px",
                         ":hover": {
-                          background: "transparent",
+                          background: "black",
                         },
                       }}
                     >

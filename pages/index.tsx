@@ -49,6 +49,7 @@ import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
 import Image from "next/image";
 import { Playlist } from "../src/models/Playlist";
 import { useAudioPlayer } from "react-use-audio-player";
+import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
 
 // const predefinedChains = ["ethereum", "polygon", "solana"];
 
@@ -62,7 +63,7 @@ function App() {
   const [isCustomPlaylistMode, setIsCustomPlaylistMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [playlistName, setPlaylistName] = useState("Unnamed Playlist");
-  const { playing, stop } = useAudioPlayer();
+  const { playing, stop, togglePlayPause } = useAudioPlayer();
 
   const { account } = useWeb3React();
   const { login } = useAuth();
@@ -426,6 +427,11 @@ function App() {
                           ? "rgba(255,255,255,0.8)"
                           : "rgba(255,255,255,0.6)",
                     }}
+                    boxShadow={
+                      selectedPlaylistIdx === 0
+                        ? "rgba(255, 255, 255, 0.85) 0px 5px 15px"
+                        : ""
+                    }
                     p={1}
                     pr={2.5}
                     borderRadius="6px"
@@ -433,8 +439,20 @@ function App() {
                     // gap={1}
                     alignItems="center"
                   >
-                    <IconButton onClick={() => setSelectedPlaylistIdx(0)}>
-                      {<PlayCircleRounded htmlColor="black" />}
+                    <IconButton
+                      onClick={() => {
+                        if (selectedPlaylistIdx === 0) {
+                          togglePlayPause();
+                        } else {
+                          setSelectedPlaylistIdx(0);
+                        }
+                      }}
+                    >
+                      {playing && selectedPlaylistIdx === 0 ? (
+                        <PauseCircleRounded htmlColor="black" />
+                      ) : (
+                        <PlayCircleRounded htmlColor="black" />
+                      )}
                     </IconButton>
                     <Typography color="black" align="center">
                       Welcome to NUSIC
@@ -449,6 +467,11 @@ function App() {
                             ? "rgba(255,255,255,0.8)"
                             : "rgba(255,255,255,0.6)",
                       }}
+                      boxShadow={
+                        selectedPlaylistIdx - 1 === i
+                          ? "rgba(255, 255, 255, 0.85) 0px 5px 15px"
+                          : ""
+                      }
                       p={1}
                       pr={2.5}
                       borderRadius="6px"
@@ -456,8 +479,20 @@ function App() {
                       // gap={1}
                       alignItems="center"
                     >
-                      <IconButton onClick={() => setSelectedPlaylistIdx(i + 1)}>
-                        <PlayCircleRounded htmlColor="black" />
+                      <IconButton
+                        onClick={() => {
+                          if (i + 1 === selectedPlaylistIdx) {
+                            togglePlayPause();
+                          } else {
+                            setSelectedPlaylistIdx(i + 1);
+                          }
+                        }}
+                      >
+                        {playing && selectedPlaylistIdx - 1 === i ? (
+                          <PauseCircleRounded htmlColor="black" />
+                        ) : (
+                          <PlayCircleRounded htmlColor="black" />
+                        )}
                       </IconButton>
                       <Typography color="black" align="center">
                         {p.name}

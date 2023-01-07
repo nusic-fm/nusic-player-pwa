@@ -3,10 +3,10 @@ import { Box } from "@mui/material";
 // import useGesture from "../../hooks/useGesture";
 // import useScan from "../../hooks/useScan";
 // import useWindowSize from "../../hooks/useWindowSize";
-import { Song } from "../../models/Song";
+import { SongDoc } from "../../models/Song";
 import ScrollElem from "./ScrollElem";
 
-type Props = { songs: Song[]; onFeedClose: () => void };
+type Props = { songs: SongDoc[]; onFeedClose: () => void };
 
 const NftFeed = ({ songs, onFeedClose }: Props) => {
   // const [currentPostIndex, setCurrentPostIndex, scan] = useScan(songs);

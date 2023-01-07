@@ -1,11 +1,11 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import { Song } from "../../models/Song";
+import { SongDoc } from "../../models/Song";
 import AudioPlayer from "../AudioPlayer";
 import VideoPlayer from "../VideoPlayer";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 
-type Props = { song: Song; onFeedClose: () => void };
+type Props = { song: SongDoc; onFeedClose: () => void };
 
 const ScrollElem = ({ song, onFeedClose }: Props) => {
   return (
