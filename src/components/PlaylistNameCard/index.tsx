@@ -4,12 +4,25 @@ import { Box, IconButton, Typography } from "@mui/material";
 
 type Props = {
   isPlayling: boolean;
+  name: string;
+  isSelected: boolean;
+  onToggleClick: () => void;
 };
 
-const PlaylistNameCard = ({ isPlayling }: Props) => {
+const PlaylistNameCard = ({
+  isPlayling,
+  name,
+  isSelected,
+  onToggleClick,
+}: Props) => {
   return (
     <Box
-      sx={{ background: "rgba(255,255,255,0.8)" }}
+      sx={{
+        background: isSelected
+          ? "rgba(255,255,255,0.8)"
+          : "rgba(255,255,255,0.6)",
+      }}
+      boxShadow={isSelected ? "rgba(255, 255, 255, 0.85) 0px 5px 15px" : ""}
       p={1}
       pr={2.5}
       borderRadius="6px"
@@ -17,15 +30,15 @@ const PlaylistNameCard = ({ isPlayling }: Props) => {
       // gap={1}
       alignItems="center"
     >
-      <IconButton>
-        {isPlayling ? (
-          <PauseCircleRounded />
+      <IconButton onClick={onToggleClick}>
+        {isPlayling && isSelected ? (
+          <PauseCircleRounded htmlColor="black" />
         ) : (
           <PlayCircleRounded htmlColor="black" />
         )}
       </IconButton>
       <Typography color="black" align="center">
-        Welcome to NUSIC
+        {name}
       </Typography>
     </Box>
   );

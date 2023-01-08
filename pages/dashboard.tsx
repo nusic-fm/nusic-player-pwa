@@ -35,6 +35,7 @@ import { addSongToDb } from "../src/services/db/songs.service";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Header from "../src/components/Header";
 // import { uploadFromUrl } from "./services/storage";
 
 type Props = {};
@@ -216,68 +217,7 @@ const Dashboard = (props: Props) => {
             "linear-gradient(0deg, rgba(20,20,61,0.9920561974789917) 0%, rgba(22,22,42,1) 77%)",
         }}
       >
-        <Box p={2}>
-          <Grid container alignItems={"center"} rowSpacing={4}>
-            <Grid item xs={8} md={5}>
-              <Typography
-                variant="h4"
-                sx={{ cursor: "pointer" }}
-                onClick={() => {
-                  router.push("/");
-                }}
-              >
-                NUSIC Player
-              </Typography>
-            </Grid>
-            <Grid item xs={0} md={4}>
-              {/* <TextField
-              label="Search"
-              fullWidth
-              onChange={(e) => {
-                const _new = songsDataSource.filter(
-                  (s) =>
-                    s.name
-                      ?.toString()
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase()) ||
-                    s.singer
-                      ?.toString()
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                );
-                setSongs(_new);
-              }}
-            ></TextField> */}
-            </Grid>
-            <Grid item xs={4} md={3}>
-              <Box display={"flex"} justifyContent="end" alignItems={"center"}>
-                {account ? (
-                  <Tooltip title={account} placement={"bottom-start"}>
-                    <Chip
-                      label={`${account.slice(0, 6)}...${account.slice(
-                        account.length - 4
-                      )}`}
-                      // size="small"
-                      color="info"
-                      variant="outlined"
-                    />
-                  </Tooltip>
-                ) : (
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      login();
-                    }}
-                  >
-                    connect
-                  </Button>
-                )}
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+        <Header />
         {account ? (
           <Box mt="2rem">
             {/* <Box m={4} width={{ md: "50%" }}>

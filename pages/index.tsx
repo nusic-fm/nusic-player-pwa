@@ -37,19 +37,21 @@ import { PlayerSong, Song, SongDoc } from "../src/models/Song";
 import ListNFT from "../src/components/ListNFT";
 // import SaveRounded from "@mui/icons-material/SaveRounded";
 // import CancelOutlined from "@mui/icons-material/CancelOutlined";
-import { getEnsName } from "../src/helpers";
+// import { getEnsName } from "../src/helpers";
 import NftFeed from "../src/components/NftFeed";
 import { useRouter } from "next/router";
 import Head from "next/head";
 // import Player from "../src/components/Player";
 // import { AudioPlayerProvider } from "react-use-audio-player";
-import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
+// import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
 // import { uploadFromUrl } from "./services/storage";
 // import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
-import Image from "next/image";
+// import Image from "next/image";
 import { Playlist } from "../src/models/Playlist";
 import { useAudioPlayer } from "react-use-audio-player";
-import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
+// import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
+import Header from "../src/components/Header";
+import PlaylistNameCard from "../src/components/PlaylistNameCard";
 
 // const predefinedChains = ["ethereum", "polygon", "solana"];
 
@@ -57,17 +59,17 @@ function App() {
   const [selectedPlaylistSongs, setSelectedPlaylistSongs] = useState<SongDoc[]>(
     []
   );
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [selectedPlaylistIdx, setSelectedPlaylistIdx] = useState<number>(0);
+  const [playlists, setPlaylists] = useState<{ [key: string]: Playlist }>({});
+  // const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>("name");
   const [isLoading, setIsLoading] = useState(false);
   const [isCustomPlaylistMode, setIsCustomPlaylistMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [playlistName, setPlaylistName] = useState("Unnamed Playlist");
   const { playing, stop, togglePlayPause } = useAudioPlayer();
+  const { login } = useAuth();
 
   const { account } = useWeb3React();
-  const { login } = useAuth();
-  const [userEnsName, setUserEnsName] = useState<string>();
   const [showFeed, setShowFeed] = useState(false);
   const isMobile = useMediaQuery((_theme) =>
     (_theme as any).breakpoints.down("md")
@@ -100,7 +102,11 @@ function App() {
 
   const fetchPlaylists = async () => {
     const playlists = await getPlaylists();
-    setPlaylists(playlists);
+    const _playlists: { [key: string]: Playlist } = {};
+    playlists.map((p) => {
+      _playlists[p.id] = p;
+    });
+    setPlaylists(_playlists);
   };
 
   useEffect(() => {
@@ -110,12 +116,8 @@ function App() {
   useEffect(() => {
     if (playing) stop();
     setSelectedPlaylistSongs([]);
-    if (selectedPlaylistIdx) {
-      fetchPlaylist(playlists[selectedPlaylistIdx - 1].id);
-    } else {
-      fetchSongs();
-    }
-  }, [selectedPlaylistIdx]);
+    fetchPlaylist(selectedPlaylistId);
+  }, [selectedPlaylistId]);
 
   const fetchPlaylist = async (address: string) => {
     setIsLoading(true);
@@ -125,7 +127,7 @@ function App() {
       //   name: playlist?.name,
       //   id: playlist.id,
       // });
-      setPlaylistName(playlist.name);
+      // setPlaylistName(playlist.name);
       if (!playlist.songs) return;
       const availableSongIds = playlist.songs
         // .filter((s) => s.isAvailable)
@@ -199,15 +201,14 @@ function App() {
       }
     }
   };
-  const fetchEnsName = async (address: string) =>
-    getEnsName(address).then((userEns) => userEns && setUserEnsName(userEns));
 
-  useEffect(() => {
-    if (account) {
-      // fetchPlaylist(account);
-      fetchEnsName(account);
-    }
-  }, [account]);
+  // const fetchUserPlaylists = async (playlistId: string) => {};
+
+  // useEffect(() => {
+  //   if (account) {
+  //     fetchUserPlaylists(account);
+  //   }
+  // }, [account]);
 
   const addToPlaylist = async (id: string) => {
     if (account) {
@@ -271,66 +272,7 @@ function App() {
             "linear-gradient(0deg, rgba(20,20,61,0.9920561974789917) 0%, rgba(22,22,42,1) 77%)",
         }}
       >
-        <Box p={2}>
-          <Grid container alignItems={"center"} rowSpacing={4}>
-            <Grid item xs={8} md={5}>
-              {/* <Typography variant="h4">NUSIC</Typography> */}
-              <Image src="/nusic-white.png" alt="" width={140} height={42} />
-            </Grid>
-            <Grid item xs={0} md={4}>
-              {/* <TextField
-              label="Search"
-              fullWidth
-              onChange={(e) => {
-                const _new = songsDataSource.filter(
-                  (s) =>
-                    s.name
-                      ?.toString()
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase()) ||
-                    s.singer
-                      ?.toString()
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                );
-                setSongs(_new);
-              }}
-            ></TextField> */}
-            </Grid>
-            <Grid item xs={4} md={3}>
-              <Box display={"flex"} justifyContent="end" alignItems={"center"}>
-                {account ? (
-                  <Tooltip title={account} placement={"bottom-start"}>
-                    <Chip
-                      clickable
-                      label={
-                        userEnsName ||
-                        `${account.slice(0, 6)}...${account.slice(
-                          account.length - 4
-                        )}`
-                      }
-                      // size="small"
-                      color="info"
-                      variant="outlined"
-                      onClick={() => router.push("/dashboard")}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      login();
-                    }}
-                  >
-                    connect
-                  </Button>
-                )}
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+        <Header />
         <Grid container>
           <Grid item xs={0} md={2}></Grid>
           <Grid item xs={12} md={8} sx={{ position: "relative" }}>
@@ -418,88 +360,67 @@ function App() {
                   textTransform={"capitalize"}
                   fontFamily={"Nunito"}
                 >
-                  Top Playlist
+                  Top Playlists
                 </Typography>
                 <Box display={"flex"} gap={2} flexWrap="wrap" my={4}>
-                  <Box
-                    sx={{
-                      background:
-                        selectedPlaylistIdx === 0
-                          ? "rgba(255,255,255,0.8)"
-                          : "rgba(255,255,255,0.6)",
+                  <PlaylistNameCard
+                    name="Welcome to NUSIC"
+                    isPlayling={playing}
+                    isSelected={selectedPlaylistId === "name"}
+                    onToggleClick={() => {
+                      if (selectedPlaylistId === "name") {
+                        togglePlayPause();
+                      } else {
+                        setSelectedPlaylistId("name");
+                      }
                     }}
-                    boxShadow={
-                      selectedPlaylistIdx === 0
-                        ? "rgba(255, 255, 255, 0.85) 0px 5px 15px"
-                        : ""
-                    }
-                    p={1}
-                    pr={2.5}
-                    borderRadius="6px"
-                    display={"flex"}
-                    // gap={1}
-                    alignItems="center"
-                  >
-                    <IconButton
-                      onClick={() => {
-                        if (selectedPlaylistIdx === 0) {
+                  />
+                  {Object.values(playlists).map((p) => (
+                    <PlaylistNameCard
+                      key={p.id}
+                      name={p.name}
+                      isPlayling={playing}
+                      isSelected={selectedPlaylistId === p.id}
+                      onToggleClick={() => {
+                        if (p.id === selectedPlaylistId) {
                           togglePlayPause();
                         } else {
-                          setSelectedPlaylistIdx(0);
+                          setSelectedPlaylistId(p.id);
                         }
                       }}
-                    >
-                      {playing && selectedPlaylistIdx === 0 ? (
-                        <PauseCircleRounded htmlColor="black" />
-                      ) : (
-                        <PlayCircleRounded htmlColor="black" />
-                      )}
-                    </IconButton>
-                    <Typography color="black" align="center">
-                      Welcome to NUSIC
-                    </Typography>
-                  </Box>
-                  {playlists.map((p, i) => (
-                    <Box
-                      key={i}
-                      sx={{
-                        background:
-                          selectedPlaylistIdx - 1 === i
-                            ? "rgba(255,255,255,0.8)"
-                            : "rgba(255,255,255,0.6)",
-                      }}
-                      boxShadow={
-                        selectedPlaylistIdx - 1 === i
-                          ? "rgba(255, 255, 255, 0.85) 0px 5px 15px"
-                          : ""
-                      }
-                      p={1}
-                      pr={2.5}
-                      borderRadius="6px"
-                      display={"flex"}
-                      // gap={1}
-                      alignItems="center"
-                    >
-                      <IconButton
-                        onClick={() => {
-                          if (i + 1 === selectedPlaylistIdx) {
-                            togglePlayPause();
-                          } else {
-                            setSelectedPlaylistIdx(i + 1);
-                          }
-                        }}
-                      >
-                        {playing && selectedPlaylistIdx - 1 === i ? (
-                          <PauseCircleRounded htmlColor="black" />
-                        ) : (
-                          <PlayCircleRounded htmlColor="black" />
-                        )}
-                      </IconButton>
-                      <Typography color="black" align="center">
-                        {p.name}
-                      </Typography>
-                    </Box>
+                    />
                   ))}
+                </Box>
+                <Typography
+                  variant="h5"
+                  textTransform={"capitalize"}
+                  fontFamily={"Nunito"}
+                >
+                  My Playlists
+                </Typography>
+                <Box my={4} display="flex">
+                  {account ? (
+                    <PlaylistNameCard
+                      name={playlists[account].name}
+                      isPlayling={playing}
+                      isSelected={selectedPlaylistId === account}
+                      onToggleClick={() => {
+                        if (account === selectedPlaylistId) {
+                          togglePlayPause();
+                        } else {
+                          setSelectedPlaylistId(account);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      onClick={login}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Connect your Wallet
+                    </Button>
+                  )}
                 </Box>
                 {/* <Typography
                   variant="h5"
@@ -526,6 +447,11 @@ function App() {
                     </Typography>
                   </Box>
                 </Box> */}
+                {/* {playlists[selectedPlaylistId] && (
+                  <Typography variant="h5" sx={{ my: 2 }}>
+                    {playlists[selectedPlaylistId].name}
+                  </Typography>
+                )} */}
                 {selectedPlaylistSongs && (
                   <SongsList
                     isLoading={isLoading}
