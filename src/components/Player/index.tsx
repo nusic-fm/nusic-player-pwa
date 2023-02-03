@@ -51,7 +51,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
   const isMobile = useMediaQuery(() => theme.breakpoints.down("md"));
 
   useEffect(() => {
-    const src = songs[songIndex].audioFileUrl;
+    const src = `${process.env.NEXT_PUBLIC_STREAMING}/stream/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`;
     if (!src) return;
     load({
       src,

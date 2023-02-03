@@ -102,15 +102,13 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
   const { load, playing } = useAudioPlayer();
 
   useEffect(() => {
-    const src = songs[songIndex].audioFileUrl;
-    if (!src) return;
-    console.log("loading: ", src);
+    const src = `${process.env.NEXT_PUBLIC_STREAMING}/stream/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`;
     load({
       src,
       html5: true,
       autoplay: true,
-      format: ["wav", "mp3", "mp4"],
-      // onend: () => setSongIndex(songIndex + 1),
+      format: ["mp3"],
+      onend: () => setSongIdx(songIndex + 1),
     });
     // onPlayIndexChange(songs[songIndex].idx);
   }, [songIndex]);
@@ -125,6 +123,7 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
       width="100%"
       boxSizing="border-box"
       sx={{ background: "rgba(0,0,0,0.85)" }}
+      position="relative"
     >
       <Box
         position="relative"

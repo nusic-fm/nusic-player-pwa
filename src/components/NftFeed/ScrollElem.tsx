@@ -1,15 +1,16 @@
 import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
 import { SongDoc } from "../../models/Song";
 import AudioPlayer from "../AudioPlayer";
-import VideoPlayer from "../VideoPlayer";
-// import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+// import VideoPlayer from "../VideoPlayer";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
-import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
-import SeekBar from "../SeekBar";
+// import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
+import StopCircleRounded from "@mui/icons-material/StopCircleRounded";
+// import SeekBar from "../SeekBar";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+// import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
-import LoopRoundedIcon from "@mui/icons-material/LoopRounded";
+// import LoopRoundedIcon from "@mui/icons-material/LoopRounded";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import { useState } from "react";
 
@@ -44,22 +45,36 @@ const ScrollElem = ({
       sx={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
       pt={2}
     >
-      <Box px={1} display="flex" justifyContent={"end"} width="100%">
-        <IconButton onClick={onFeedClose}>
-          <CloseRoundedIcon sx={{ fontSize: "2rem" }} />
-        </IconButton>
+      <Box position={"relative"} width="100%">
+        <Box
+          position={"absolute"}
+          width="100%"
+          top={0}
+          height="100vh"
+          zIndex={0}
+          sx={{
+            backgroundImage: `url("http://localhost:8080/image/${song.tokenAddress}/${song.tokenId}")`,
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+            filter: "blur(80px)",
+            opacity: 0.6,
+            backgroundSize: "cover",
+          }}
+        ></Box>
       </Box>
       <Box
         display="flex"
         justifyContent={"center"}
         alignItems="center"
         flexBasis="40%"
+        position={"relative"}
       >
-        {song.format === "audio" ? (
+        {/* {song.format === "audio" ? (
           <AudioPlayer song={song} inView={inView} isPlaying={isPlaying} />
         ) : (
           <VideoPlayer song={song} inView={inView} isPlaying={isPlaying} />
-        )}
+        )} */}
+        <AudioPlayer song={song} inView={inView} isPlaying={isPlaying} />
       </Box>
       <Box
         pt={4}
@@ -69,23 +84,20 @@ const ScrollElem = ({
         width="100%"
         alignItems={"center"}
       >
-        <Typography variant="h6" noWrap width={"70%"}>
+        <Typography variant="body1" width={"100%"}>
           {song.name}
         </Typography>
-        {/* <IconButton>
-          <FavoriteOutlinedIcon htmlColor="#c3c3c3" />
-        </IconButton> */}
       </Box>
-      <Box pt={2} px={4} width="100%">
+      {/* <Box pt={2} px={4} width="100%">
         <SeekBar
-          value={position}
+          value={playing ? position : 0}
           max={duration}
           onChange={() => {}}
           onChangeCommitted={() => {}}
         />
-      </Box>
+      </Box> */}
       <Box
-        p={4}
+        p={2}
         width="100%"
         display={"flex"}
         alignItems="center"
@@ -96,7 +108,7 @@ const ScrollElem = ({
         </IconButton>
         <IconButton onClick={togglePlayPause}>
           {playing ? (
-            <PauseCircleRounded sx={{ fontSize: 80 }} />
+            <StopCircleRounded sx={{ fontSize: 80 }} />
           ) : (
             <PlayCircleRounded sx={{ fontSize: 80 }} />
           )}
@@ -110,26 +122,32 @@ const ScrollElem = ({
         width="100%"
         display={"flex"}
         alignItems="center"
-        justifyContent={"space-between"}
+        justifyContent={"center"}
         gap={2}
       >
         <IconButton disabled>
-          <ShareOutlinedIcon sx={{ fontSize: 40 }} />
+          <FavoriteOutlinedIcon />
         </IconButton>
+        <IconButton disabled>
+          <ShareOutlinedIcon />
+        </IconButton>
+
         <IconButton
           onClick={async () => {
             setIsLoading(true);
             await addToPlaylist(song.id);
             setIsLoading(false);
           }}
+          disabled
         >
-          {isLoading ? (
-            <CircularProgress sx={{ fontSize: 40 }} />
-          ) : (
-            <PlaylistAddRoundedIcon sx={{ fontSize: 40 }} />
-          )}
+          {isLoading ? <CircularProgress /> : <PlaylistAddRoundedIcon />}
         </IconButton>
       </Box>
+      {/* <Box px={1} display="flex" justifyContent={"end"} width="100%">
+        <IconButton onClick={onFeedClose}>
+          <CloseRoundedIcon sx={{ fontSize: "2rem" }} />
+        </IconButton>
+      </Box> */}
     </Box>
   );
 };

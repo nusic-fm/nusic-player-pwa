@@ -17,7 +17,8 @@ import { db } from "../firebase.service";
 const getSongs = async (): Promise<SongDoc[]> => {
   const q = query(
     collection(db, "songs"),
-    where("type", "==", "general"),
+    where("nativeAudioUrl", "==", false),
+    // where("type", "==", "general"),
     // orderBy("audioFileUrl", "asc"),
     limit(10)
   );
@@ -28,21 +29,22 @@ const getSongs = async (): Promise<SongDoc[]> => {
     i++;
     songs.push({ ...(doc.data() as Song), idx: i, id: doc.id });
   });
-  const sortArray = [
-    "mmmCherry - Wildest Dreams (NUSIC Intro V1)",
-    "GYU: PREQUEL",
-    "Push Me Too Far",
-    "Ether (ft. MNDR)",
-    "Slickmau5 by deadmau5 x OG Slick",
-    "Ultraviolet Vinyl Collection by 3LAU",
-    "Don Diablo",
-    `Spottie WiFi x Bun B: "All Time High"`,
-    "Golden Ticket: Bandit",
-    "Crypto Boy",
-  ];
-  return songs
-    .sort((a, b) => sortArray.indexOf(a.name) - sortArray.indexOf(b.name))
-    .map((s, i) => ({ ...s, idx: i }));
+  // const sortArray = [
+  //   "mmmCherry - Wildest Dreams (NUSIC Intro V1)",
+  //   "GYU: PREQUEL",
+  //   "Push Me Too Far",
+  //   "Ether (ft. MNDR)",
+  //   "Slickmau5 by deadmau5 x OG Slick",
+  //   "Ultraviolet Vinyl Collection by 3LAU",
+  //   "Don Diablo",
+  //   `Spottie WiFi x Bun B: "All Time High"`,
+  //   "Golden Ticket: Bandit",
+  //   "Crypto Boy",
+  // ];
+  // return songs
+  //   .sort((a, b) => sortArray.indexOf(a.name) - sortArray.indexOf(b.name))
+  //   .map((s, i) => ({ ...s, idx: i }));
+  return songs;
 };
 
 const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {

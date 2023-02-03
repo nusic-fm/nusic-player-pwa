@@ -3,12 +3,22 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "@mui/material/styles";
 import createEmotionCache from "../src/createEmotionCache";
 import { EmotionCache, CacheProvider } from "@emotion/react";
-import { CssBaseline } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  CssBaseline,
+  Paper,
+} from "@mui/material";
 // import { Head } from "next/document";
 import theme from "../src/theme";
 import { Web3ReactProvider } from "@web3-react/core";
 import { ethers } from "ethers";
 import { AudioPlayerProvider } from "react-use-audio-player";
+import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
+import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
+import Image from "next/image";
+// import { useRouter } from "next/router";
+import { useState } from "react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -34,6 +44,9 @@ export default function MyApp(props: MyAppProps) {
     emotionCache = clientSideEmotionCache,
     pageProps: { session, ...pageProps },
   } = props;
+  // const router = useRouter();
+  const [value, setValue] = useState(0);
+
   return (
     <CacheProvider value={emotionCache}>
       {/* <Head>
@@ -48,6 +61,59 @@ export default function MyApp(props: MyAppProps) {
         <Web3ReactProvider getLibrary={getLibrary}>
           <AudioPlayerProvider>
             <Component {...pageProps} />
+            <Paper
+              sx={{
+                position: "fixed",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: "rgba(0,0,0,0.2)",
+              }}
+              elevation={3}
+            >
+              <BottomNavigation
+                showLabels
+                sx={{ background: "rgba(0,0,0,0.2)" }}
+                value={value}
+                onChange={(event, newValue) => {
+                  setValue(newValue);
+                }}
+              >
+                <BottomNavigationAction
+                  label="Home"
+                  icon={
+                    <PlayCircleOutlineRoundedIcon
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    />
+                  }
+                ></BottomNavigationAction>
+                <BottomNavigationAction
+                  label="Discover"
+                  icon={
+                    <ExploreRoundedIcon
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    />
+                  }
+                ></BottomNavigationAction>
+                <BottomNavigationAction
+                  label="Market"
+                  icon={
+                    <Image
+                      src="/nft.png"
+                      color="white"
+                      style={{
+                        background: "white",
+                        borderRadius: "50%",
+                        opacity: 0.8,
+                      }}
+                      alt=""
+                      width={20}
+                      height={20}
+                    />
+                  }
+                ></BottomNavigationAction>
+              </BottomNavigation>
+            </Paper>
           </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}

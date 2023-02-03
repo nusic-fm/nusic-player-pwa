@@ -81,7 +81,7 @@ const AudioPlaer = ({ song, inView, isPlaying }: Props) => {
             animation: ${roteteImage} 30s ease infinite;
             border-radius: 50%;
           `}
-          src={song.artworkUrl}
+          src={`${process.env.NEXT_PUBLIC_STREAMING}/image/${song.tokenAddress}/${song.tokenId}`}
           alt=""
           width="260px"
           height="260px"
