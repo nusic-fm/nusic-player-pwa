@@ -47,6 +47,24 @@ const getSongs = async (): Promise<SongDoc[]> => {
   return songs;
 };
 
+const getDiscoverSongs = async (): Promise<SongDoc[]> => {
+  const q = query(
+    collection(db, "songs"),
+    where("nativeAudioUrl", "==", false),
+    // where("type", "==", "general"),
+    // orderBy("audioFileUrl", "asc"),
+    limit(10)
+  );
+  const querySnapshots = await getDocs(q);
+  const songs: SongDoc[] = [];
+  let i = 0;
+  querySnapshots.forEach((doc) => {
+    i++;
+    songs.push({ ...(doc.data() as Song), idx: i, id: doc.id });
+  });
+  return songs;
+};
+
 const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {
   // const q = query(
   //   collection(db, "songs"),
@@ -82,6 +100,26 @@ const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {
     .map((s, i) => ({ ...s, idx: i }));
 };
 
+const getSongsById = async (songId: string): Promise<SongDoc> => {
+  // const q = query(
+  //   collection(db, "songs"),
+  //   where(documentId(), "in", songIds)
+  //   // orderBy("audioFileUrl", "asc"),
+  //   // limit(15)
+  // );
+  // const querySnapshots = await getDocs(q);
+  // const songs: SongDoc[] = [];
+  // let i =0;
+  // querySnapshots.forEach((doc) => {
+  //   i++;
+  //   songs.push({ ...(doc.data() as Song), id: doc.id, idx: i });
+  // });
+  // return songs.sort((a, b) => songIds.indexOf(a.id) - songIds.indexOf(b.id)).map((s,i) => ({...s, idx: i}));
+  const id = songId;
+  const d = doc(db, "songs", id);
+  const docRef = await getDoc(d);
+  return { ...(docRef.data() as SongDoc), id: docRef.id };
+};
 const addSongToDb = async (song: Song) => {
   const songId = `${song.tokenAddress}-${song.tokenId}`;
   const d = doc(db, "songs", songId);
@@ -102,4 +140,11 @@ const incrementStreamCount = async (songId: string) => {
   }
 };
 
-export { getSongs, getSongsByIds, addSongToDb, incrementStreamCount };
+export {
+  getSongs,
+  getSongsByIds,
+  addSongToDb,
+  incrementStreamCount,
+  getDiscoverSongs,
+  getSongsById,
+};

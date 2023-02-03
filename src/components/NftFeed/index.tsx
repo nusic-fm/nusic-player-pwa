@@ -108,7 +108,6 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
       html5: true,
       autoplay: true,
       format: ["mp3"],
-      onend: () => setSongIdx(songIndex + 1),
     });
     // onPlayIndexChange(songs[songIndex].idx);
   }, [songIndex]);

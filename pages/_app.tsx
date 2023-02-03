@@ -17,7 +17,7 @@ import { AudioPlayerProvider } from "react-use-audio-player";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
 import Image from "next/image";
-// import { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -44,8 +44,15 @@ export default function MyApp(props: MyAppProps) {
     emotionCache = clientSideEmotionCache,
     pageProps: { session, ...pageProps },
   } = props;
-  // const router = useRouter();
-  const [value, setValue] = useState(0);
+  const router = useRouter();
+
+  const [value, setValue] = useState(() => {
+    if (router.pathname === "/") {
+      return 0;
+    } else if (router.pathname === "/discover") {
+      return 1;
+    }
+  });
 
   return (
     <CacheProvider value={emotionCache}>
@@ -73,14 +80,14 @@ export default function MyApp(props: MyAppProps) {
             >
               <BottomNavigation
                 showLabels
-                sx={{ background: "rgba(0,0,0,0.2)" }}
+                sx={{ background: value ? "rgb(0,0,0)" : "rgba(0,0,0,0.2)" }}
                 value={value}
                 onChange={(event, newValue) => {
                   setValue(newValue);
                 }}
               >
                 <BottomNavigationAction
-                  label="Home"
+                  label="Play"
                   icon={
                     <PlayCircleOutlineRoundedIcon
                       sx={{ color: "rgba(255, 255, 255, 0.7)" }}
@@ -88,6 +95,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
+                  href="/discover"
                   label="Discover"
                   icon={
                     <ExploreRoundedIcon
