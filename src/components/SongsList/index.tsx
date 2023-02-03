@@ -16,10 +16,10 @@ import PlayCircleOutlinedIcon from "@mui/icons-material/PlayCircleOutlined";
 //   ReactJkMusicPlayerInstance,
 // } from "react-jinke-music-player";
 import { useEffect, useState } from "react";
-import { PlayerSong, SongDoc } from "../../models/Song";
+import { SongDoc } from "../../models/Song";
 import { incrementStreamCount } from "../../services/db/songs.service";
-import Image from "next/image";
-import { AudioPlayerProvider, useAudioPlayer } from "react-use-audio-player";
+// import Image from "next/image";
+import { useAudioPlayer } from "react-use-audio-player";
 import Player from "../Player";
 
 type Props = {
@@ -210,7 +210,7 @@ const SongsList = ({
                 </Typography>
               </Box>
               <img
-                src={song.artworkUrl as string}
+                src={`${process.env.NEXT_PUBLIC_STREAMING}/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`}
                 width={40}
                 height={40}
                 style={{ borderRadius: "4px" }}

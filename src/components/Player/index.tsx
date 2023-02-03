@@ -84,7 +84,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
         gap={2}
       >
         <img
-          src={songs[songIndex].artworkUrl}
+          src={`${process.env.NEXT_PUBLIC_STREAMING}/image/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`}
           alt=""
           width={"40px"}
           height="40px"

@@ -171,37 +171,37 @@ const Dashboard = (props: Props) => {
   };
 
   const onSaveInSongs = async () => {
-    if (account && uriDetails && previewToken) {
-      try {
-        if (account) {
-          setIsLoading(true);
-          const nft: Song = {
-            address: previewToken.token_address,
-            name: previewToken.name,
-            tokenId: previewToken.token_id,
-            artworkUrl: uriDetails.artworkUrl,
-            audioFileUrl: uriDetails.audioFileUrl,
-          };
-          // try {
-          //   const songUrl = await uploadFromUrl(
-          //     nft.audioFileUrl,
-          //     previewToken.name
-          //   );
-          //   nft.audioFileUrl = songUrl;
-          // } catch (e) {
-          //   console.log(e);
-          // }
-          await addSongToDb(nft);
-          await addToPlaylist(`${nft.address}-${nft.tokenId}`);
-        } else {
-          setSnackbarMessage("Please connect your account and try again");
-        }
-      } catch (e) {
-        setSnackbarMessage("Successfully added to the playlist");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    // if (account && uriDetails && previewToken) {
+    //   try {
+    //     if (account) {
+    //       setIsLoading(true);
+    //       const nft: Song = {
+    //         tokenAddress: previewToken.token_address,
+    //         name: previewToken.name,
+    //         tokenId: previewToken.token_id,
+    //         artworkUrl: uriDetails.artworkUrl,
+    //         audioFileUrl: uriDetails.audioFileUrl,
+    //       };
+    //       // try {
+    //       //   const songUrl = await uploadFromUrl(
+    //       //     nft.audioFileUrl,
+    //       //     previewToken.name
+    //       //   );
+    //       //   nft.audioFileUrl = songUrl;
+    //       // } catch (e) {
+    //       //   console.log(e);
+    //       // }
+    //       await addSongToDb(nft);
+    //       await addToPlaylist(`${nft.address}-${nft.tokenId}`);
+    //     } else {
+    //       setSnackbarMessage("Please connect your account and try again");
+    //     }
+    //   } catch (e) {
+    //     setSnackbarMessage("Successfully added to the playlist");
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // }
   };
 
   return (

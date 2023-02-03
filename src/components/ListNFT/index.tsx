@@ -106,19 +106,19 @@ function ListNFT({ open, onClose, onSaveSongPlaylist }: Props) {
   };
 
   const onSave = async () => {
-    if (nftDetails && nftDetails.token_address && uriDetails) {
-      setIsLoading(true);
-      await onSaveSongPlaylist({
-        name: nftDetails.name,
-        tokenId: nftDetails.token_id,
-        address: nftDetails.token_address,
-        artworkUrl: uriDetails.artworkUrl,
-        audioFileUrl: uriDetails.audioFileUrl,
-      });
-      setNftDetails(undefined);
-      setIsLoading(false);
-      onClose();
-    }
+    // if (nftDetails && nftDetails.token_address && uriDetails) {
+    //   setIsLoading(true);
+    //   await onSaveSongPlaylist({
+    //     name: nftDetails.name,
+    //     tokenId: nftDetails.token_id,
+    //     address: nftDetails.token_address,
+    //     artworkUrl: uriDetails.artworkUrl,
+    //     audioFileUrl: uriDetails.audioFileUrl,
+    //   });
+    //   setNftDetails(undefined);
+    //   setIsLoading(false);
+    //   onClose();
+    // }
   };
 
   useEffect(() => {

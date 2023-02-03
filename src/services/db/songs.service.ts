@@ -83,7 +83,7 @@ const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {
 };
 
 const addSongToDb = async (song: Song) => {
-  const songId = `${song.address}-${song.tokenId}`;
+  const songId = `${song.tokenAddress}-${song.tokenId}`;
   const d = doc(db, "songs", songId);
   const ss = await getDoc(d);
   if (ss.exists()) {

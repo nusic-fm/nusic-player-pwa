@@ -59,11 +59,11 @@ const VideoPlayer = ({ song, inView, isPlaying }: Props) => {
           ref={videoRef}
           width="260px"
           height="260px"
-          src={song.audioFileUrl}
+          src={`song.audioFileUrl`}
           // autoPlay
           muted
           // controls
-          poster={song.artworkUrl}
+          poster={`song.artworkUrl`}
         ></video>
       </Box>
     </Box>
