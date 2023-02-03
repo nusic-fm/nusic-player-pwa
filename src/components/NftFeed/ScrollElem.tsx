@@ -53,7 +53,7 @@ const ScrollElem = ({
           height="100vh"
           zIndex={0}
           sx={{
-            backgroundImage: `url("http://localhost:8080/image/${song.tokenAddress}/${song.tokenId}")`,
+            backgroundImage: `url("${process.env.NEXT_PUBLIC_STREAMING}/image/${song.tokenAddress}/${song.tokenId}")`,
             backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
             filter: "blur(80px)",
