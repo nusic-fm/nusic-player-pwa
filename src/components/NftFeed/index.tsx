@@ -113,7 +113,7 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
   }, [songIndex]);
 
   const inView = (index: number) => {
-    if (songIndex === index) return;
+    if (songIndex === index || songs.length === index) return;
     setSongIdx(index);
   };
 
