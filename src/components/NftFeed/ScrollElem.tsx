@@ -79,13 +79,16 @@ const ScrollElem = ({
       <Box
         pt={4}
         px={4}
-        display="flex"
-        justifyContent={"space-between"}
+        // display="flex"
+        // justifyContent={"space-between"}
         width="100%"
-        alignItems={"center"}
+        // alignItems={"center"}
       >
         <Typography variant="body1" width={"100%"}>
           {song.name}
+        </Typography>
+        <Typography variant="caption" width={"100%"}>
+          {song.artist}
         </Typography>
       </Box>
       {/* <Box pt={2} px={4} width="100%">

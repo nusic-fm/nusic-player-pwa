@@ -1,4 +1,4 @@
-import { ListItemButton, List, Paper, ListItemText } from "@mui/material";
+import { ListItemButton, List, Paper, Typography, Box } from "@mui/material";
 import { useHits } from "react-instantsearch-hooks-web";
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
 }
 
 const Suggestions = ({ onSuggestionSelect }: Props) => {
-  const { hits, results, sendEvent } = useHits();
+  const { hits } = useHits();
 
   return (
     <Paper elevation={2} sx={{ width: "100%" }}>
@@ -16,7 +16,12 @@ const Suggestions = ({ onSuggestionSelect }: Props) => {
             key={hit.objectID}
             onClick={() => onSuggestionSelect(hit.objectID)}
           >
-            {(hit as any).name.slice(0, 10)}
+            <Box display={"flex"} flexDirection="column" width={"100%"}>
+              <Typography maxWidth={"100%"} overflow="auto">
+                {(hit as any).name}
+              </Typography>
+              <Typography variant="caption">{(hit as any).artist}</Typography>
+            </Box>
           </ListItemButton>
         ))}
       </List>

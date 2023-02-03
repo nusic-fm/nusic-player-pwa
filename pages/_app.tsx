@@ -87,6 +87,7 @@ export default function MyApp(props: MyAppProps) {
                 }}
               >
                 <BottomNavigationAction
+                  href="/"
                   label="Play"
                   icon={
                     <PlayCircleOutlineRoundedIcon

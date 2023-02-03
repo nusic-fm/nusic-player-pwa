@@ -1,18 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useSearchBox } from "react-instantsearch-hooks-web";
-import { Popper } from "@mui/material";
+import { IconButton, Popper } from "@mui/material";
 import Suggestions from "./Suggestions";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 interface Props {
   onSuggestionSelect: (id: string) => void;
+  clearSearch: () => void;
 }
 
-const SearchBar = ({ onSuggestionSelect }: Props) => {
+const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
   const searchRef = useRef(null);
-  const [showSuggestions, setShowSuggestion] = useState(false);
 
   //   const { items, refine } = useRefinementList({
   //     attribute: "artist",
@@ -20,7 +21,7 @@ const SearchBar = ({ onSuggestionSelect }: Props) => {
   const { query, refine, clear } = useSearchBox();
 
   return (
-    <Box p={2}>
+    <Box pt={2}>
       <Box
         display={"flex"}
         justifyContent="center"
@@ -28,27 +29,32 @@ const SearchBar = ({ onSuggestionSelect }: Props) => {
         ref={searchRef}
       >
         <TextField
+          value={query}
           placeholder="Search"
           autoComplete="off"
           size="small"
           onChange={(e) => {
-            if (e.target.value.length < 3) {
-              setShowSuggestion(false);
-              return;
-            }
-            setShowSuggestion(true);
             refine(e.target.value);
+          }}
+          InputProps={{
+            endAdornment: (
+              <IconButton
+                disabled={!query}
+                size="small"
+                onClick={() => {
+                  clear();
+                  clearSearch();
+                }}
+              >
+                <CloseRoundedIcon fontSize="small" />
+              </IconButton>
+            ),
           }}
         />
       </Box>
-      <Popper
-        open={showSuggestions}
-        anchorEl={searchRef.current}
-        sx={{ width: "80%" }}
-      >
+      <Popper open={!!query} anchorEl={searchRef.current} sx={{ width: "80%" }}>
         <Suggestions
           onSuggestionSelect={(songId: string) => {
-            setShowSuggestion(false);
             onSuggestionSelect(songId);
           }}
         />
