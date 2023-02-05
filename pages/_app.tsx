@@ -18,7 +18,8 @@ import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineR
 import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// import Player from "../src/components/Player";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -46,13 +47,18 @@ export default function MyApp(props: MyAppProps) {
   } = props;
   const router = useRouter();
 
-  const [value, setValue] = useState(() => {
+  const [value, setValue] = useState<number>();
+
+  useEffect(() => {
+    if (!router.isReady) return;
     if (router.pathname === "/") {
-      return 0;
+      setValue(0);
     } else if (router.pathname === "/discover") {
-      return 1;
+      setValue(1);
+    } else if (router.pathname.startsWith("/market")) {
+      setValue(2);
     }
-  });
+  }, [router.isReady, router.pathname]);
 
   return (
     <CacheProvider value={emotionCache}>
@@ -68,6 +74,20 @@ export default function MyApp(props: MyAppProps) {
         <Web3ReactProvider getLibrary={getLibrary}>
           <AudioPlayerProvider>
             <Component {...pageProps} />
+            {/* {value && (
+              <Paper
+                sx={{
+                  position: "fixed",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  background: "rgba(0,0,0,0.2)",
+                }}
+                elevation={3}
+              >
+                <Player songs={[]} songIndexProps={[0, () => {}]} />
+              </Paper>
+            )} */}
             <Paper
               sx={{
                 position: "fixed",
@@ -80,14 +100,14 @@ export default function MyApp(props: MyAppProps) {
             >
               <BottomNavigation
                 showLabels
-                sx={{ background: value ? "rgb(0,0,0)" : "rgba(0,0,0,0.2)" }}
+                sx={{ background: "rgb(0,0,0)" }}
                 value={value}
                 onChange={(event, newValue) => {
                   setValue(newValue);
                 }}
               >
                 <BottomNavigationAction
-                  href="/"
+                  onClick={() => router.push(`/`)}
                   label="Play"
                   icon={
                     <PlayCircleOutlineRoundedIcon
@@ -96,7 +116,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  href="/discover"
+                  onClick={() => router.push(`/discover`)}
                   label="Discover"
                   icon={
                     <ExploreRoundedIcon
@@ -105,6 +125,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
+                  onClick={() => router.push(`/market`)}
                   label="Market"
                   icon={
                     <Image

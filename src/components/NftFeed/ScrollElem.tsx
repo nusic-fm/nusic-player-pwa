@@ -13,6 +13,8 @@ import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
 // import LoopRoundedIcon from "@mui/icons-material/LoopRounded";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import { useState } from "react";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useRouter } from "next/router";
 
 type Props = {
   song: SongDoc;
@@ -32,6 +34,8 @@ const ScrollElem = ({
   const { playing, togglePlayPause } = useAudioPlayer();
   const { duration, position } = useAudioPosition();
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   return (
     <Box
@@ -144,6 +148,13 @@ const ScrollElem = ({
           disabled
         >
           {isLoading ? <CircularProgress /> : <PlaylistAddRoundedIcon />}
+        </IconButton>
+        <IconButton
+          onClick={() =>
+            router.push(`market/${song.tokenAddress}?tokenId=${song.tokenId}`)
+          }
+        >
+          <InfoOutlinedIcon />
         </IconButton>
       </Box>
       {/* <Box px={1} display="flex" justifyContent={"end"} width="100%">

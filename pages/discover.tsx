@@ -11,6 +11,7 @@ import {
   getSongsById,
 } from "../src/services/db/songs.service";
 import DiscoverRow from "../src/components/DiscoverRow";
+import { useRouter } from "next/router";
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APPID as string,
@@ -23,6 +24,8 @@ const Discover = () => {
   const [searchResult, setSearchResult] = useState<SongDoc[]>();
   const { load, playing, togglePlayPause } = useAudioPlayer();
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string>();
+
+  const router = useRouter();
 
   const fetchSongs = async () => {
     setSongsLoading(true);
@@ -78,7 +81,8 @@ const Discover = () => {
             {searchResult.map((song) => (
               <DiscoverRow
                 key={song.idx}
-                onTogglePlay={() => {
+                onTogglePlay={(e) => {
+                  e.stopPropagation();
                   if (song.id === currentlyPlayingId && playing) {
                     togglePlayPause();
                     return;
@@ -87,6 +91,9 @@ const Discover = () => {
                 }}
                 song={song}
                 isPlaying={song.id === currentlyPlayingId && playing}
+                onRowClick={(address: string, tokenId: string) => {
+                  router.push(`market/${address}?tokenId=${tokenId}`);
+                }}
               />
             ))}
           </Box>
@@ -105,7 +112,8 @@ const Discover = () => {
         {songs?.map((song) => (
           <DiscoverRow
             key={song.idx}
-            onTogglePlay={() => {
+            onTogglePlay={(e) => {
+              e.stopPropagation();
               if (song.id === currentlyPlayingId && playing) {
                 togglePlayPause();
                 return;
@@ -114,6 +122,9 @@ const Discover = () => {
             }}
             song={song}
             isPlaying={song.id === currentlyPlayingId && playing}
+            onRowClick={(address: string, tokenId: string) => {
+              router.push(`market/${address}?tokenId=${tokenId}`);
+            }}
           />
         ))}
       </Box>

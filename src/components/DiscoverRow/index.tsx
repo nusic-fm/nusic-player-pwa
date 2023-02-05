@@ -6,11 +6,12 @@ import { SongDoc } from "../../models/Song";
 
 type Props = {
   song: SongDoc;
-  onTogglePlay: () => void;
+  onTogglePlay: (e: any) => void;
   isPlaying: boolean;
+  onRowClick: (address: string, tokenId: string) => void;
 };
 
-const DiscoverRow = ({ song, onTogglePlay, isPlaying }: Props) => {
+const DiscoverRow = ({ song, onTogglePlay, isPlaying, onRowClick }: Props) => {
   return (
     <Box
       key={song.id}
@@ -19,6 +20,7 @@ const DiscoverRow = ({ song, onTogglePlay, isPlaying }: Props) => {
       display={"flex"}
       alignItems="center"
       gap={1}
+      onClick={() => onRowClick(song.tokenAddress, song.tokenId)}
     >
       <img
         src={`${process.env.NEXT_PUBLIC_STREAMING}/image/${song.tokenAddress}/${song.tokenId}`}

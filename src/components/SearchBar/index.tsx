@@ -30,7 +30,7 @@ const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
       >
         <TextField
           value={query}
-          placeholder="Search"
+          placeholder="Search for Artists, Collections, Genres"
           autoComplete="off"
           size="small"
           onChange={(e) => {
