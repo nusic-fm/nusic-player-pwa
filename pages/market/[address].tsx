@@ -75,9 +75,9 @@ const NftInfo = (props: Props) => {
                   label={
                     <Stack>
                       <Typography variant="caption">
-                        {attribute.value}
+                        {attribute.trait_type}
                       </Typography>
-                      <Typography>{attribute.trait_type}</Typography>
+                      <Typography>{attribute.value}</Typography>
                     </Stack>
                   }
                 />
