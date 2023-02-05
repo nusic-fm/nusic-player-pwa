@@ -21,17 +21,19 @@ const Market = (props: Props) => {
   }, []);
 
   return (
-    <Box display={"flex"} gap={2} flexWrap="wrap" p={2}>
-      {collections?.map((nft) => (
-        <Chip
-          key={nft.id}
-          label={nft.name}
-          clickable
-          onClick={() =>
-            router.push(`market/${nft.tokenAddress}?tokenId=${nft.tokenId}`)
-          }
-        ></Chip>
-      ))}
+    <Box sx={{ bgcolor: "black" }} minHeight="100vh" p={2} pb={6}>
+      <Box display={"flex"} flexWrap="wrap" gap={2}>
+        {collections?.map((nft) => (
+          <Chip
+            key={nft.id}
+            label={nft.name}
+            clickable
+            onClick={() =>
+              router.push(`market/${nft.tokenAddress}?tokenId=${nft.tokenId}`)
+            }
+          ></Chip>
+        ))}
+      </Box>
     </Box>
   );
 };

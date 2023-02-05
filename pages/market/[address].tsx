@@ -40,7 +40,7 @@ const NftInfo = (props: Props) => {
   }, [router.isReady]);
 
   return (
-    <Box p={2} mb={6}>
+    <Box p={2} pb={6} sx={{ bgcolor: "black" }} minHeight="100vh">
       {nftToken && (
         <Box>
           <Typography align="center">{nftToken?.name}</Typography>

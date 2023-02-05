@@ -58,7 +58,7 @@ const Discover = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ bgcolor: "black" }} minHeight="100vh">
       <InstantSearch searchClient={searchClient} indexName="songs">
         <SearchBar
           onSuggestionSelect={onSongSelect}
