@@ -7,11 +7,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   CssBaseline,
-  // Drawer,
-  // List,
-  // ListItemButton,
-  // ListItemIcon,
-  // ListItemText,
+  Drawer,
   Paper,
 } from "@mui/material";
 // import { Head } from "next/document";
@@ -28,6 +24,7 @@ import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 // import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
+import AuthUI from "../src/components/AuthUI";
 // import Player from "../src/components/Player";
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -57,7 +54,7 @@ export default function MyApp(props: MyAppProps) {
   const router = useRouter();
 
   const [value, setValue] = useState<number>();
-  // const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -127,7 +124,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  // onClick={() => router.push(`/market`)}
+                  onClick={() => setShowDrawer(true)}
                   label="Saved"
                   icon={
                     <FavoriteBorderRoundedIcon
@@ -156,7 +153,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  // onClick={() => setShowDrawer(true)}
+                  onClick={() => setShowDrawer(true)}
                   label="Profile"
                   icon={
                     // <MenuRoundedIcon
@@ -170,12 +167,12 @@ export default function MyApp(props: MyAppProps) {
                 ></BottomNavigationAction>
               </BottomNavigation>
             </Paper>
-            {/* <Drawer
+            <Drawer
               anchor="bottom"
               open={showDrawer}
               onClose={() => setShowDrawer(false)}
             >
-              <List>
+              {/* <List>
                 <ListItemButton onClick={() => router.push(`/profile`)}>
                   <ListItemIcon>
                     <AccountCircleRoundedIcon
@@ -185,8 +182,9 @@ export default function MyApp(props: MyAppProps) {
                   </ListItemIcon>
                   <ListItemText>Profile</ListItemText>
                 </ListItemButton>
-              </List>
-            </Drawer> */}
+              </List> */}
+              <AuthUI />
+            </Drawer>
           </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}

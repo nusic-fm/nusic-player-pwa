@@ -37,9 +37,11 @@
     "react-firebase-hooks": "^5.1.1",
     "react-instantsearch-hooks-web": "^6.39.2",
     "react-use-audio-player": "^1.2.6",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "wavesurfer.js": "^6.4.0"
   },
   "devDependencies": {
-    "@types/lodash.get": "^4.4.7"
+    "@types/lodash.get": "^4.4.7",
+    "@types/wavesurfer.js": "^6.0.3"
   }
 }
