@@ -44,7 +44,7 @@ const Market = (props: Props) => {
             alignItems={"center"}
           >
             <img
-              src={nft.original.animationUrl}
+              src={nft.original.imageUrl}
               alt={nft.tokenId}
               width="80"
               height="80"

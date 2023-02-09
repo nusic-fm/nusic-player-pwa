@@ -26,23 +26,29 @@ const getNftCollections = async (): Promise<NftCollectionDoc[]> => {
 };
 
 const getNftCollectionsToken = async (): Promise<NftTokenDoc[]> => {
-  const q = query(collection(db, "nfts"), limit(10));
+  const q = query(collection(db, "tokens"), limit(10));
   const nftsSnap = await getDocs(q);
-  const docIds = nftsSnap.docs.map((doc) => doc.id);
-  const docs = await Promise.all(
-    docIds.map((docId) => {
-      const collectionSnap = query(
-        collection(db, "nfts", docId, "tokens"),
-        limit(1)
-      );
-      return getDocs(collectionSnap);
-    })
-  );
-  const nftCollectionItems = docs
-    .map((d) => d.docs[0])
-    .map((d) => ({ ...d.data(), id: d.id } as NftTokenDoc));
+  const docs = nftsSnap.docs.map((d) => {
+    const token = d.data() as NftToken;
+    return {
+      ...token,
+      id: d.id,
+    } as NftTokenDoc;
+  });
+  // const docs = await Promise.all(
+  //   docIds.map((docId) => {
+  //     const collectionSnap = query(
+  //       collection(db, "nfts", docId, "tokens"),
+  //       limit(1)
+  //     );
+  //     return getDocs(collectionSnap);
+  //   })
+  // );
+  // const nftCollectionItems = docs
+  //   .map((d) => d.docs[0])
+  //   .map((d) => ({ ...d.data(), id: d.id } as NftTokenDoc));
 
-  return nftCollectionItems;
+  return docs;
 };
 
 const getNftCollectionToken = async (

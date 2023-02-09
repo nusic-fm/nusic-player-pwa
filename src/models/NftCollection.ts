@@ -25,6 +25,4 @@ export interface NftToken {
 
 export interface NftTokenDoc extends NftToken {
   id: string;
-  streamUrl: string;
-  posterUrl: string;
 }
