@@ -61,8 +61,6 @@ const getNftCollectionToken = async (
   return {
     ...token,
     id: snap.id,
-    posterUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${token.tokenAddress}/${token.tokenId}/image/poster`,
-    streamUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${token.tokenAddress}/${token.tokenId}/audio/stream`,
   };
 };
 
