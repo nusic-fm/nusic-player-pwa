@@ -55,7 +55,8 @@ const getNftCollectionToken = async (
   address: string,
   tokenId: string
 ): Promise<NftTokenDoc> => {
-  const d = doc(db, "nfts", address, "tokens", tokenId);
+  const id = `${address}-${tokenId}`;
+  const d = doc(db, "tokens", id);
   const snap = await getDoc(d);
   const token = snap.data() as NftToken;
   return {

@@ -64,26 +64,31 @@ const NftInfo = (props: Props) => {
               </AccordionDetails>
             </Accordion>
           </Box>
-          <Box p={2}>
-            <Divider />
-            <Stack py={2} gap={2} flexWrap="wrap" direction={"row"}>
-              {nftToken.attributes?.map((attribute) => (
-                <Chip
-                  variant="outlined"
-                  key={attribute.trait_type}
-                  sx={{ py: 4 }}
-                  label={
-                    <Stack>
-                      <Typography variant="caption">
-                        {attribute.trait_type}
-                      </Typography>
-                      <Typography>{attribute.value}</Typography>
-                    </Stack>
-                  }
-                />
-              ))}
-            </Stack>
-            <Divider />
+          <Box py={2}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                Attributes
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="subtitle2">
+                  {nftToken.attributes?.map((attribute) => (
+                    <Chip
+                      variant="outlined"
+                      key={attribute.trait_type}
+                      sx={{ py: 4 }}
+                      label={
+                        <Stack>
+                          <Typography variant="caption">
+                            {attribute.trait_type}
+                          </Typography>
+                          <Typography>{attribute.value}</Typography>
+                        </Stack>
+                      }
+                    />
+                  ))}
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
           </Box>
           <Box>
             <Stack
