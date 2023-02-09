@@ -7,6 +7,11 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   CssBaseline,
+  // Drawer,
+  // List,
+  // ListItemButton,
+  // ListItemIcon,
+  // ListItemText,
   Paper,
 } from "@mui/material";
 // import { Head } from "next/document";
@@ -19,6 +24,10 @@ import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+// import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
 // import Player from "../src/components/Player";
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -48,15 +57,16 @@ export default function MyApp(props: MyAppProps) {
   const router = useRouter();
 
   const [value, setValue] = useState<number>();
+  // const [showDrawer, setShowDrawer] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
     if (router.pathname === "/") {
       setValue(0);
     } else if (router.pathname === "/discover") {
-      setValue(1);
-    } else if (router.pathname.startsWith("/market")) {
       setValue(2);
+    } else if (router.pathname.startsWith("/market")) {
+      setValue(3);
     }
   }, [router.isReady, router.pathname]);
 
@@ -111,6 +121,16 @@ export default function MyApp(props: MyAppProps) {
                   label="Play"
                   icon={
                     <PlayCircleOutlineRoundedIcon
+                      fontSize="small"
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    />
+                  }
+                ></BottomNavigationAction>
+                <BottomNavigationAction
+                  // onClick={() => router.push(`/market`)}
+                  label="Saved"
+                  icon={
+                    <FavoriteBorderRoundedIcon
                       sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                     />
                   }
@@ -120,6 +140,7 @@ export default function MyApp(props: MyAppProps) {
                   label="Discover"
                   icon={
                     <ExploreRoundedIcon
+                      fontSize="small"
                       sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                     />
                   }
@@ -128,22 +149,44 @@ export default function MyApp(props: MyAppProps) {
                   onClick={() => router.push(`/market`)}
                   label="Market"
                   icon={
-                    <Image
-                      src="/nft.png"
-                      color="white"
-                      style={{
-                        background: "white",
-                        borderRadius: "50%",
-                        opacity: 0.8,
-                      }}
-                      alt=""
-                      width={20}
-                      height={20}
+                    <StorefrontOutlinedIcon
+                      fontSize="small"
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    />
+                  }
+                ></BottomNavigationAction>
+                <BottomNavigationAction
+                  // onClick={() => setShowDrawer(true)}
+                  label="Profile"
+                  icon={
+                    // <MenuRoundedIcon
+                    //   sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    // />
+                    <AccountCircleRoundedIcon
+                      fontSize="small"
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
                     />
                   }
                 ></BottomNavigationAction>
               </BottomNavigation>
             </Paper>
+            {/* <Drawer
+              anchor="bottom"
+              open={showDrawer}
+              onClose={() => setShowDrawer(false)}
+            >
+              <List>
+                <ListItemButton onClick={() => router.push(`/profile`)}>
+                  <ListItemIcon>
+                    <AccountCircleRoundedIcon
+                      fontSize="small"
+                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText>Profile</ListItemText>
+                </ListItemButton>
+              </List>
+            </Drawer> */}
           </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}

@@ -10,6 +10,7 @@ import {
   NftCollectionDoc,
   NftCollection,
   NftTokenDoc,
+  NftToken,
 } from "../../models/NftCollection";
 import { db } from "../firebase.service";
 
@@ -50,7 +51,13 @@ const getNftCollectionToken = async (
 ): Promise<NftTokenDoc> => {
   const d = doc(db, "nfts", address, "tokens", tokenId);
   const snap = await getDoc(d);
-  return { ...snap.data(), id: snap.id } as NftTokenDoc;
+  const token = snap.data() as NftToken;
+  return {
+    ...token,
+    id: snap.id,
+    posterUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${token.tokenAddress}/${token.tokenId}/image/poster`,
+    streamUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${token.tokenAddress}/${token.tokenId}/audio/stream`,
+  };
 };
 
 export { getNftCollections, getNftCollectionsToken, getNftCollectionToken };

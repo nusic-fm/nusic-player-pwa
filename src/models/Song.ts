@@ -15,4 +15,6 @@ export interface Song {
 export interface SongDoc extends Song {
   id: string;
   idx: number;
+  streamUrl: string;
+  posterUrl: string;
 }

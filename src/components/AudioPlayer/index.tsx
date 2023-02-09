@@ -81,10 +81,10 @@ const AudioPlaer = ({ song, inView, isPlaying }: Props) => {
             animation: ${roteteImage} 30s ease infinite;
             border-radius: 50%;
           `}
-          src={`${process.env.NEXT_PUBLIC_STREAMING}/image/${song.tokenAddress}/${song.tokenId}`}
+          src={song.posterUrl}
           alt=""
-          width="260px"
-          height="260px"
+          width="70%"
+          // height="260px"
         ></img>
       </Box>
       {/* <Box display={"flex"} gap={2} justifyContent="center">

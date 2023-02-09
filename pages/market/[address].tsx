@@ -46,7 +46,7 @@ const NftInfo = (props: Props) => {
           <Typography align="center">{nftToken?.name}</Typography>
           <Box display={"flex"} justifyContent="center" my={2}>
             <img
-              src={`${process.env.NEXT_PUBLIC_STREAMING}/image/${address}/${tokenId}`}
+              src={nftToken.posterUrl}
               alt="nft"
               width={200}
               height={200}

@@ -23,12 +23,14 @@ const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
   return (
     <Box pt={2}>
       <Box
+        px={1}
         display={"flex"}
         justifyContent="center"
         alignContent={"center"}
         ref={searchRef}
       >
         <TextField
+          disabled
           value={query}
           placeholder="Search for Artists, Collections, Genres"
           autoComplete="off"
@@ -36,6 +38,7 @@ const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
           onChange={(e) => {
             refine(e.target.value);
           }}
+          fullWidth
           InputProps={{
             endAdornment: (
               <IconButton

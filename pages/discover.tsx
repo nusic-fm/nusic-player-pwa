@@ -39,7 +39,7 @@ const Discover = () => {
   }, []);
 
   const onPlaySong = (song: SongDoc) => {
-    const src = `${process.env.NEXT_PUBLIC_STREAMING}/stream/${song.tokenAddress}/${song.tokenId}`;
+    const src = song.streamUrl;
     load({
       src,
       html5: true,
@@ -114,7 +114,7 @@ const Discover = () => {
             key={song.idx}
             onTogglePlay={(e) => {
               e.stopPropagation();
-              if (song.id === currentlyPlayingId && playing) {
+              if (song.id === currentlyPlayingId) {
                 togglePlayPause();
                 return;
               }

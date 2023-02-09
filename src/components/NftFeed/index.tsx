@@ -102,7 +102,7 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
   const { load, playing } = useAudioPlayer();
 
   useEffect(() => {
-    const src = `${process.env.NEXT_PUBLIC_STREAMING}/stream/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`;
+    const src = songs[songIndex].streamUrl;
     load({
       src,
       html5: true,
