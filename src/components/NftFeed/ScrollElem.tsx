@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 import { SongDoc } from "../../models/Song";
-import AudioPlayer from "../AudioPlayer";
+// import AudioPlayer from "../AudioPlayer";
 // import VideoPlayer from "../VideoPlayer";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
 import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
 // import StopCircleRounded from "@mui/icons-material/StopCircleRounded";
 // import SeekBar from "../SeekBar";
-import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
+// import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 // import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
 // import LoopRoundedIcon from "@mui/icons-material/LoopRounded";
@@ -18,6 +18,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useRouter } from "next/router";
 import { useInViewport } from "../../hooks/useInViewport";
 import { LoadingButton } from "@mui/lab";
+import { fmtMSS } from "../../helpers";
 // import SeekBar from "../SeekBar";
 
 type Props = {
@@ -44,6 +45,7 @@ const ScrollElem = ({
   const waveformId = `waveform-${song.id}`;
 
   const [error, setError] = useState<string>();
+  const [duration, setDuration] = useState<string>();
 
   const { isInViewport, ref } = useInViewport(song.name);
   // const { playing, togglePlayPause } = useAudioPlayer();
@@ -73,7 +75,7 @@ const ScrollElem = ({
     setIsLoading(true);
     const WaveSurfer = (await import("wavesurfer.js")).default;
     var wavesurfer = WaveSurfer.create({
-      scrollParent: true,
+      scrollParent: false,
       fillParent: true,
       // barGap: 50,
       container: `#${waveformId}`,
@@ -82,26 +84,28 @@ const ScrollElem = ({
       // cursorColor: "red",
       cursorWidth: 0,
       backend: "MediaElement",
-      height: 80,
-      barWidth: 2,
-      barHeight: 0.5,
+      height: 40,
+      barWidth: 1,
+      barHeight: 1,
       // hideScrollbar: true,
       xhr: {},
       progressColor: "#A794FF",
-      barGap: 3,
+      barGap: 2,
+      barRadius: 3,
       plugins: [],
     });
     wavesurfer.on("ready", function () {
+      const d = wavesurfer.getDuration();
+      setDuration(fmtMSS(Math.floor(d)));
       setIsLoading(false);
       if (isPlaying) wavesurfer.play();
       // wavesurfer.play();
       // wavesurfer.backend()
     });
     wavesurfer.on("error", function (errMessage: string) {
-      console.log(errMessage);
       setIsLoading(false);
       setError(errMessage);
-      if (isPlaying) togglePlayPause();
+      // if (isPlaying) togglePlayPause();
       // wavesurfer.play();
       // wavesurfer.backend()
     });
@@ -200,8 +204,25 @@ const ScrollElem = ({
           onChangeCommitted={() => {}}
         />
       </Box> */}
-      <Box width="100%" mt={"10%"} display="flex" justifyContent={"center"}>
-        {!error && <Box id={waveformId} style={{ width: "80%" }}></Box>}
+      <Box
+        width="100%"
+        mt={"10%"}
+        display="flex"
+        justifyContent={"center"}
+        flexDirection="column"
+        alignItems={"center"}
+      >
+        {!error && <Box id={waveformId} style={{ width: "80%" }} mb={1}></Box>}
+        {!error && (
+          <Box
+            style={{ width: "80%" }}
+            display="flex"
+            justifyContent={"space-between"}
+          >
+            <Typography></Typography>
+            <Typography variant="caption">{duration}</Typography>
+          </Box>
+        )}
         {error && <Typography color="red">{error}</Typography>}
       </Box>
       <Box
