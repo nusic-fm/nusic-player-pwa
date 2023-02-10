@@ -12,17 +12,23 @@ import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
 // import LoopRoundedIcon from "@mui/icons-material/LoopRounded";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import { useState } from "react";
+import { MutableRefObject, useEffect, useState } from "react";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useRouter } from "next/router";
-import SeekBar from "../SeekBar";
+import { useInViewport } from "../../hooks/useInViewport";
+import { LoadingButton } from "@mui/lab";
+// import SeekBar from "../SeekBar";
 
 type Props = {
   song: SongDoc;
   onFeedClose: () => void;
-  inView: (index: number) => void;
+  inView: (index: string) => void;
   isPlaying: boolean;
   addToPlaylist: (songId: string) => Promise<void>;
+  wavesurferInstances: MutableRefObject<{
+    [key: string]: WaveSurfer;
+  }>;
+  togglePlayPause: () => void;
 };
 
 const ScrollElem = ({
@@ -31,9 +37,16 @@ const ScrollElem = ({
   inView,
   isPlaying,
   addToPlaylist,
+  wavesurferInstances,
+  togglePlayPause,
 }: Props) => {
-  const { playing, togglePlayPause } = useAudioPlayer();
-  const { duration, position } = useAudioPosition();
+  const waveformId = `waveform-${song.id}`;
+
+  const [error, setError] = useState<string>();
+
+  const { isInViewport, ref } = useInViewport(song.name);
+  // const { playing, togglePlayPause } = useAudioPlayer();
+  // const { duration, position } = useAudioPosition();
   const [isLoading, setIsLoading] = useState(false);
   // const wavesurferIns = useRef<null | WaveSurfer>(null);
   // const [canPlay, setCanPlay] = useState(false);
@@ -51,55 +64,67 @@ const ScrollElem = ({
   //   // }
   // };
 
-  // const showWaveForm = async () => {
-  //   if (wavesurferIns.current) return;
-  //   const WaveSurfer = (await import("wavesurfer.js")).default;
-  //   var wavesurfer = WaveSurfer.create({
-  //     scrollParent: true,
-  //     fillParent: true,
-  //     // barGap: 50,
-  //     container: "#waveform",
-  //     // backgroundColor: "rgba(255,255,255, 0.2)",
-  //     // waveColor: "#573FC8",
-  //     // cursorColor: "red",
-  //     cursorWidth: 0,
-  //     backend: "MediaElement",
-  //     height: 80,
-  //     barWidth: 2,
-  //     barHeight: 1,
-  //     // hideScrollbar: true,
-  //     xhr: {},
-  //     progressColor: "#A794FF",
-  //     barGap: 3,
-  //     plugins: [],
-  //   });
-  //   wavesurfer.on("ready", function () {
-  //     setIsLoading(false);
-  //     // wavesurfer.backend()
-  //   });
-  //   wavesurfer.load(
-  //     song.streamUrl
-  //     // "https://storage.googleapis.com/nusic-storage/assets/ethereum/1/0x0af1837ab358adc2acab032f26d1a1da0208ff67/33/audio/stream"
-  //     // "https://storage.googleapis.com/nusic-storage/assets/ethereum/1/0x0af1837ab358adc2acab032f26d1a1da0208ff67/33/audio/stream.wav"
-  //     // "https://storage.googleapis.com/nusic-storage/ethereum/1/0x123/1/content/stream.mp3"
-  //     // "https://storage.cloud.google.com/nusic-storage/test"
-  //     // "https://www.mfiles.co.uk/mp3-downloads/brahms-st-anthony-chorale-theme-two-pianos.mp3"
-  //     // `${process.env.NEXT_PUBLIC_STREAMING}/file/${song.tokenAddress}/${song.tokenId}`
-  //     // "https://storage.googleapis.com/nusic-audio/originals/MajorLazer_TooOriginal-bass.mp3"
-  //     // "https://storage.googleapis.com/music-nft-indexer-9aaa2.appspot.com//assets/ethereum/1/0x4c22d3b875437d43402f5b81ae4f61b8f764e1b1/805/audio/stream?GoogleAccessId=firebase-adminsdk-gb3io%40music-nft-indexer-9aaa2.iam.gserviceaccount.com&Expires=1675679250&Signature=gK%2BV3BJE6aPj%2B8P6tuzPlZHSP%2F8F1mrBBaX21GfXCv6H%2BuG%2Bc5qvCLSCs%2F9NbwbYJniTOhBxnGwquPAUucfcLtsaQip5aeUfJym9CwW24JPOLec5FI8xNeSwW%2F7Qkj4sgeXJtzTIorY5UJJtfa5Wp0WFyiWqLxCPewjjxCeLh57sPnE5gYKsNwfMaG7nKDTqNOnMJGwlUQBkODrWCi%2Fad%2FJassDZ2zSEnIoab5YeCBnOAb8Lv1IduwCd83ZDgQLFwuVYVMoteeYHq9EpVP1yhQBAVqrDvQsL6mNRhN5FFRdPsFrdVgprbfArzgqAXVRoeo3uGxTSIq77IitvLnIXlg%3D%3D"
-  //   );
-  //   wavesurferIns.current = wavesurfer;
-  // };
+  const showWaveForm = async () => {
+    if (wavesurferInstances.current[waveformId]) {
+      if (isPlaying) wavesurferInstances.current[waveformId].play();
+      return;
+    }
+    setIsLoading(true);
+    const WaveSurfer = (await import("wavesurfer.js")).default;
+    var wavesurfer = WaveSurfer.create({
+      scrollParent: true,
+      fillParent: true,
+      // barGap: 50,
+      container: `#${waveformId}`,
+      // backgroundColor: "rgba(255,255,255, 0.2)",
+      // waveColor: "#573FC8",
+      // cursorColor: "red",
+      cursorWidth: 0,
+      backend: "MediaElement",
+      height: 80,
+      barWidth: 2,
+      barHeight: 0.7,
+      // hideScrollbar: true,
+      xhr: {},
+      progressColor: "#A794FF",
+      barGap: 3,
+      plugins: [],
+    });
+    wavesurfer.on("ready", function () {
+      setIsLoading(false);
+      if (isPlaying) wavesurfer.play();
+      // wavesurfer.play();
+      // wavesurfer.backend()
+    });
+    wavesurfer.on("error", function (errMessage: string) {
+      console.log(errMessage);
+      setIsLoading(false);
+      setError(errMessage);
+      if (isPlaying) togglePlayPause();
+      // wavesurfer.play();
+      // wavesurfer.backend()
+    });
+    // wavesurfer.on('play')
+    wavesurfer.load(song.streamUrl);
+    wavesurferInstances.current[waveformId] = wavesurfer;
+  };
 
-  // useEffect(() => {
-  //   if (canPlay && song.idx === 1) {
-  //     showWaveForm();
-  //   }
-  // }, [canPlay]);
+  useEffect(() => {
+    if (isInViewport) {
+      // console.log("yes, inside ", song.name);
+      showWaveForm();
+      inView(song.id);
+      // setIsPlaying(true);
+    } else {
+      // pause();
+      // setIsPlaying(false);
+    }
+  }, [isInViewport]);
 
   return (
     <Box
       display="flex"
+      ref={(r) => ref(r as any)}
       // justifyContent={"center"}
       alignItems="center"
       flexDirection={"column"}
@@ -140,11 +165,11 @@ const ScrollElem = ({
         )} */}
         <AudioPlayer
           song={song}
-          inView={inView}
+          // inView={inView}
           // inView={() => {
           //   setCanPlay(true);
           // }}
-          isPlaying={playing}
+          isPlaying={isPlaying}
         />
       </Box>
       <Box
@@ -170,9 +195,10 @@ const ScrollElem = ({
           onChangeCommitted={() => {}}
         />
       </Box> */}
-      {/* <Box width="100%" mt={2} display="flex" justifyContent={"center"}>
-        <Box id="waveform" style={{ width: "80%" }}></Box>
-      </Box> */}
+      <Box width="100%" mt={2} display="flex" justifyContent={"center"}>
+        {!error && <Box id={waveformId} style={{ width: "80%" }}></Box>}
+        {error && <Typography color="red">{error}</Typography>}
+      </Box>
       <Box
         pt={1}
         width="100%"
@@ -183,13 +209,19 @@ const ScrollElem = ({
         <IconButton disabled>
           {/* <ShareRoundedIcon sx={{ fontSize: 40 }} /> */}
         </IconButton>
-        <IconButton onClick={togglePlayPause}>
-          {playing ? (
-            <PauseCircleRounded sx={{ fontSize: 80 }} />
-          ) : (
+        {isLoading ? (
+          <LoadingButton loading={isLoading} size="large">
             <PlayCircleRounded sx={{ fontSize: 80 }} />
-          )}
-        </IconButton>
+          </LoadingButton>
+        ) : (
+          <IconButton onClick={togglePlayPause} disabled={!!error}>
+            {isPlaying ? (
+              <PauseCircleRounded sx={{ fontSize: 80 }} />
+            ) : (
+              <PlayCircleRounded sx={{ fontSize: 80 }} />
+            )}
+          </IconButton>
+        )}
         {/* <IconButton disabled>
           <LoopRoundedIcon sx={{ fontSize: 40 }} />
         </IconButton> */}
@@ -217,7 +249,8 @@ const ScrollElem = ({
           }}
           disabled
         >
-          {isLoading ? <CircularProgress /> : <PlaylistAddRoundedIcon />}
+          <PlaylistAddRoundedIcon />
+          {/* {isLoading ? <CircularProgress /> : } */}
         </IconButton>
         <IconButton
           onClick={() =>

@@ -22,13 +22,13 @@ const roteteImage = keyframes`
 
 type Props = {
   song: SongDoc;
-  inView: (index: number) => void;
+  // inView: (index: number) => void;
   isPlaying: boolean;
 };
 
-const AudioPlaer = ({ song, inView, isPlaying }: Props) => {
+const AudioPlaer = ({ song, isPlaying }: Props) => {
   // const audioRef = useRef(new Audio(song.audioFileUrl));
-  const { isInViewport, ref } = useInViewport(song.name);
+  // const { isInViewport, ref } = useInViewport(song.name);
   // const [isPlaying, setIsPlaying] = useState(false);
   const animationRef = useRef<HTMLImageElement>(null);
   const { togglePlayPause, pause } = useAudioPlayer();
@@ -48,21 +48,21 @@ const AudioPlaer = ({ song, inView, isPlaying }: Props) => {
     }
   }, [isPlaying]);
 
-  useEffect(() => {
-    if (isInViewport) {
-      inView(song.idx);
-      // setIsPlaying(true);
-    } else {
-      // pause();
-      // setIsPlaying(false);
-    }
-  }, [isInViewport]);
+  // useEffect(() => {
+  //   if (isInViewport) {
+  //     inView(song.idx);
+  //     // setIsPlaying(true);
+  //   } else {
+  //     // pause();
+  //     // setIsPlaying(false);
+  //   }
+  // }, [isInViewport]);
 
   return (
     <Box
       width="100%"
       height="100%"
-      ref={(r) => ref(r as any)}
+      // ref={(r) => ref(r as any)}
       onClick={() => togglePlayPause()}
       display="flex"
       alignItems="center"
