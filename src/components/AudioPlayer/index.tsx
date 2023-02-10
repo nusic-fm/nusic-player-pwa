@@ -36,17 +36,17 @@ const AudioPlaer = ({ song, isPlaying }: Props) => {
   // const togglePlayPause = () => {
   //   setIsPlaying(!isPlaying);
   // };
-  useEffect(() => {
-    if (isPlaying) {
-      if (animationRef.current)
-        animationRef.current.style.animationPlayState = "running";
-      // audioRef.current.play();
-    } else {
-      if (animationRef.current)
-        animationRef.current.style.animationPlayState = "paused";
-      // audioRef.current.pause();
-    }
-  }, [isPlaying]);
+  // useEffect(() => {
+  //   if (isPlaying) {
+  //     if (animationRef.current)
+  //       animationRef.current.style.animationPlayState = "running";
+  //     // audioRef.current.play();
+  //   } else {
+  //     if (animationRef.current)
+  //       animationRef.current.style.animationPlayState = "paused";
+  //     // audioRef.current.pause();
+  //   }
+  // }, [isPlaying]);
 
   // useEffect(() => {
   //   if (isInViewport) {
@@ -76,14 +76,15 @@ const AudioPlaer = ({ song, isPlaying }: Props) => {
         alignItems="center"
       >
         <img
-          ref={animationRef}
-          css={css`
-            animation: ${roteteImage} 30s ease infinite;
-            border-radius: 50%;
-          `}
+          // ref={animationRef}
+          // css={css`
+          //   animation: ${roteteImage} 30s ease infinite;
+          //   border-radius: 50%;
+          // `}
           src={song.posterUrl}
           alt=""
           width="70%"
+          style={{ borderRadius: "8px" }}
           // height="260px"
         ></img>
       </Box>
