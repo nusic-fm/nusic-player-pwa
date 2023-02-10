@@ -178,14 +178,14 @@ const ScrollElem = ({
         ></img>
       </Box>
       <Box
-        mt={"12%"}
+        mt={"6%"}
         px={4}
         // display="flex"
         // justifyContent={"space-between"}
         width="100%"
         // alignItems={"center"}
       >
-        <Typography variant="h6" width={"100%"}>
+        <Typography variant="body1" width={"100%"}>
           {song.name}
         </Typography>
         <Typography variant="caption" width={"100%"}>
@@ -200,7 +200,7 @@ const ScrollElem = ({
           onChangeCommitted={() => {}}
         />
       </Box> */}
-      <Box width="100%" mt={"15%"} display="flex" justifyContent={"center"}>
+      <Box width="100%" mt={"10%"} display="flex" justifyContent={"center"}>
         {!error && <Box id={waveformId} style={{ width: "80%" }}></Box>}
         {error && <Typography color="red">{error}</Typography>}
       </Box>
