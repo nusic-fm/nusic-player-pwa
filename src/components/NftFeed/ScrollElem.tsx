@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Box, CircularProgress, IconButton, Typography } from "@mui/material";
 import { SongDoc } from "../../models/Song";
 import AudioPlayer from "../AudioPlayer";
@@ -77,13 +78,13 @@ const ScrollElem = ({
       // barGap: 50,
       container: `#${waveformId}`,
       // backgroundColor: "rgba(255,255,255, 0.2)",
-      // waveColor: "#573FC8",
+      // waveColor: "#00000066",
       // cursorColor: "red",
       cursorWidth: 0,
       backend: "MediaElement",
       height: 80,
       barWidth: 2,
-      barHeight: 0.7,
+      barHeight: 0.5,
       // hideScrollbar: true,
       xhr: {},
       progressColor: "#A794FF",
@@ -131,8 +132,14 @@ const ScrollElem = ({
       width="100%"
       height="100vh"
       key={song.name}
-      sx={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
-      pt={2} //TODO
+      sx={{
+        scrollSnapAlign: "start",
+        scrollSnapStop: "always",
+        opacity: !isInViewport ? 0.3 : 1,
+        transition: "opacity 0.5s",
+      }}
+      pt={"1rem"} //TODO
+      mb={-12}
     >
       <Box position={"relative"} width="100%">
         <Box
@@ -155,32 +162,30 @@ const ScrollElem = ({
         display="flex"
         justifyContent={"center"}
         alignItems="center"
-        flexBasis="40%"
+        // flexBasis="40%"
         position={"relative"}
       >
-        {/* {song.format === "audio" ? (
-          <AudioPlayer song={song} inView={inView} isPlaying={isPlaying} />
-        ) : (
-          <VideoPlayer song={song} inView={inView} isPlaying={isPlaying} />
-        )} */}
-        <AudioPlayer
-          song={song}
-          // inView={inView}
-          // inView={() => {
-          //   setCanPlay(true);
-          // }}
-          isPlaying={isPlaying}
-        />
+        <img
+          // ref={animationRef}
+          // css={css`
+          //   animation: ${roteteImage} 30s ease infinite;
+          //   border-radius: 50%;
+          // `}
+          src={song.posterUrl}
+          alt=""
+          width="70%"
+          style={{ borderRadius: "8px" }}
+        ></img>
       </Box>
       <Box
-        pt={1}
+        mt={"12%"}
         px={4}
         // display="flex"
         // justifyContent={"space-between"}
         width="100%"
         // alignItems={"center"}
       >
-        <Typography variant="body1" width={"100%"}>
+        <Typography variant="h6" width={"100%"}>
           {song.name}
         </Typography>
         <Typography variant="caption" width={"100%"}>
@@ -195,16 +200,16 @@ const ScrollElem = ({
           onChangeCommitted={() => {}}
         />
       </Box> */}
-      <Box width="100%" mt={2} display="flex" justifyContent={"center"}>
+      <Box width="100%" mt={"15%"} display="flex" justifyContent={"center"}>
         {!error && <Box id={waveformId} style={{ width: "80%" }}></Box>}
         {error && <Typography color="red">{error}</Typography>}
       </Box>
       <Box
-        pt={1}
         width="100%"
         display={"flex"}
         alignItems="center"
         justifyContent={"center"}
+        mt={"5%"}
       >
         <IconButton disabled>
           {/* <ShareRoundedIcon sx={{ fontSize: 40 }} /> */}

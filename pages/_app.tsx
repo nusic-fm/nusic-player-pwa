@@ -102,6 +102,7 @@ export default function MyApp(props: MyAppProps) {
                 left: 0,
                 right: 0,
                 background: "rgba(0,0,0,0.2)",
+                zIndex: 4,
               }}
               elevation={3}
             >

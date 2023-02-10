@@ -40,11 +40,17 @@ const Index = () => {
             justifyContent="center"
             p={4}
           >
-            <Skeleton variant="circular" width={230} height={230} />
-            <Skeleton variant="rounded" width="100%" />
+            <Skeleton variant="rounded" width={230} height={230} />
+            <Skeleton variant="rounded" width="100%" height={30} />
+            <Skeleton variant="rounded" width="100%" height={80} />
             <Skeleton variant="circular" width={80} height={80} />
-            <Skeleton variant="rounded" width="100%" />
-            <Skeleton variant="rounded" width="100%" />
+            <Skeleton variant="rounded" width="80%" height={40} />
+            <Skeleton
+              variant="rounded"
+              width={230}
+              height={60}
+              sx={{ mt: 4 }}
+            />
           </Box>
         ) : (
           <Typography>

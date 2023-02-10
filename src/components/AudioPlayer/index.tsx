@@ -30,7 +30,7 @@ const AudioPlaer = ({ song, isPlaying }: Props) => {
   // const audioRef = useRef(new Audio(song.audioFileUrl));
   // const { isInViewport, ref } = useInViewport(song.name);
   // const [isPlaying, setIsPlaying] = useState(false);
-  const animationRef = useRef<HTMLImageElement>(null);
+  // const animationRef = useRef<HTMLImageElement>(null);
   const { togglePlayPause, pause } = useAudioPlayer();
 
   // const togglePlayPause = () => {
