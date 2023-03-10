@@ -8,7 +8,7 @@ import { useAudioPlayer } from "react-use-audio-player";
 import { SongDoc } from "../src/models/Song";
 import {
   getDiscoverSongs,
-  getSongsById,
+  getSongById,
 } from "../src/services/db/songs.service";
 import DiscoverRow from "../src/components/DiscoverRow";
 import { useRouter } from "next/router";
@@ -50,7 +50,7 @@ const Discover = () => {
   };
 
   const onSongSelect = async (songId: string) => {
-    const song = await getSongsById(songId);
+    const song = await getSongById(songId);
     setSearchResult([song]);
   };
   const removeSearchResult = async () => {
@@ -59,14 +59,14 @@ const Discover = () => {
 
   return (
     <Box sx={{ bgcolor: "black" }} minHeight="100vh">
-      <InstantSearch searchClient={searchClient} indexName="songs">
+      <InstantSearch searchClient={searchClient} indexName="tracks">
         <SearchBar
           onSuggestionSelect={onSongSelect}
           clearSearch={removeSearchResult}
         />
       </InstantSearch>
       {searchResult && (
-        <Box px={1}>
+        <Box px={1} mt={2}>
           <Typography variant="body2" sx={{ color: "#c3c3c3" }}>
             Results
           </Typography>

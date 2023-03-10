@@ -131,7 +131,7 @@ const getSongsByIds = async (songIds: string[]): Promise<SongDoc[]> => {
     .map((s, i) => ({ ...s, idx: i }));
 };
 
-const getSongsById = async (songId: string): Promise<SongDoc> => {
+const getSongById = async (songId: string): Promise<SongDoc> => {
   // const q = query(
   //   collection(db, "songs"),
   //   where(documentId(), "in", songIds)
@@ -149,7 +149,14 @@ const getSongsById = async (songId: string): Promise<SongDoc> => {
   const id = songId;
   const d = doc(db, DB_NAME, id);
   const docRef = await getDoc(d);
-  return { ...(docRef.data() as SongDoc), id: docRef.id };
+  const track = docRef.data() as Song;
+  return {
+    ...track,
+    id: docRef.id,
+    idx: 0,
+    posterUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${track.tokenAddress}/${track.tokenId}/image/poster`,
+    streamUrl: `https://storage.googleapis.com/nusic-storage/assets/ethereum/1/${track.tokenAddress}/${track.tokenId}/audio/stream`,
+  };
 };
 const addSongToDb = async (song: Song) => {
   const songId = `${song.tokenAddress}-${song.tokenId}`;
@@ -177,6 +184,6 @@ export {
   addSongToDb,
   incrementStreamCount,
   getDiscoverSongs,
-  getSongsById,
+  getSongById,
   getSongsLength,
 };

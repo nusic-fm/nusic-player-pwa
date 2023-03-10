@@ -30,7 +30,7 @@ const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
         ref={searchRef}
       >
         <TextField
-          disabled
+          // disabled
           value={query}
           placeholder="Search for Artists, Collections, Genres"
           autoComplete="off"
@@ -58,6 +58,7 @@ const SearchBar = ({ onSuggestionSelect, clearSearch }: Props) => {
       <Popper open={!!query} anchorEl={searchRef.current} sx={{ width: "80%" }}>
         <Suggestions
           onSuggestionSelect={(songId: string) => {
+            clear();
             onSuggestionSelect(songId);
           }}
         />
