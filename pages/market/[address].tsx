@@ -14,7 +14,7 @@ import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { NftTokenDoc } from "../../src/models/NftCollection";
-import { getNftCollectionToken } from "../../src/services/db/nfts.service";
+import { getNftCollectionToken } from "../../src/services/db/tokens.service";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 type Props = {};

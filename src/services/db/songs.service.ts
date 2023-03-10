@@ -10,11 +10,19 @@ import {
   setDoc,
   updateDoc,
   increment,
+  getCountFromServer,
 } from "firebase/firestore";
 import { Song, SongDoc } from "../../models/Song";
 import { db } from "../firebase.service";
 
 const DB_NAME = "tracks";
+
+const getSongsLength = async (): Promise<number> => {
+  const col = collection(db, DB_NAME);
+  const snapshot = await getCountFromServer(col);
+  console.log("count: ", snapshot.data().count);
+  return snapshot.data().count;
+};
 
 const getSongs = async (): Promise<SongDoc[]> => {
   const q = query(
@@ -170,4 +178,5 @@ export {
   incrementStreamCount,
   getDiscoverSongs,
   getSongsById,
+  getSongsLength,
 };

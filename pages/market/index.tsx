@@ -1,24 +1,38 @@
 /* eslint-disable @next/next/no-img-element */
-import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import MarketItem from "../../src/components/MarketItem";
 import { NftTokenDoc } from "../../src/models/NftCollection";
-import { getNftCollectionsToken } from "../../src/services/db/nfts.service";
+import { PricesObj } from "../../src/models/Price";
 
 type Props = {};
 
-const Market = (props: Props) => {
+const Market = ({}: Props) => {
   const [collections, setCollections] = useState<NftTokenDoc[]>();
-  const router = useRouter();
+  const [pricesObj, setPricesObj] = useState<PricesObj>();
 
-  const fetchNftCollections = async () => {
-    const nftCollections = await getNftCollectionsToken();
-    setCollections(nftCollections);
+  const fetchNftCollectionsWithPrices = async () => {
+    const res = await axios.post(
+      "api/market-tokens",
+      {
+        tokens: [{ message: "test" }],
+        baseUrl: "https://api.reservoir.tools/tokens/v5",
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    const data = res.data as {
+      tokens: NftTokenDoc[];
+      pricesObj: PricesObj;
+    };
+
+    setCollections(data.tokens);
+    setPricesObj(data.pricesObj);
   };
 
   useEffect(() => {
-    fetchNftCollections();
+    fetchNftCollectionsWithPrices();
   }, []);
 
   return (
@@ -31,30 +45,7 @@ const Market = (props: Props) => {
         width="100%"
       >
         {collections?.map((nft, i) => (
-          <Stack
-            key={i}
-            gap={2}
-            p={1}
-            border="1px solid #c3c3c3"
-            borderRadius={"6px"}
-            onClick={() =>
-              router.push(`market/${nft.tokenAddress}?tokenId=${nft.tokenId}`)
-            }
-            width="45%"
-            alignItems={"center"}
-          >
-            <img
-              src={nft.original.imageUrl}
-              alt={nft.tokenId}
-              width="80"
-              height="80"
-            />
-            <Box>
-              <Typography variant="caption">{nft.artist}</Typography>
-              <Typography variant="body2">{nft.name}</Typography>
-            </Box>
-            {/* <Button variant="contained">Buy Now</Button> */}
-          </Stack>
+          <MarketItem nft={nft} pricesObj={pricesObj} key={i}></MarketItem>
         ))}
       </Box>
     </Box>
