@@ -144,7 +144,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  onClick={() => router.push(`/market`)}
+                  onClick={() => router.push(`/test-market`)}
                   label="Market"
                   icon={
                     <StorefrontOutlinedIcon
