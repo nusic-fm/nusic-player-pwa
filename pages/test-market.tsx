@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Box } from "@mui/system";
+import { renderPaperCheckoutLink } from "@paperxyz/js-client-sdk";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -84,6 +85,26 @@ const Market = (props: Props) => {
 
   const onMakeOffer = async (nft: any) => {};
 
+  const openCheckout = (checkoutLinkUrl: string) =>
+    renderPaperCheckoutLink({
+      checkoutLinkUrl,
+      onModalClosed: () => {
+        alert("Closed");
+      },
+      onPaymentFailed: ({ transactionId }) => {
+        console.log(transactionId);
+        alert("failed");
+      },
+      onPaymentSucceeded({ transactionId }) {
+        console.log(transactionId);
+        alert("success");
+      },
+      onTransferSucceeded({ transactionId, claimedTokens }) {
+        console.log(transactionId, claimedTokens);
+        alert("Transfer Success");
+      },
+    });
+
   return (
     <Box sx={{ bgcolor: "black" }} minHeight="100vh" p={2} pb={6} width="100%">
       <Box
@@ -95,6 +116,7 @@ const Market = (props: Props) => {
       >
         {collections?.map((nft, i) => (
           <MarketItem
+            openCheckout={openCheckout}
             key={i}
             nft={nft as any}
             pricesObj={priceObj}

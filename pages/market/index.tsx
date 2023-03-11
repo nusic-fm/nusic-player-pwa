@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import MarketItem from "../../src/components/MarketItem";
 import { NftTokenDoc } from "../../src/models/NftCollection";
 import { PricesObj } from "../../src/models/Price";
+import { renderPaperCheckoutLink } from "@paperxyz/js-client-sdk";
 
 type Props = {};
 
@@ -31,6 +32,26 @@ const Market = ({}: Props) => {
     setPricesObj(data.pricesObj);
   };
 
+  const openCheckout = (checkoutLinkUrl: string) =>
+    renderPaperCheckoutLink({
+      checkoutLinkUrl,
+      onModalClosed() {
+        alert("Closed");
+      },
+      onPaymentFailed: ({ transactionId }) => {
+        console.log(transactionId);
+        alert("failed");
+      },
+      onPaymentSucceeded({ transactionId }) {
+        console.log(transactionId);
+        alert("success");
+      },
+      onTransferSucceeded({ transactionId, claimedTokens }) {
+        console.log(transactionId, claimedTokens);
+        alert("Transfer Success");
+      },
+    });
+
   useEffect(() => {
     fetchNftCollectionsWithPrices();
   }, []);
@@ -45,7 +66,12 @@ const Market = ({}: Props) => {
         width="100%"
       >
         {collections?.map((nft, i) => (
-          <MarketItem nft={nft} pricesObj={pricesObj} key={i}></MarketItem>
+          <MarketItem
+            nft={nft}
+            pricesObj={pricesObj}
+            key={i}
+            openCheckout={openCheckout}
+          ></MarketItem>
         ))}
       </Box>
     </Box>

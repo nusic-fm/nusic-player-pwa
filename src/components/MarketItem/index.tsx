@@ -9,9 +9,10 @@ import { PricesObj } from "../../models/Price";
 type Props = {
   nft: NftTokenDoc;
   pricesObj?: PricesObj;
+  openCheckout: (link: string) => void;
 };
 
-const MarketItem = ({ nft, pricesObj }: Props) => {
+const MarketItem = ({ nft, pricesObj, openCheckout }: Props) => {
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   const onMakeOffer = async (nft: NftTokenDoc) => {
@@ -23,7 +24,8 @@ const MarketItem = ({ nft, pricesObj }: Props) => {
         { headers: { "Content-Type": "application/json" } }
       );
       const checkoutLinkIntentUrl = response.data.checkoutLinkIntentUrl;
-      window.open(checkoutLinkIntentUrl, "_blank");
+      openCheckout(checkoutLinkIntentUrl);
+      // window.open(checkoutLinkIntentUrl, "_blank");
     } catch (e: any) {
       alert("Unable to find the checkout link from paper, try again later.");
     } finally {

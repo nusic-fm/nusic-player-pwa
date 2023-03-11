@@ -17,6 +17,7 @@
     "@mui/lab": "^5.0.0-alpha.114",
     "@mui/material": "^5.11.3",
     "@next/font": "13.1.1",
+    "@paperxyz/js-client-sdk": "^0.0.50",
     "@paperxyz/react-client-sdk": "^0.8.9",
     "@reservoir0x/reservoir-sdk": "^0.6.1",
     "@types/node": "18.11.18",
