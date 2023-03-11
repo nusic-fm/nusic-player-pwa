@@ -27,6 +27,7 @@ const MarketItem = ({ nft, pricesObj, openCheckout }: Props) => {
       openCheckout(checkoutLinkIntentUrl);
       // window.open(checkoutLinkIntentUrl, "_blank");
     } catch (e: any) {
+      console.log(e.message);
       alert("Unable to find the checkout link from paper, try again later.");
     } finally {
       setIsActionLoading(false);
