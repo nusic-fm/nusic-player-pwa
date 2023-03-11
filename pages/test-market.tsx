@@ -70,7 +70,7 @@ const Market = (props: Props) => {
   const router = useRouter();
 
   const fetchPrices = async () => {
-    const res = await axios.post("api/test-market-tokens", {
+    const res = await axios.post("/api/test-market-tokens", {
       tokens: nfts.map((n) => `${n.tokenAddress}:${n.tokenId}`),
       baseUrl: "https://api-goerli.reservoir.tools/tokens/v5",
     });

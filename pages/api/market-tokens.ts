@@ -43,11 +43,12 @@ export default async function handler(
     const pricesObj: PricesObj = {};
     if (data.tokens) {
       data.tokens.map((t: any) => {
-        console.log(t.market.floorAsk);
         pricesObj[`${t.token.contract}-${t.token.tokenId}`] = {
           lastBuy: t.token.lastBuy.value,
           lastSell: t.token.lastSell.value,
-          price: ethers.utils.formatEther(t.market.floorAsk.price?.amount.raw),
+          price: t.market.floorAsk.price?.amount?.raw
+            ? ethers.utils.formatEther(t.market.floorAsk.price?.amount.raw)
+            : 0,
         };
       });
     }

@@ -11,10 +11,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  if (req.method !== "POST") {
-    res.status(405).send("Only POST requests allowed");
-    return;
-  }
+  // if (req.method !== "POST") {
+  //   res.status(405).send("Only POST requests allowed");
+  //   return;
+  // }
   //   const tokens = req.body.tokens;
   const baseUrl = req.body.baseUrl;
   const tokens = req.body.tokens;
@@ -42,7 +42,9 @@ export default async function handler(
         pricesObj[`${t.token.contract}-${t.token.tokenId}`] = {
           lastBuy: t.token.lastBuy.value,
           lastSell: t.token.lastSell.value,
-          price: ethers.utils.formatEther(t.market.floorAsk.price?.amount.raw),
+          price: t.market.floorAsk.price?.amount?.raw
+            ? ethers.utils.formatEther(t.market.floorAsk.price?.amount.raw)
+            : 0,
         };
       });
     }
