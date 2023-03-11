@@ -84,11 +84,12 @@ const MarketItem = ({ nft, pricesObj, openCheckout }: Props) => {
         )}
       </Box>
       <LoadingButton
+        disabled={!(pricesObj && pricesObj[nft.id]?.price)}
         loading={isActionLoading}
         variant="contained"
         onClick={() => onMakeOffer(nft)}
       >
-        Make Offer
+        Buy Now
       </LoadingButton>
     </Stack>
   );
