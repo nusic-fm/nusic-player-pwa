@@ -22,13 +22,12 @@ export default async function handler(
   };
 
   try {
-    console.log(process.env.PAPER_SECRET_KEY);
     const resp = await axios.post(
       "https://withpaper.com/api/2022-08-12/checkout-link-intent",
       body,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAPER_SECRET_KEY}`,
+          Authorization: `Bearer 10030a54-b01c-457d-a7c9-5b3c82be394a`,
           "Content-Type": "application/json",
         },
       }
@@ -36,6 +35,6 @@ export default async function handler(
     const { checkoutLinkIntentUrl } = resp.data;
     res.json({ checkoutLinkIntentUrl });
   } catch (e: any) {
-    res.status(500).send(e.message);
+    res.send(e.message);
   }
 }
