@@ -27,7 +27,7 @@ export default async function handler(
       body,
       {
         headers: {
-          Authorization: `Bearer 10030a54-b01c-457d-a7c9-5b3c82be394a`,
+          Authorization: `Bearer ${process.env.PAPER_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
       }
@@ -35,6 +35,6 @@ export default async function handler(
     const { checkoutLinkIntentUrl } = resp.data;
     res.json({ checkoutLinkIntentUrl });
   } catch (e: any) {
-    res.send(e.message);
+    res.status(500).send(e.message);
   }
 }
