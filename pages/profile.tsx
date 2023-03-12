@@ -1,4 +1,11 @@
-import { Typography, Button, Drawer, TextField, Skeleton } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Drawer,
+  Skeleton,
+  Chip,
+  Stack,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -31,8 +38,28 @@ const Profile = (props: Props) => {
     );
   }
 
+  if (user.emailVerified === false) {
+    return (
+      <Stack p={2} gap={1}>
+        <Typography textAlign={"center"}>
+          Hi, a verificaion Email has been sent to this {user.email} account,
+          Kindly verify to continue
+        </Typography>
+
+        <Chip
+          label={
+            !user.emailVerified
+              ? "Email Verified"
+              : "Email Verification Pending"
+          }
+          color={!user.emailVerified ? "success" : "warning"}
+        />
+      </Stack>
+    );
+  }
+
   return (
-    <Box p={2}>
+    <Stack p={2} gap={1}>
       <Box
         display={"flex"}
         alignItems="center"
@@ -61,7 +88,7 @@ const Profile = (props: Props) => {
           Sign Out
         </Button>
       </Box>
-    </Box>
+    </Stack>
   );
 };
 

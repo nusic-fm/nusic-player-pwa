@@ -11,7 +11,10 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
-import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import {
+  useCreateUserWithEmailAndPassword,
+  useSendEmailVerification,
+} from "react-firebase-hooks/auth";
 import { auth } from "../../services/firebase.service";
 
 type Props = { open: boolean; onClose: () => void };
@@ -21,13 +24,20 @@ const RegistrationForDialog = ({ open, onClose }: Props) => {
   const [password, setPassword] = useState("");
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
+  const [sendEmailVerification, sendingVerification, verificationError] =
+    useSendEmailVerification(auth);
 
   const onSubmit = async () => {
     if (email && password) {
       try {
         const user = await createUserWithEmailAndPassword(email, password);
         if (user) {
-          alert("Successful");
+          if (user.user.emailVerified === false) {
+            const emailSent = await sendEmailVerification();
+            if (emailSent) {
+              alert("Verification email has been sent to your email address");
+            }
+          }
         }
       } catch (e: any) {
         if (e.code === 400) {
@@ -49,6 +59,7 @@ const RegistrationForDialog = ({ open, onClose }: Props) => {
           <TextField
             placeholder="email"
             value={email}
+            type="email"
             onChange={(e) => setEmail(e.target.value)}
           ></TextField>
           <TextField
