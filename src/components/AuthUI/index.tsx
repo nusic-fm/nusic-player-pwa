@@ -14,6 +14,7 @@ import Image from "next/image";
 import { LoadingButton } from "@mui/lab";
 import RegistrationForDialog from "../RegistrationForDialog";
 import ForgotPassword from "./ForgotPassword";
+import { useRouter } from "next/router";
 
 type Props = {
   url: string;
@@ -35,6 +36,7 @@ const AuthUI = ({ url }: Props) => {
   const [signInWithEmailLink] = useSignInWithEmailLink(auth);
   const [sendEmailVerification, sendingVerification, verificationError] =
     useSendEmailVerification(auth);
+  const router = useRouter();
 
   const checkForEmailAuth = async () => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -46,8 +48,8 @@ const AuthUI = ({ url }: Props) => {
       }
       if (email) {
         await signInWithEmailLink(email, window.location.href);
+        router.push("/profile", undefined, { shallow: true });
         window.localStorage.removeItem("email");
-        window.location.replace("");
       }
     }
   };
@@ -72,6 +74,7 @@ const AuthUI = ({ url }: Props) => {
     }
     const isSuccess = await sendSignInLinkToEmail(email, {
       url,
+      handleCodeInApp: true,
     });
     if (isSuccess) {
       window.localStorage.setItem("email", email);
@@ -82,7 +85,7 @@ const AuthUI = ({ url }: Props) => {
     if (!user) {
       checkForEmailAuth();
     }
-  }, []);
+  }, [user]);
 
   return (
     <Box>
@@ -103,9 +106,9 @@ const AuthUI = ({ url }: Props) => {
             onChange={(e) => setPassword(e.target.value)}
             error={!!emailError}
           ></TextField>
-          {emailError?.message && (
+          {(emailError ?? emailLinkError)?.message && (
             <Typography color={"error"} align="center">
-              {emailError?.message}
+              {(emailError ?? emailLinkError)?.message}
             </Typography>
           )}
           <Box display="flex" justifyContent={"start"} gap={1}>

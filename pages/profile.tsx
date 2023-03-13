@@ -59,7 +59,7 @@ const Profile = (props: Props) => {
   }
 
   return (
-    <Stack sx={{ bgcolor: "black" }} p={2} gap={1}>
+    <Stack sx={{ bgcolor: "black", minHeight: "100vh" }} p={2} gap={1}>
       <Box
         display={"flex"}
         alignItems="center"
