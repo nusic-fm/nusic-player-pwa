@@ -22,13 +22,13 @@ type Props = {
 
 const AuthUI = ({ url }: Props) => {
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  // const [password, setPassword] = useState<string>("");
   const auth = getAuth();
   const [user, loading, error] = useAuthState(auth);
-  const [signInWithEmailAndPassword, , emailLoading, emailError] =
-    useSignInWithEmailAndPassword(auth);
-  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  // const [signInWithEmailAndPassword, , emailLoading, emailError] =
+  //   useSignInWithEmailAndPassword(auth);
+  // const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  // const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [sendSignInLinkToEmail, sending, emailLinkError] =
     useSendSignInLinkToEmail(auth);
   const [signInWithGoogle, , googleLoading, googleError] =
@@ -53,19 +53,19 @@ const AuthUI = ({ url }: Props) => {
       }
     }
   };
-  const onEmailSignIn = async () => {
-    if (!email.length || !password.length) {
-      alert("Please fill both email and password.");
-      return;
-    }
-    const userRef = await signInWithEmailAndPassword(email, password);
-    if (userRef && userRef.user.emailVerified === false) {
-      const emailSent = await sendEmailVerification();
-      if (emailSent) {
-        alert("Verification email has been sent to your email address");
-      }
-    }
-  };
+  // const onEmailSignIn = async () => {
+  //   if (!email.length || !password.length) {
+  //     alert("Please fill both email and password.");
+  //     return;
+  //   }
+  //   const userRef = await signInWithEmailAndPassword(email, password);
+  //   if (userRef && userRef.user.emailVerified === false) {
+  //     const emailSent = await sendEmailVerification();
+  //     if (emailSent) {
+  //       alert("Verification email has been sent to your email address");
+  //     }
+  //   }
+  // };
 
   const onEmailLinkSignIn = async () => {
     if (!email) {
@@ -92,26 +92,28 @@ const AuthUI = ({ url }: Props) => {
       <Stack p={2}>
         <Stack gap={2} alignContent="center" justifyContent={"center"}>
           <TextField
-            placeholder="email"
+            // placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            error={!!emailError}
+            error={!!emailLinkError}
             autoComplete="off"
+            label="email"
+            color="info"
           ></TextField>
-          <TextField
+          {/* <TextField
             placeholder="password"
             type={"password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={!!emailError}
-          ></TextField>
-          {(emailError ?? emailLinkError)?.message && (
+          ></TextField> */}
+          {emailLinkError?.message && (
             <Typography color={"error"} align="center">
-              {(emailError ?? emailLinkError)?.message}
+              {emailLinkError?.message}
             </Typography>
           )}
-          <Box display="flex" justifyContent={"start"} gap={1}>
+          {/* <Box display="flex" justifyContent={"start"} gap={1}>
             <Link
               variant="body2"
               color={"rgb(155,155,164)"}
@@ -120,8 +122,8 @@ const AuthUI = ({ url }: Props) => {
             >
               Forgot Password?
             </Link>
-          </Box>
-          <Box display={"flex"} justifyContent="center">
+          </Box> */}
+          {/* <Box display={"flex"} justifyContent="center">
             <LoadingButton
               loading={sending}
               variant="contained"
@@ -129,17 +131,17 @@ const AuthUI = ({ url }: Props) => {
             >
               Login
             </LoadingButton>
-          </Box>
+          </Box> */}
           <Box display={"flex"} justifyContent="center">
             <LoadingButton
               loading={sending}
               variant="contained"
               onClick={onEmailLinkSignIn}
             >
-              Link Auth
+              Verify
             </LoadingButton>
           </Box>
-          <Box display="flex" justifyContent={"center"} gap={1}>
+          {/* <Box display="flex" justifyContent={"center"} gap={1}>
             <Typography variant="body2" color={"rgb(155,155,164)"}>
               Create a Password
             </Typography>
@@ -150,7 +152,7 @@ const AuthUI = ({ url }: Props) => {
             >
               here
             </Link>
-          </Box>
+          </Box> */}
         </Stack>
         <Box my={1} mt={2}>
           <Typography align="center">OR</Typography>
@@ -166,7 +168,7 @@ const AuthUI = ({ url }: Props) => {
           </IconButton>
         </Box>
       </Stack>
-      <RegistrationForDialog
+      {/* <RegistrationForDialog
         open={showRegistrationForm}
         onClose={() => setShowRegistrationForm(false)}
       />
@@ -174,7 +176,7 @@ const AuthUI = ({ url }: Props) => {
         open={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
         url={url}
-      />
+      /> */}
     </Box>
   );
 };
