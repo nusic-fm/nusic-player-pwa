@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { LoadingButton } from "@mui/lab";
 import RegistrationForDialog from "../RegistrationForDialog";
+import ForgotPassword from "./ForgotPassword";
 
 type Props = {
   url: string;
@@ -26,6 +27,7 @@ const AuthUI = ({ url }: Props) => {
   const [signInWithEmailAndPassword, , emailLoading, emailError] =
     useSignInWithEmailAndPassword(auth);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [sendSignInLinkToEmail, sending, emailLinkError] =
     useSendSignInLinkToEmail(auth);
   const [signInWithGoogle, , googleLoading, googleError] =
@@ -34,21 +36,21 @@ const AuthUI = ({ url }: Props) => {
   const [sendEmailVerification, sendingVerification, verificationError] =
     useSendEmailVerification(auth);
 
-  // const checkForEmailAuth = async () => {
-  //   if (isSignInWithEmailLink(auth, window.location.href)) {
-  //     let email = window.localStorage.getItem("email");
-  //     if (!email) {
-  //       // User opened the link on a different device. To prevent session fixation
-  //       // attacks, ask the user to provide the associated email again. For example:
-  //       email = window.prompt("Please provide your email for confirmation");
-  //     }
-  //     if (email) {
-  //       await signInWithEmailLink(email, window.location.href);
-  //       window.localStorage.removeItem("email");
-  //       window.location.replace("");
-  //     }
-  //   }
-  // };
+  const checkForEmailAuth = async () => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem("email");
+      if (!email) {
+        // User opened the link on a different device. To prevent session fixation
+        // attacks, ask the user to provide the associated email again. For example:
+        email = window.prompt("Please provide your email for confirmation");
+      }
+      if (email) {
+        await signInWithEmailLink(email, window.location.href);
+        window.localStorage.removeItem("email");
+        window.location.replace("");
+      }
+    }
+  };
   const onEmailSignIn = async () => {
     if (!email.length || !password.length) {
       alert("Please fill both email and password.");
@@ -61,24 +63,26 @@ const AuthUI = ({ url }: Props) => {
         alert("Verification email has been sent to your email address");
       }
     }
-    // if (!email) {
-    //   alert("Enter the email");
-    //   return;
-    // }
-    // const isSuccess = await sendSignInLinkToEmail(email, {
-    //   url,
-    //   handleCodeInApp: true,
-    // });
-    // if (isSuccess) {
-    //   window.localStorage.setItem("email", email);
-    //   alert("Email has been sent");
-    // }
   };
-  // useEffect(() => {
-  //   if (!user) {
-  //     checkForEmailAuth();
-  //   }
-  // }, []);
+
+  const onEmailLinkSignIn = async () => {
+    if (!email) {
+      alert("Enter the email");
+      return;
+    }
+    const isSuccess = await sendSignInLinkToEmail(email, {
+      url,
+    });
+    if (isSuccess) {
+      window.localStorage.setItem("email", email);
+      alert("Email has been sent");
+    }
+  };
+  useEffect(() => {
+    if (!user) {
+      checkForEmailAuth();
+    }
+  }, []);
 
   return (
     <Box>
@@ -90,6 +94,7 @@ const AuthUI = ({ url }: Props) => {
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             error={!!emailError}
+            autoComplete="off"
           ></TextField>
           <TextField
             placeholder="password"
@@ -108,6 +113,7 @@ const AuthUI = ({ url }: Props) => {
               variant="body2"
               color={"rgb(155,155,164)"}
               sx={{ cursor: "pointer" }}
+              onClick={() => setShowForgotPassword(true)}
             >
               Forgot Password?
             </Link>
@@ -119,6 +125,15 @@ const AuthUI = ({ url }: Props) => {
               onClick={onEmailSignIn}
             >
               Login
+            </LoadingButton>
+          </Box>
+          <Box display={"flex"} justifyContent="center">
+            <LoadingButton
+              loading={sending}
+              variant="contained"
+              onClick={onEmailLinkSignIn}
+            >
+              Link Auth
             </LoadingButton>
           </Box>
           <Box display="flex" justifyContent={"center"} gap={1}>
@@ -151,6 +166,11 @@ const AuthUI = ({ url }: Props) => {
       <RegistrationForDialog
         open={showRegistrationForm}
         onClose={() => setShowRegistrationForm(false)}
+      />
+      <ForgotPassword
+        open={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        url={url}
       />
     </Box>
   );
