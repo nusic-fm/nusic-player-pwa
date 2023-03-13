@@ -154,7 +154,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  onClick={() => setShowDrawer(true)}
+                  onClick={() => router.push(`/profile`)}
                   label="Profile"
                   icon={
                     // <MenuRoundedIcon
@@ -184,7 +184,13 @@ export default function MyApp(props: MyAppProps) {
                   <ListItemText>Profile</ListItemText>
                 </ListItemButton>
               </List> */}
-              <AuthUI />
+              <AuthUI
+                url={
+                  typeof window === "undefined"
+                    ? ""
+                    : `${window.location.origin}/profile`
+                }
+              />
             </Drawer>
           </AudioPlayerProvider>
         </Web3ReactProvider>
