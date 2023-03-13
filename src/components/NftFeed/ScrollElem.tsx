@@ -110,7 +110,7 @@ const ScrollElem = ({
       // wavesurfer.backend()
     });
     // wavesurfer.on('play')
-    wavesurfer.load(song.streamUrl);
+    // wavesurfer.load(song.streamUrl);
     wavesurferInstances.current[waveformId] = wavesurfer;
   };
 
