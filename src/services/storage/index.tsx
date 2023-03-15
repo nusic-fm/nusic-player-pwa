@@ -17,3 +17,17 @@ export const uploadFromUrl = async (url: string, name: string) => {
   console.log("uploaded the file: ", performance.now() - old);
   return dUrl;
 };
+
+export const uploadFromFile = async (
+  file: File,
+  name: string,
+  contentType: string
+) => {
+  const storageRef = ref(storage, name);
+  const metadata = {
+    contentType,
+  };
+  // 'file' comes from the Blob or File API
+  await uploadBytes(storageRef, file, metadata);
+  console.log("Uploaded");
+};
