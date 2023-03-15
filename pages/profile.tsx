@@ -66,15 +66,17 @@ const Profile = (props: Props) => {
 
   if (!user && !loading) {
     return (
-      <Drawer anchor="bottom" open>
-        <AuthUI
-          url={
-            typeof window === "undefined"
-              ? ""
-              : `${window.location.origin}/profile`
-          }
-        />
-      </Drawer>
+      <Box sx={{ bgcolor: "black", minHeight: "100vh" }}>
+        <Drawer anchor="bottom" open>
+          <AuthUI
+            url={
+              typeof window === "undefined"
+                ? ""
+                : `${window.location.origin}/profile`
+            }
+          />
+        </Drawer>
+      </Box>
     );
   }
 
@@ -99,7 +101,7 @@ const Profile = (props: Props) => {
   // }
 
   return (
-    <Box p={2}>
+    <Box p={2} sx={{ bgcolor: "black", minHeight: "100vh" }}>
       <Box display={"flex"} gap={2} alignItems="center">
         <Typography variant="h6">Profile</Typography>
         <IconButton onClick={() => setShowEditForm(true)}>
@@ -114,7 +116,7 @@ const Profile = (props: Props) => {
         </Stack>
       )}
       {userDoc && user && (
-        <Stack sx={{ bgcolor: "black", minHeight: "100vh" }} mt={2} gap={2}>
+        <Stack mt={2} gap={2}>
           <Box display={"flex"} gap={2} alignItems="center">
             {userDoc.avatarUrl && (
               <img
