@@ -26,6 +26,7 @@ import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
 import AuthUI from "../src/components/AuthUI";
 // import Player from "../src/components/Player";
+import { Web3Provider } from "@ethersproject/providers";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -38,11 +39,8 @@ interface MyAppProps extends AppProps {
 //   return <Component {...pageProps} />
 // }
 
-const POLLING_INTERVAL = 12000;
-export const getLibrary = (provider: any): ethers.providers.Web3Provider => {
-  const library = new ethers.providers.Web3Provider(provider);
-  library.pollingInterval = POLLING_INTERVAL;
-  return library;
+export const getLibrary = (provider: any): Web3Provider => {
+  return new Web3Provider(provider);
 };
 
 export default function MyApp(props: MyAppProps) {

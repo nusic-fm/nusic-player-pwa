@@ -27,6 +27,7 @@ import { UserDoc } from "../src/models/User";
 import { getUserDoc, updateUserProfile } from "../src/services/db/user.service";
 import { auth } from "../src/services/firebase.service";
 import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
+import LinkAccounts from "../src/components/AuthUI/LinkAccounts";
 
 type Props = {};
 
@@ -78,6 +79,10 @@ const Profile = (props: Props) => {
         </Drawer>
       </Box>
     );
+  }
+
+  if (user?.isAnonymous && !loading) {
+    return <LinkAccounts user={user} />;
   }
 
   // if (user.emailVerified === false) {

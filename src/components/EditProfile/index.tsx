@@ -18,6 +18,7 @@ import { uploadFromFile } from "../../services/storage";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import { updateUserProfile } from "../../services/db/user.service";
 import { UserDoc } from "../../models/User";
+import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
 
 type Props = {
   open: boolean;
@@ -189,31 +190,63 @@ const EditProfile = ({ open, onClose, uid, userDoc }: Props) => {
             placeholder="Instagram Url"
             value={profileObj?.instagramUrl}
             onChange={(e) => onChangeHandler("instagramUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <img src="/social/instagram.png" alt="" width={32} />
+              ),
+            }}
           />
           <TextField
             placeholder="Twitter Url"
             value={profileObj?.twitterUrl}
             onChange={(e) => onChangeHandler("twitterUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <img src="/social/twitter.png" alt="" width={32} />
+              ),
+            }}
           />
           <TextField
             placeholder="Discord Url"
             value={profileObj?.discordUrl}
             onChange={(e) => onChangeHandler("discordUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <img src="/social/discord-icon.png" alt="" width={32} />
+              ),
+            }}
           />
           <TextField
             placeholder="Tiktok Url"
             value={profileObj?.tiktokUrl}
             onChange={(e) => onChangeHandler("tiktokUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <img src="/social/tiktok.png" alt="" width={32} />
+              ),
+            }}
           />
           <TextField
             placeholder="Spotify Url"
             value={profileObj?.spotifyUrl}
             onChange={(e) => onChangeHandler("spotifyUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <img src="/social/spotify.png" alt="" width={32} />
+              ),
+            }}
           />
           <TextField
             placeholder="Website Url"
             value={profileObj?.websiteUrl}
             onChange={(e) => onChangeHandler("websiteUrl", e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <LanguageOutlinedIcon
+                  sx={{ width: 32, height: 32, color: "#c4c4c4" }}
+                />
+              ),
+            }}
           />
         </Stack>
       </DialogContent>
