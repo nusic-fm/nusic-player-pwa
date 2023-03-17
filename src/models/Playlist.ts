@@ -1,5 +1,5 @@
 export interface PlayListSong {
-  address: string;
+  songId: string;
 }
 export interface Playlist {
   id: string;

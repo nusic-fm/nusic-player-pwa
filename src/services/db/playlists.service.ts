@@ -1,4 +1,5 @@
 import {
+  addDoc,
   arrayRemove,
   arrayUnion,
   collection,
@@ -7,6 +8,7 @@ import {
   getDocs,
   increment,
   limit,
+  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -16,11 +18,11 @@ import { Playlist, PlayListSong } from "../../models/Playlist";
 import { SongDoc, Song } from "../../models/Song";
 import { db } from "../firebase.service";
 
-const getPlaylists = async (): Promise<Playlist[]> => {
+const getTopPlaylists = async (): Promise<Playlist[]> => {
   const q = query(
     collection(db, "playlists"),
-    where("totalLikes", ">", 0),
-    // orderBy("audioFileUrl", "asc"),
+    // where("totalLikes", ">", 0),
+    orderBy("totalLikes", "desc"),
     limit(5)
   );
   const querySnapshots = await getDocs(q);
@@ -40,54 +42,51 @@ const getPlaylist = async (id: string): Promise<Playlist | null> => {
   return null;
 };
 
-const savePlaylist = async (
-  account: string,
-  playlistSongs: PlayListSong[],
-  name: string
+const createPlaylistDb = async (
+  name: string,
+  userId: string,
+  playlistSong: PlayListSong
+): Promise<string> => {
+  const c = collection(db, "playlists");
+  const ss = await addDoc(c, { name, songs: arrayUnion(playlistSong), userId });
+  return ss.id;
+};
+
+const saveToPlaylistDb = async (
+  id: string,
+  playlistSongs: PlayListSong[]
 ): Promise<void> => {
-  const d = doc(db, "playlists", account);
+  const d = doc(db, "playlists", id);
   const ss = await getDoc(d);
   if (ss.exists()) {
-    await updateDoc(d, { songs: arrayUnion(...playlistSongs), name });
+    await updateDoc(d, { songs: arrayUnion(...playlistSongs) });
   } else {
-    await setDoc(d, { songs: arrayUnion(...playlistSongs), name });
+    alert("Playlist doesn't exists");
+    // await setDoc(d, { songs: arrayUnion(...playlistSongs), name });
   }
 };
 
-const changePlaylistName = async (
-  account: string,
-  name: string
-): Promise<void> => {
-  const d = doc(db, "playlists", account);
+const changePlaylistName = async (id: string, name: string): Promise<void> => {
+  const d = doc(db, "playlists", id);
   const ss = await getDoc(d);
   if (ss.exists()) {
     await updateDoc(d, { name });
   } else {
-    await setDoc(d, { name });
-  }
-};
-const addToPlaylistDb = async (
-  account: string,
-  playlistSong: PlayListSong
-): Promise<void> => {
-  const d = doc(db, "playlists", account);
-  const ss = await getDoc(d);
-  if (ss.exists()) {
-    await updateDoc(d, { songs: arrayUnion(playlistSong) });
-  } else {
-    await setDoc(d, { songs: arrayUnion(playlistSong) });
+    alert("Playlist doesn't exists");
+    // await setDoc(d, { name });
   }
 };
 
 const removeToPlaylistDb = async (
-  account: string,
+  id: string,
   playlistSong: PlayListSong
 ): Promise<void> => {
-  const d = doc(db, "playlists", account);
+  const d = doc(db, "playlists", id);
   const ss = await getDoc(d);
   if (ss.exists()) {
     await updateDoc(d, { songs: arrayRemove(playlistSong) });
   } else {
+    alert("Playlist doesn't exists");
   }
 };
 
@@ -100,10 +99,10 @@ const addLikeDb = async (playlistAddress: string, userAddress: string) => {
 };
 
 export {
-  getPlaylists,
+  getTopPlaylists,
   getPlaylist,
-  savePlaylist,
-  addToPlaylistDb,
+  saveToPlaylistDb,
+  createPlaylistDb,
   changePlaylistName,
   addLikeDb,
   removeToPlaylistDb,
