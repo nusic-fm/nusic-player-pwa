@@ -7,24 +7,20 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   CssBaseline,
-  Drawer,
   Paper,
 } from "@mui/material";
 // import { Head } from "next/document";
 import theme from "../src/theme";
 import { Web3ReactProvider } from "@web3-react/core";
-import { ethers } from "ethers";
 import { AudioPlayerProvider } from "react-use-audio-player";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 // import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
-import AuthUI from "../src/components/AuthUI";
 // import Player from "../src/components/Player";
 import { Web3Provider } from "@ethersproject/providers";
 
@@ -52,16 +48,19 @@ export default function MyApp(props: MyAppProps) {
   const router = useRouter();
 
   const [value, setValue] = useState<number>();
-  const [showDrawer, setShowDrawer] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
     if (router.pathname === "/") {
       setValue(0);
+    } else if (router.pathname === "/library") {
+      setValue(1);
     } else if (router.pathname === "/discover") {
       setValue(2);
     } else if (router.pathname.startsWith("/market")) {
       setValue(3);
+    } else if (router.pathname.startsWith("/profile")) {
+      setValue(4);
     }
   }, [router.isReady, router.pathname]);
 
@@ -123,7 +122,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
                 <BottomNavigationAction
-                  onClick={() => setShowDrawer(true)}
+                  onClick={() => router.push(`/library`)}
                   label="Saved"
                   icon={
                     <FavoriteBorderRoundedIcon
@@ -166,30 +165,6 @@ export default function MyApp(props: MyAppProps) {
                 ></BottomNavigationAction>
               </BottomNavigation>
             </Paper>
-            <Drawer
-              anchor="bottom"
-              open={showDrawer}
-              onClose={() => setShowDrawer(false)}
-            >
-              {/* <List>
-                <ListItemButton onClick={() => router.push(`/profile`)}>
-                  <ListItemIcon>
-                    <AccountCircleRoundedIcon
-                      fontSize="small"
-                      sx={{ color: "rgba(255, 255, 255, 0.7)" }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText>Profile</ListItemText>
-                </ListItemButton>
-              </List> */}
-              <AuthUI
-                url={
-                  typeof window === "undefined"
-                    ? ""
-                    : `${window.location.origin}/profile`
-                }
-              />
-            </Drawer>
           </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}
