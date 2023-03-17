@@ -53,6 +53,7 @@ const Library = ({}: Props) => {
   return (
     <Box minHeight={"100vh"} sx={{ bgcolor: "black" }} p={2}>
       <Stack gap={2}>
+        <Typography variant="h6">My Library</Typography>
         {loading ? (
           <Skeleton variant="rounded" />
         ) : (
