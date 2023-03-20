@@ -24,11 +24,21 @@ const LinkAccounts = ({ user }: Props) => {
         email = window.prompt("Please provide your email for confirmation");
       }
       if (email) {
-        const credential = EmailAuthProvider.credentialWithLink(
-          email,
-          window.location.href
-        );
-        await linkWithCredential(user, credential);
+        try {
+          const credential = EmailAuthProvider.credentialWithLink(
+            email,
+            window.location.href
+          );
+          await linkWithCredential(user, credential);
+        } catch (e: any) {
+          if (e.code === "auth/email-already-in-use") {
+            alert(
+              `${email} is already in use by another account, please provide a different email`
+            );
+            router.push("/profile");
+            return;
+          }
+        }
         router.push("/profile", undefined, { shallow: true });
         window.localStorage.removeItem("email");
       }

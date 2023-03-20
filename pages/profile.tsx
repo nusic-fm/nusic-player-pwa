@@ -50,7 +50,7 @@ const Profile = (props: Props) => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.isAnonymous === false) {
       fetchUserDoc(user.uid);
     } else if (!authLoading) {
       setLoading(false);
@@ -64,6 +64,10 @@ const Profile = (props: Props) => {
   //   setShowEditForm(false);
   // }
   // };
+
+  if (user?.isAnonymous && !loading) {
+    return <LinkAccounts user={user} />;
+  }
 
   if (!user && !loading) {
     return (
@@ -79,10 +83,6 @@ const Profile = (props: Props) => {
         </Drawer>
       </Box>
     );
-  }
-
-  if (user?.isAnonymous && !loading) {
-    return <LinkAccounts user={user} />;
   }
 
   // if (user.emailVerified === false) {
