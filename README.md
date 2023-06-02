@@ -10,6 +10,9 @@ npm run dev
 yarn dev
 ```
 
+<!-- /Users/logeshrajappa/work/nusic-streaming/nusic-player-pwa/music-nft-indexer-9aaa2-firebase-adminsdk-gb3io-8d20e209a5 -->
+<!-- name,artist,blockNo,bpm,collectionName,description,key,nativeAudioUrl,nativeContent,nativeImageUrl,owner,tokenAdderss,tokenId,tokendIds,path -->
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.

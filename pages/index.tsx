@@ -30,11 +30,7 @@ const Index = () => {
       {isMobile === false && <Box height={"100vh"} width={200}></Box>}
       <Box height={"100vh"} width="100%">
         {songs.length ? (
-          <NftFeed
-            songs={songs}
-            addToPlaylist={async (id: string) => {}}
-            onFeedClose={() => {}}
-          />
+          <NftFeed songs={songs} onFeedClose={() => {}} />
         ) : songsLoading ? (
           <Box
             display={"flex"}

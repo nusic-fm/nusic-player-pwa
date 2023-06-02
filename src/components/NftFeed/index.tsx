@@ -1,24 +1,71 @@
 import { Box } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useState } from "react";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useAuthState } from "react-firebase-hooks/auth";
+// import { useAudioPlayer } from "react-use-audio-player";
 // import { useSpring, animated } from "react-spring";
 // import useGesture from "../../hooks/useGesture";
 // import useScan from "../../hooks/useScan";
 // import useWindowSize from "../../hooks/useWindowSize";
 import { SongDoc } from "../../models/Song";
+import {
+  createPlaylistDb,
+  saveToPlaylistDb,
+} from "../../services/db/playlists.service";
+import { addToUserPlaylist } from "../../services/db/user.service";
+import { auth } from "../../services/firebase.service";
+import PlaylistModal from "../PlaylistModal";
 import ScrollElem from "./ScrollElem";
 
 type Props = {
   songs: SongDoc[];
   onFeedClose: () => void;
-  addToPlaylist: (songId: string) => Promise<void>;
 };
 
-const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
+const NftFeed = ({ songs, onFeedClose }: Props) => {
   const [songId, setSongId] = useState<string>();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [user, authLoading] = useAuthState(auth);
   // const { load, playing } = useAudioPlayer();
+  const [showPlaylists, setShowPlaylists] = useState(false);
+  const [selectedSongId, setSelectedSongId] = useState<string>();
+
+  const onAddToPlaylist = async (songId: string) => {
+    if (!user) {
+      alert("Please login");
+      return;
+    }
+    setSelectedSongId(songId);
+    setShowPlaylists(true);
+  };
+
+  const onPlaylistSelect = async (
+    playlistId: string,
+    isCreate: boolean = false,
+    playlistName: string = ""
+  ) => {
+    if (!user || !selectedSongId) return;
+    if (isCreate) {
+      try {
+        const newPlaylistId = await createPlaylistDb(playlistName, user.uid, {
+          songId: selectedSongId,
+        });
+        await addToUserPlaylist(user?.uid, newPlaylistId, {
+          name: playlistName,
+        });
+      } catch (e: any) {
+        alert(e.message);
+      }
+    } else {
+      await saveToPlaylistDb(playlistId, [{ songId: selectedSongId }]);
+    }
+    alert("Added to Playlist");
+    setShowPlaylists(false);
+    // TODO
+    // playlists
+    // user/playlists
+    // await addToUserPlaylist(user?.uid, songId, {});
+  };
 
   const wavesurferInstances = useRef<{
     [key: string]: WaveSurfer;
@@ -86,12 +133,21 @@ const NftFeed = ({ songs, onFeedClose, addToPlaylist }: Props) => {
             onFeedClose={onFeedClose}
             inView={inView}
             isPlaying={isPlaying}
-            addToPlaylist={addToPlaylist}
+            onAddToPlaylist={onAddToPlaylist}
             wavesurferInstances={wavesurferInstances}
             togglePlayPause={togglePlayPause}
+            user={user}
           />
         ))}
       </Box>
+      {user && (
+        <PlaylistModal
+          open={showPlaylists}
+          uid={user.uid}
+          onPlaylistSelect={onPlaylistSelect}
+          onClose={() => setShowPlaylists(false)}
+        />
+      )}
     </Box>
   );
 };

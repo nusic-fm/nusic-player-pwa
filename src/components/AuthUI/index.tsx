@@ -1,75 +1,89 @@
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { getAuth, signOut } from "firebase/auth";
-import { useState } from "react";
+import { isSignInWithEmailLink, signInAnonymously } from "firebase/auth";
+import { useEffect, useState } from "react";
 import {
   useAuthState,
-  useSignInWithEmailAndPassword,
+  useSendEmailVerification,
+  useSignInWithEmailLink,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { useWeb3React } from "@web3-react/core";
 
-type Props = {};
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { WalletLinkConnector } from "@web3-react/walletlink-connector";
+import WalletConnectors from "./WalletConnectors";
+import EmailLink from "./EmailLink";
+import { auth } from "../../services/firebase.service";
 
-const AuthUI = (props: Props) => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const auth = getAuth();
+type Props = {
+  url: string;
+};
+
+const AuthUI = ({ url }: Props) => {
   const [user, loading, error] = useAuthState(auth);
-  const [signInWithEmailAndPassword, , emailLoading, emailError] =
-    useSignInWithEmailAndPassword(auth);
-
+  // const [signInWithEmailAndPassword, , emailLoading, emailError] =
+  //   useSignInWithEmailAndPassword(auth);
+  // const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  // const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [signInWithGoogle, , googleLoading, googleError] =
     useSignInWithGoogle(auth);
+  const [signInWithEmailLink] = useSignInWithEmailLink(auth);
+  const [sendEmailVerification, sendingVerification, verificationError] =
+    useSendEmailVerification(auth);
+  const router = useRouter();
+  const { mode } = router.query;
 
-  const onEmailSignIn = async () => {
-    if (!email.length || !password.length) {
-      alert("Please fill both email and password.");
-      return;
+  const {
+    activate,
+    deactivate,
+    account,
+    error: walletConnectError,
+  } = useWeb3React();
+  const [showWallets, setShowWallets] = useState(false);
+
+  const checkForEmailAuth = async () => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem("email");
+      if (!email) {
+        // User opened the link on a different device. To prevent session fixation
+        // attacks, ask the user to provide the associated email again. For example:
+        email = window.prompt("Please provide your email for confirmation");
+      }
+      if (email) {
+        await signInWithEmailLink(email, window.location.href);
+        router.push("/profile", undefined, { shallow: true });
+        window.localStorage.removeItem("email");
+      }
     }
-    signInWithEmailAndPassword(email, password);
   };
 
-  if (user) {
-    return (
-      <Box p={2}>
-        <Typography>Name: {user.displayName}</Typography>
-        <Typography>Email: {user.email}</Typography>
-        <Box display={"flex"} justifyContent="center" mt={2}>
-          <Button onClick={() => signOut(auth)} variant="contained">
-            Sign Out
-          </Button>
-        </Box>
-      </Box>
-    );
-  }
+  const onConnectWallet = async () => {
+    setShowWallets(true);
+  };
+
+  const onSignInUsingWallet = async (
+    connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
+  ) => {
+    await activate(connector, (e) => {});
+    await signInAnonymously(auth);
+    setShowWallets(false);
+  };
+
+  useEffect(() => {
+    if (!user) {
+      checkForEmailAuth();
+    }
+  }, [user]);
+
   return (
     <Box>
-      <Stack p={2}>
-        <Stack gap={2} alignContent="center" justifyContent={"center"}>
-          <TextField
-            placeholder="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!emailError}
-          ></TextField>
-          <TextField
-            placeholder="password"
-            type={"password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!emailError}
-          ></TextField>
-          <Typography color={"error"} align="center">
-            {emailError?.code}
-          </Typography>
-          <Box display={"flex"} justifyContent="center">
-            <Button variant="contained" onClick={onEmailSignIn}>
-              Log In
-            </Button>
-          </Box>
-        </Stack>
-        <Box my={1} mt={2}>
+      <Stack p={2} gap={2}>
+        <EmailLink url={url} />
+        <Box my={1}>
           <Typography align="center">OR</Typography>
         </Box>
         <Box display={"flex"} justifyContent="center">
@@ -82,7 +96,27 @@ const AuthUI = (props: Props) => {
             />
           </IconButton>
         </Box>
+        <Divider />
+        <Box display={"flex"} justifyContent="center">
+          <Button onClick={onConnectWallet} variant="outlined" color="info">
+            Connect Wallet
+          </Button>
+        </Box>
       </Stack>
+      <WalletConnectors
+        open={showWallets}
+        onSignInUsingWallet={onSignInUsingWallet}
+      />
+
+      {/* <RegistrationForDialog
+        open={showRegistrationForm}
+        onClose={() => setShowRegistrationForm(false)}
+      />
+      <ForgotPassword
+        open={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        url={url}
+      /> */}
     </Box>
   );
 };

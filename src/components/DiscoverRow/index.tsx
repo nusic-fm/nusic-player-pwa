@@ -23,7 +23,7 @@ const DiscoverRow = ({ song, onTogglePlay, isPlaying, onRowClick }: Props) => {
       gap={1}
       onClick={() => onRowClick(song.tokenAddress, song.tokenId)}
     >
-      <img src={song.posterUrl} alt="test" width={60} height={60}></img>
+      <img src={song.posterUrl} alt="" width={60} height={60}></img>
       <Box width={"80%"}>
         <Typography variant="body2">{song.name}</Typography>
         <Typography variant="caption">{song.artist}</Typography>

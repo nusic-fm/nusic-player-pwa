@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { useInViewport } from "../../hooks/useInViewport";
 import { LoadingButton } from "@mui/lab";
 import { fmtMSS } from "../../helpers";
+import { User } from "firebase/auth";
 // import SeekBar from "../SeekBar";
 
 type Props = {
@@ -26,11 +27,12 @@ type Props = {
   onFeedClose: () => void;
   inView: (index: string) => void;
   isPlaying: boolean;
-  addToPlaylist: (songId: string) => Promise<void>;
+  onAddToPlaylist: (songId: string) => Promise<void>;
   wavesurferInstances: MutableRefObject<{
     [key: string]: WaveSurfer;
   }>;
   togglePlayPause: () => void;
+  user?: User | null;
 };
 
 const ScrollElem = ({
@@ -38,9 +40,10 @@ const ScrollElem = ({
   onFeedClose,
   inView,
   isPlaying,
-  addToPlaylist,
+  onAddToPlaylist,
   wavesurferInstances,
   togglePlayPause,
+  user,
 }: Props) => {
   const waveformId = `waveform-${song.id}`;
 
@@ -110,7 +113,7 @@ const ScrollElem = ({
       // wavesurfer.backend()
     });
     // wavesurfer.on('play')
-    wavesurfer.load(song.streamUrl);
+    // wavesurfer.load(song.streamUrl);
     wavesurferInstances.current[waveformId] = wavesurfer;
   };
 
@@ -269,11 +272,11 @@ const ScrollElem = ({
 
         <IconButton
           onClick={async () => {
-            setIsLoading(true);
-            await addToPlaylist(song.id);
-            setIsLoading(false);
+            // setIsLoading(true);
+            onAddToPlaylist(song.id);
+            // setIsLoading(false);
           }}
-          disabled
+          disabled={!user}
         >
           <PlaylistAddRoundedIcon />
           {/* {isLoading ? <CircularProgress /> : } */}

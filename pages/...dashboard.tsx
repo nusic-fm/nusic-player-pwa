@@ -28,7 +28,7 @@ import { MoralisNftData } from "../src/models/MoralisNFT";
 import { Playlist } from "../src/models/Playlist";
 import { Song } from "../src/models/Song";
 import {
-  addToPlaylistDb,
+  // addToPlaylistDb,
   getPlaylist,
 } from "../src/services/db/playlists.service";
 import { addSongToDb } from "../src/services/db/songs.service";
@@ -157,9 +157,9 @@ const Dashboard = (props: Props) => {
   const addToPlaylist = async (id: string) => {
     if (account) {
       try {
-        await addToPlaylistDb(account, {
-          address: id,
-        });
+        // await addToPlaylistDb(account, {
+        //   address: id,
+        // });
       } catch (e) {
         setSnackbarMessage(
           "Unable to Add to the Playlist, please try again later"

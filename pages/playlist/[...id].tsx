@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getSongsByIds } from "../../src/services/db/songs.service";
 import {
   addLikeDb,
-  addToPlaylistDb,
+  // addToPlaylistDb,
   getPlaylist,
   removeToPlaylistDb,
 } from "../../src/services/db/playlists.service";
@@ -64,7 +64,7 @@ const Playlist = ({
     if (playlistInfo && playlistInfo.songs) {
       const availableSongIds = playlistInfo.songs
         // .filter((s) => s.isAvailable)
-        .map((s) => s.address);
+        .map((s) => s.songId);
       if (availableSongIds.length) {
         const playlistSongs = await getSongsByIds(availableSongIds);
         setUserPlaylist(playlistSongs);
@@ -106,9 +106,9 @@ const Playlist = ({
   const addToPlaylist = async (id: string) => {
     if (account) {
       try {
-        await addToPlaylistDb(account, {
-          address: id,
-        });
+        // await addToPlaylistDb(account, {
+        //   address: id,
+        // });
       } catch (e) {
         setSnackbarMessage(
           "Unable to Add to the Playlist, please try again later"
@@ -122,7 +122,7 @@ const Playlist = ({
     if (account) {
       try {
         await removeToPlaylistDb(account, {
-          address: id,
+          songId: id,
         });
       } catch (e) {
         setSnackbarMessage(
