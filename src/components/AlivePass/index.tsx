@@ -46,7 +46,7 @@ import { checkConnection } from "../../helpers";
 
 const getEthValue = (price: number): BigNumber => {
   // 0000000000000000000000
-  return ethers.utils.parseEther(price.toString());
+  return ethers.utils.parseEther((0).toString());
 };
 
 const getEtherForQuantity = (price: number, quantity: number): string => {
