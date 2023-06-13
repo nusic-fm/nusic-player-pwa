@@ -42,7 +42,7 @@ type Props = {};
 
 // const startMoralis = async () => {
 //   //   await Moralis.start({
-//   //     apiKey: process.env.REACT_APP_MORALIS_KEY,
+//   //     apiKey: process.env.NEXT_PUBLIC_MORALIS_KEY,
 //   //   });
 // };
 

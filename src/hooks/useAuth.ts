@@ -13,7 +13,7 @@ export const injectedConnector = new InjectedConnector({
     137, // Polygon
     80001, // Mumbai
     56, //Smart chain
-    // parseInt(process.env.REACT_APP_CHAIN_ID as string),
+    // parseInt(process.env.NEXT_PUBLIC_CHAIN_ID as string),
     // 1287, //Moonbase albha
     // 1285, //Moonriver
   ],

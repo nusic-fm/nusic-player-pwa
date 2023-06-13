@@ -17,7 +17,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           /> */}
           <link
-            href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Arimo:wght@200;300;400;500;600;700;800&display=swap"
             rel="stylesheet"
           ></link>
           <meta name="emotion-insertion-point" content="" />
