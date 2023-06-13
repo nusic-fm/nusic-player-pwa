@@ -7,5 +7,6 @@ export interface MoralisNftData {
   metadata?: string | undefined;
   name: string;
   symbol: string;
-  normalized_metadata: { animation_url?: string; name?: string };
+  normalized_metadata: { animation_url?: string; name?: string; image: string };
+  artworkUrl: string | undefined;
 }
