@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import {
@@ -40,6 +41,7 @@ import { MoralisNftData } from "../../models/MoralisNFT";
 // import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { checkConnection } from "../../helpers";
+import { CoinbaseWallet, Injected } from "../../hooks/useWalletConnectors";
 // import { CoinbaseWallet, Injected } from "./hooks/useWalletConnectors";
 // import { Injected } from "./hooks/useWalletConnectors";
 // import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -134,6 +136,12 @@ const AlivePass = ({ buyRef }: Props) => {
   };
 
   useEffect(() => {
+    if (showNftsDrawer && !account) {
+      checkAutoLogin();
+    }
+  }, [showNftsDrawer]);
+
+  useEffect(() => {
     // fetchEthPrice();
   }, []);
 
@@ -205,20 +213,22 @@ const AlivePass = ({ buyRef }: Props) => {
     });
   };
 
-  // const checkAutoLogin = async () => {
-  //   const provider = new ethers.providers.Web3Provider(
-  //     (window as any).ethereum
-  //   );
-  //   const accounts = await provider.listAccounts();
-  //   if (accounts.length) {
-  //     const eth = (window as any).ethereum;
-  //     if (eth.isMetaMask) {
-  //       onSignInUsingWallet(Injected);
-  //     } else if (eth.isCoinbaseBrowser) {
-  //       onSignInUsingWallet(CoinbaseWallet);
-  //     }
-  //   }
-  // };
+  const checkAutoLogin = async () => {
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const accounts = await provider.listAccounts();
+    if (accounts.length) {
+      const eth = (window as any).ethereum;
+      if (eth.isMetaMask) {
+        onSignInUsingWallet(Injected);
+      } else if (eth.isCoinbaseBrowser) {
+        onSignInUsingWallet(CoinbaseWallet);
+      }
+    } else {
+      setShowWalletConnector(true);
+    }
+  };
 
   // useEffect(() => {
   //   checkAutoLogin();
@@ -239,7 +249,7 @@ const AlivePass = ({ buyRef }: Props) => {
     >
       <Box p={2}>
         <Box>
-          <Box position={"relative"} mt={5}>
+          {/* <Box position={"relative"} mt={5}>
             <Box display={"flex"} justifyContent="center">
               <Box
                 width={280}
@@ -264,7 +274,7 @@ const AlivePass = ({ buyRef }: Props) => {
                 It&apos;s Alive !!!
               </Typography>
             </Stack>
-          </Box>
+          </Box> */}
         </Box>
         <Box mt={"180px"} pb={6}>
           <Grid container>
@@ -338,7 +348,7 @@ const AlivePass = ({ buyRef }: Props) => {
                     sx={{ width: { xs: "100%", md: "50%" } }}
                     onClick={onMint}
                   >
-                    Mint
+                    Mint With ETH
                   </LoadingButton>
                   {/* <Tooltip title="Connect your Wallet to receive the NFT directly into your address"> */}
                   <Button
@@ -392,12 +402,14 @@ const AlivePass = ({ buyRef }: Props) => {
                       endIcon={<ArrowForwardIcon />}
                       color="info"
                       size="small"
-                      onClick={() => setShowNftsDrawer(true)}
+                      href="//alive.nusic.fm"
+                      target={"_blank"}
+                      // onClick={() => setShowNftsDrawer(true)}
                     >
-                      Try with your NFT
+                      Learn More
                     </Button>
                   </Box>
-                  {showNftsDrawer && (
+                  {showNftsDrawer && account && (
                     <Drawer
                       anchor={"bottom"}
                       hideBackdrop
@@ -419,20 +431,20 @@ const AlivePass = ({ buyRef }: Props) => {
             <Grid item md={3}></Grid>
           </Grid>
         </Box>
-        <Stack mt={5} gap={1} alignItems="center">
-          <Typography variant="h4" align="center" fontWeight={700}>
+        <Stack mt={5} gap={1} alignItems="center" justifyContent={"center"}>
+          <Typography variant="h3" align="center" fontWeight={900}>
             <img
               src="/nusic_white.png"
               alt=""
               width={100}
               style={{ marginRight: "20px" }}
             />
-            Alive Collective
+            Alive Collective - nGenesis Edition
           </Typography>
           <Typography variant="body1" align="center" color={"gray"}>
-            nGenesis Edition
+            Join the Movement that is Powering the Evolution of Music
           </Typography>
-          <Button
+          {/* <Button
             size="small"
             sx={{ mt: 1 }}
             onClick={() => {
@@ -444,18 +456,65 @@ const AlivePass = ({ buyRef }: Props) => {
             }}
           >
             Learn More
-          </Button>
+          </Button> */}
+        </Stack>
+        <Stack
+          // mt={10}
+          mx={{ md: "20%" }}
+          p={2}
+          gap={2}
+          // sx={{
+          //   boxShadow:
+          //     "rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset",
+          // }}
+        >
+          {/* <Typography align="center" variant="h4" fontWeight={700}>
+            Customize Your Membership NFT
+          </Typography> */}
+          <Box mt={1} borderRadius={"6px"}>
+            {/* <Typography variant="h5" align="center">
+              Inject your PFP into the NUSIC alive pass
+            </Typography>
+            <Typography align="center" color={"gray"}>
+              Connect your favorite NFT directly to your NUSIC Alive Pass
+            </Typography> */}
+            {/* <Typography variant="h3">How?</Typography> */}
+            <Box mt={2}>
+              <Typography variant="h6" fontWeight={700}>
+                Inject your PFP into the NUSIC alive pass
+              </Typography>
+              <Typography variant="body1" color={"gray"}>
+                Connect your favorite NFT directly to your NUSIC Alive Pass
+              </Typography>
+              <Typography variant="body1" color={"gray"}>
+                Show the world what community you are part of
+              </Typography>
+            </Box>
+          </Box>
+          <Box mt={4}>
+            <img src="/alive/pfp.gif" alt="" width={"100%"} />
+          </Box>
+          <Box display={"flex"} justifyContent="center" gap={2}>
+            <Button
+              variant="outlined"
+              // size="small"
+              color="secondary"
+              sx={{ width: "200px" }}
+              onClick={() => setShowNftsDrawer(true)}
+            >
+              Free Trial
+            </Button>
+          </Box>
         </Stack>
         <Stack mt={5} pt={4} gap={1} alignItems="center" ref={stackRef}>
           <Typography variant="h4" align="center" fontWeight={700}>
-            First Access to
             <img
               src="/nusic_white.png"
               alt=""
               width={100}
               style={{ marginLeft: "20px", marginRight: "20px" }}
             />
-            Protocol
+            Core Values
           </Typography>
         </Stack>
         <Stack
@@ -478,10 +537,12 @@ const AlivePass = ({ buyRef }: Props) => {
             gap={2}
           >
             <img src="/alive/1.png" alt="" width={50} />
-            <Typography variant="h4">Scale Your Music NFTs</Typography>
+            <Typography variant="h4" fontWeight={900}>
+              True <br /> Transparency
+            </Typography>
             <Typography>
-              Move beyond cryptographic references to files to true immutable
-              ownership
+              Cryptographic rails ensure that all non-confidential data is
+              publicly available
             </Typography>
           </Stack>
           <Stack
@@ -496,10 +557,12 @@ const AlivePass = ({ buyRef }: Props) => {
             gap={2}
           >
             <img src="/alive/2.png" alt="" width={50} />
-            <Typography variant="h4">Decentralized Streaming</Typography>
+            <Typography variant="h4" fontWeight={900}>
+              Artist <br /> Centric
+            </Typography>
             <Typography>
-              A decentralized content delivery network dedicated to music
-              streaming & IP protection
+              Artists have full control to administer metadata in collaboration
+              with fanbase
             </Typography>
           </Stack>
           <Stack
@@ -514,14 +577,16 @@ const AlivePass = ({ buyRef }: Props) => {
             gap={2}
           >
             <img src="/alive/3.png" alt="" width={50} />
-            <Typography variant="h4">Earn $NUSIC Incentives</Typography>
+            <Typography variant="h4" fontWeight={900}>
+              Evolutionary <br /> Protocol
+            </Typography>
             <Typography>
-              Music NFT creators & holders, listeners & node operators all
-              receive $NUSIC tokens
+              Leverages exising infrastructure as solution to music&apos;s big
+              problem
             </Typography>
           </Stack>
         </Stack>
-        <Box display={"flex"} justifyContent="center">
+        {/* <Box display={"flex"} justifyContent="center">
           <Stack
             mt={5}
             width={{
@@ -540,46 +605,9 @@ const AlivePass = ({ buyRef }: Props) => {
               </Typography>
             </Box>
           </Stack>
-        </Box>
-        <Stack
-          mt={10}
-          mx={{ md: "20%" }}
-          p={2}
-          gap={2}
-          // sx={{
-          //   boxShadow:
-          //     "rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset",
-          // }}
-        >
-          <Typography align="center" variant="h4" fontWeight={700}>
-            Customize Your Membership NFT
-          </Typography>
-          <Box mt={1} borderRadius={"6px"}>
-            {/* <Typography variant="h5" align="center">
-              Inject your PFP into the NUSIC alive pass
-            </Typography>
-            <Typography align="center" color={"gray"}>
-              Connect your favorite NFT directly to your NUSIC Alive Pass
-            </Typography> */}
-            <Typography variant="h3">How?</Typography>
-            <Box mt={2}>
-              <Typography variant="h6" fontWeight={700}>
-                Inject your PFP into the NUSIC alive pass
-              </Typography>
-              <Typography variant="body1" color={"gray"}>
-                Connect your favorite NFT directly to your NUSIC Alive Pass
-              </Typography>
-              <Typography variant="body1" color={"gray"}>
-                Show the world what community you are part of
-              </Typography>
-            </Box>
-          </Box>
-          <Box mt={4}>
-            <img src="/alive/pfp.gif" alt="" width={"100%"} />
-          </Box>
-        </Stack>
+        </Box> */}
         {/* Placeholder */}
-        <Box mt={10}>
+        {/* <Box mt={10}>
           <Typography variant="h4" align="center" fontWeight={700}>
             Priority Access For 3 Years
           </Typography>
@@ -669,7 +697,7 @@ const AlivePass = ({ buyRef }: Props) => {
               Wednesday, June 21st 2023 - Friday, June 20th 2026
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
       </Box>
 
       <Box mt={20}>

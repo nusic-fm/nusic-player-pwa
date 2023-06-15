@@ -14,8 +14,9 @@ import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import AudioFileOutlinedIcon from "@mui/icons-material/AudioFileOutlined";
 import DonutSmallOutlinedIcon from "@mui/icons-material/DonutSmallOutlined";
 import EastIcon from "@mui/icons-material/East";
+import { useRouter } from "next/router";
 
-type Props = { onNavSelection: (_section: string) => void };
+type Props = {};
 
 const styles = {
   paper: {
@@ -23,7 +24,9 @@ const styles = {
   },
 } as any;
 
-const NusicNavBar = ({ onNavSelection }: Props) => {
+const NusicNavBar = (props: Props) => {
+  const router = useRouter();
+
   return (
     <Box
       my={5}
@@ -35,21 +38,25 @@ const NusicNavBar = ({ onNavSelection }: Props) => {
       borderRadius="10px"
     >
       <List>
-        <ListItemButton sx={{ mb: 2 }}>
+        <ListItemButton sx={{ mb: 2 }} disabled>
           <HomeRoundedIcon />
         </ListItemButton>
-        <ListItemButton sx={{ mb: 2 }}>
+        <ListItemButton sx={{ mb: 2 }} disabled>
           <PersonSearchIcon />
         </ListItemButton>
         <Divider sx={{ my: 10 }} />
-        <ListItemButton sx={{ mb: 2 }}>
+        <ListItemButton sx={{ mb: 2 }} onClick={() => router.push("/metadata")}>
           <DonutSmallOutlinedIcon />
         </ListItemButton>
-        <ListItemButton sx={{ mb: 2 }}>
+        <ListItemButton
+          disabled
+          sx={{ mb: 2 }}
+          // onClick={() => router.push("/downloads")}
+        >
           <AudioFileOutlinedIcon />
         </ListItemButton>
         <ListItemButton
-          onClick={() => onNavSelection("alive")}
+          onClick={() => router.push("/alive-pass")}
           sx={{
             mt: 12,
             background:

@@ -1,14 +1,61 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { Button, Fab, Grid, TextField, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AlivePass from "../AlivePass";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { ethers } from "ethers";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { WalletLinkConnector } from "@web3-react/walletlink-connector";
+import { checkConnection } from "../../helpers";
+import { Injected, CoinbaseWallet } from "../../hooks/useWalletConnectors";
+import { useWeb3React } from "@web3-react/core";
+import { useRouter } from "next/router";
 
 type Props = {};
 
 const LandingPage = (props: Props) => {
   const buyRef = useRef(null);
+  const { account, library, activate } = useWeb3React();
+  const router = useRouter();
+
+  const onSignInUsingWallet = async (
+    connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
+  ) => {
+    await checkConnection();
+    activate(connector, async (e) => {
+      if (e.name === "t" || e.name === "UnsupportedChainIdError") {
+        // setSnackbarMessage("Please switch to Ethereum Mainnet");
+      } else {
+        // setSnackbarMessage(e.message);
+      }
+
+      console.log(e.name, e.message);
+    });
+  };
+
+  const checkAutoLogin = async () => {
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const accounts = await provider.listAccounts();
+    if (accounts.length) {
+      const eth = (window as any).ethereum;
+      if (eth.isMetaMask) {
+        onSignInUsingWallet(Injected);
+      } else if (eth.isCoinbaseBrowser) {
+        onSignInUsingWallet(CoinbaseWallet);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (account) {
+      router.push("/alive-pass");
+    }
+  }, [account]);
 
   return (
     <Box minHeight="100vh" position={"relative"}>
@@ -34,11 +81,17 @@ const LandingPage = (props: Props) => {
             // justifyContent={"center"}
           >
             <Box>
-              <Typography variant="h3" fontWeight={700}>
-                STREAM & EARN{" "}
-                {<img src="/nusic_purple.png" alt="" width={100} />} TOKENS
+              <Typography
+                variant="h3"
+                fontWeight={700}
+                textTransform="uppercase"
+              >
+                Get More from Your Music
               </Typography>
-              <Typography>Mint an Alive Pass to be able to</Typography>
+              <Typography>
+                NUSIC is a transparent music streaming protocol which enables
+                you to discover & share a new universe of music
+              </Typography>
             </Box>
             <Stack gap={3}>
               <Typography
@@ -193,6 +246,20 @@ const LandingPage = (props: Props) => {
               </Stack>
             </Box> */}
           </Stack>
+          <Box
+            display={"flex"}
+            alignItems="center"
+            gap={2}
+            mt={"20%"}
+            mx={"20%"}
+            justifyContent="space-around"
+          >
+            <img src="/home/built_icon.png" alt="" />
+            <img src="/home/arweave_icon.png" alt="" />
+            <img src="/home/phala_icon.png" alt="" />
+            <img src="/home/op_icon.png" alt="" />
+            <img src="/home/ipfs_icon.png" alt="" />
+          </Box>
         </Grid>
         <Grid xs={12} md={4} minHeight={"100%"}>
           <Stack
@@ -234,9 +301,12 @@ const LandingPage = (props: Props) => {
               <Stack gap={2}>
                 <Button
                   variant="contained"
+                  onClick={() => {
+                    checkAutoLogin();
+                  }}
                   // sx={{ bgcolor: "#010101" }}
                   // size="small"
-                  href="/metadata"
+                  // href="/metadata"
                 >
                   Connect Wallet
                 </Button>
@@ -258,6 +328,25 @@ const LandingPage = (props: Props) => {
           </Stack>
         </Grid>
       </Grid>
+      <Stack
+        py={10}
+        sx={{
+          background: "#1b1433",
+        }}
+        gap={1}
+      >
+        <Typography variant="h3" align="center" fontWeight={900}>
+          Transparent Music Streaming Protocol
+        </Typography>
+        <Typography align="center" variant="h6">
+          Forget opaque back room deals, the new music industry is open
+        </Typography>
+        <Box display={"flex"} justifyContent="center" alignItems={"center"}>
+          <Button variant="outlined" color="secondary">
+            Learn More
+          </Button>
+        </Box>
+      </Stack>
       <AlivePass buyRef={buyRef} />
     </Box>
   );
