@@ -93,7 +93,7 @@ const LandingPage = (props: Props) => {
                 you to discover & share a new universe of music
               </Typography>
             </Box>
-            <Stack gap={3}>
+            {/* <Stack gap={3}>
               <Typography
                 variant="h6"
                 sx={{
@@ -143,8 +143,8 @@ const LandingPage = (props: Props) => {
                   Get Access Now !!!
                 </Button>
               </Box>
-            </Stack>
-            {/* <Box
+            </Stack> */}
+            <Box
               display="flex"
               gap={4}
               flexWrap="wrap"
@@ -244,7 +244,7 @@ const LandingPage = (props: Props) => {
                   </Typography>
                 </Stack>
               </Stack>
-            </Box> */}
+            </Box>
           </Stack>
           <Box
             display={"flex"}
