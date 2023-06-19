@@ -33,7 +33,21 @@ const WalletConnectors = ({ open, onSignInUsingWallet, onClose }: Props) => {
   const { error } = useWeb3React();
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      slotProps={{
+        root: {
+          backgroundColor: "rgba(0,0,30,0.4)",
+          backdropFilter: "blur(4px)",
+        } as any,
+      }}
+      sx={{
+        backgroundColor: "rgba(0,0,30,0.4)",
+        backdropFilter: "blur(8px)",
+      }}
+    >
       <DialogTitle>
         Connect Wallet
         <DialogContentText sx={{ mt: 1 }} variant="caption">
