@@ -65,25 +65,25 @@ const Metadata = (props: Props) => {
     checkAutoLogin();
   }, []);
 
-  const onInsert = async (nft: SelectedNftDetails | MoralisNftData) => {
-    setIsLoading(true);
-    const url = nft.artworkUrl;
-    const res = await axios.post(
-      `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`,
-      {},
-      { responseType: "arraybuffer" }
-    );
-    let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
-    let srcValue = "data:image/png;base64," + base64ImageString;
-    setImageFromServer(srcValue);
-    setIsLoading(false);
-  };
+  // const onInsert = async (nft: SelectedNftDetails | MoralisNftData) => {
+  //   setIsLoading(true);
+  //   const url = nft.artworkUrl;
+  //   const res = await axios.post(
+  //     `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`,
+  //     {},
+  //     { responseType: "arraybuffer" }
+  //   );
+  //   let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
+  //   let srcValue = "data:image/png;base64," + base64ImageString;
+  //   setImageFromServer(srcValue);
+  //   setIsLoading(false);
+  // };
 
   return (
     <WithNavbar>
       <Box>
         <Box width={"calc(100vw - 160px)"}>
-          <NftsByWallet onConnect={() => {}} onInsert={onInsert} />
+          <NftsByWallet onConnect={() => {}} />
           <Stack mt={10} alignItems="center">
             <Box
               my={2}

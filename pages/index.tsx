@@ -5,6 +5,7 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  Drawer,
   Fab,
   Grid,
   IconButton,
@@ -34,6 +35,13 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useAudioPlayer } from "react-use-audio-player";
 import PauseIcon from "@mui/icons-material/Pause";
 import WalletConnectors from "../src/components/AlivePass/WalletConnector";
+import { AliveUserDoc } from "../src/models/User";
+import {
+  getOrCreateUserDoc,
+  updateUserDoc,
+} from "../src/services/db/user.service";
+import SaveIcon from "@mui/icons-material/Save";
+import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
 
 type Props = {};
 
@@ -46,6 +54,10 @@ const Index = (props: Props) => {
   const [nfts, setNfts] = useState<IZoraData[]>([]);
   const { load, playing, togglePlayPause, loading, pause } = useAudioPlayer();
   const [playIndex, setPlayIndex] = useState<number>(-1);
+  const [userDoc, setUserDoc] = useState<AliveUserDoc>();
+  const [changedName, setChangedName] = useState<string>();
+  const [changedBio, setChangedBio] = useState<string>();
+  const [updating, setUpdating] = useState<boolean>();
 
   useEffect(() => {
     if (playIndex !== -1) {
@@ -62,10 +74,10 @@ const Index = (props: Props) => {
 
   useEffect(() => {
     if (account) {
-      debugger;
       //   fetcMusicNfts();
       //   fetchNfts();
       setShowConnector(false);
+      fetchUserDoc(account);
       fetchAllNfts();
     } else {
       checkAutoLogin();
@@ -79,6 +91,10 @@ const Index = (props: Props) => {
   //     );
   //     setMusicNfts(_musicTokens);
   //   };
+  const fetchUserDoc = async (walletAddress: string) => {
+    const _userDoc = await getOrCreateUserDoc(walletAddress);
+    setUserDoc(_userDoc);
+  };
 
   const fetchAllNfts = async () => {
     // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
@@ -183,6 +199,20 @@ const Index = (props: Props) => {
     // setIsLoading(false);
   };
 
+  const onUpdateUserDoc = async (obj: { bio?: string; userName?: string }) => {
+    if (account) {
+      setUpdating(true);
+      await updateUserDoc(account, obj);
+      await fetchUserDoc(account);
+      if (obj.bio) {
+        setChangedBio(undefined);
+      } else if (obj.userName) {
+        setChangedName(undefined);
+      }
+      setUpdating(false);
+    }
+  };
+
   return (
     <Box my={2}>
       <Grid container>
@@ -205,7 +235,22 @@ const Index = (props: Props) => {
               >
                 {" "}
               </Box>
-              <TextField size="small" placeholder="username" />
+              <TextField
+                size="small"
+                placeholder="username"
+                value={changedName || userDoc?.userName}
+                onChange={(e) => setChangedName(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      disabled={!changedName || updating}
+                      onClick={() => onUpdateUserDoc({ userName: changedName })}
+                    >
+                      <SaveIcon fontSize="small" />
+                    </IconButton>
+                  ),
+                }}
+              />
               {account && (
                 <Chip
                   label={`${account.slice(0, 6)}...${account.slice(
@@ -215,7 +260,23 @@ const Index = (props: Props) => {
               )}
               <Stack width={"100%"} gap={1} my={2}>
                 <Typography>Bio</Typography>
-                <TextField multiline minRows={3} maxRows={8} />
+                <TextField
+                  multiline
+                  value={changedBio || userDoc?.bio}
+                  onChange={(e) => setChangedBio(e.target.value)}
+                  minRows={3}
+                  maxRows={8}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        disabled={!changedBio || updating}
+                        onClick={() => onUpdateUserDoc({ bio: changedBio })}
+                      >
+                        <SaveIcon fontSize="small" />
+                      </IconButton>
+                    ),
+                  }}
+                />
               </Stack>
             </Stack>
             <Box m={2}>
@@ -421,6 +482,20 @@ const Index = (props: Props) => {
         onSignInUsingWallet={onSignInUsingWallet}
         open={showConnector}
       />
+      <Drawer
+        anchor={"right"}
+        hideBackdrop
+        open
+        // onClose={() => setShowNftsDrawer(false)}
+      >
+        <NftsByWallet
+          onConnect={() => {}}
+          onInsert={(nft: any) => {}}
+          onClose={() => {
+            // setShowNftsDrawer(false);
+          }}
+        />
+      </Drawer>
     </Box>
   );
 };

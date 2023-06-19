@@ -9,7 +9,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { Playlist } from "../../models/Playlist";
-import { UserDoc } from "../../models/User";
+import { AliveUserDoc, UserDoc } from "../../models/User";
 import { db } from "../firebase.service";
 
 const DB_NAME = "users";
@@ -52,4 +52,32 @@ const addToUserPlaylist = async (
   await setDoc(d, songObj);
 };
 
-export { getUserDoc, updateUserProfile, getUserPlaylists, addToUserPlaylist };
+const getOrCreateUserDoc = async (
+  walletAddress: string
+): Promise<AliveUserDoc> => {
+  const d = doc(db, DB_NAME, walletAddress);
+  const docRef = await getDoc(d);
+  if (docRef.exists()) {
+    return docRef.data() as AliveUserDoc;
+  } else {
+    await setDoc(d, { walletAddress });
+    return { walletAddress };
+  }
+};
+
+const updateUserDoc = async (
+  walletAddress: string,
+  userDoc: { bio?: string; userName?: string }
+): Promise<void> => {
+  const d = doc(db, DB_NAME, walletAddress);
+  await updateDoc(d, userDoc);
+};
+
+export {
+  getUserDoc,
+  updateUserProfile,
+  getUserPlaylists,
+  addToUserPlaylist,
+  getOrCreateUserDoc,
+  updateUserDoc,
+};

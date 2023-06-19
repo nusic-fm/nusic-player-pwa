@@ -35,7 +35,7 @@ const WalletConnectors = ({ open, onSignInUsingWallet, onClose }: Props) => {
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={() => {}}
       fullWidth
       slotProps={{
         root: {

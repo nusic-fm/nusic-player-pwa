@@ -4,123 +4,50 @@ import { Box } from "@mui/system";
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { SelectedNftDetails, NftDetails } from "../../../models";
-import { MoralisNftData } from "../../../models/MoralisNFT";
-import { createUrlFromCid } from "../../../helpers";
 import Close from "@mui/icons-material/Close";
+import { getNftsMetadataByWallet } from "../../../helpers/zora";
+import { IZoraData } from "../../../models/zora";
 
 type Props = {
   onConnect: () => void;
-  onInsert: (nft: SelectedNftDetails | MoralisNftData) => void;
+  onInsert?: (nft: IZoraData) => void;
   onClose?: () => void;
 };
 
-const NftsByWallet = ({ onConnect, onInsert, onClose }: Props) => {
+const NftsByWallet = ({ onConnect, onClose }: Props) => {
   const { account } = useWeb3React();
-  const [tokens, setTokens] = useState<MoralisNftData[]>([]);
+  const [tokens, setTokens] = useState<IZoraData[]>([]);
   // const [previewNft, setPreviewNft] = useState<SelectedNftDetails>(); //TODO
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [insertUrl, setInsertUrl] = useState<string>();
 
-  const onFetchNftPreview = async (
-    tokenUri: string
-  ): Promise<NftDetails | null> => {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_SERVER}/nft/`,
-      {
-        tokenUri,
-      }
+  const onInsert = async (url: string) => {
+    // setIsLoading(true);
+    const res = await axios.post(
+      `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`,
+      {},
+      { responseType: "arraybuffer" }
     );
-    if (response) {
-      const data = response.data as NftDetails;
-      return data;
-    } else {
-      return null;
-    }
+    let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
+    let srcValue = "data:image/png;base64," + base64ImageString;
+    setInsertUrl(srcValue);
+    // setIsLoading(false);
   };
 
-  const onNftSelect = async (nftData: MoralisNftData) => {
-    if (nftData.token_uri) {
-      setIsPreviewLoading(true);
-      try {
-        const metadata = await onFetchNftPreview(nftData.token_uri);
-        if (metadata) {
-          const newTokens = tokens.map((t) => {
-            if (
-              t.token_address === nftData.token_address &&
-              t.token_id === nftData.token_id
-            ) {
-              return { ...t, artworkUrl: metadata.artworkUrl };
-            }
-            return t;
-          });
-          setTokens(newTokens);
-          // setPreviewNft({
-          //   address: nftData.token_address,
-          //   artworkUrl: metadata.artworkUrl,
-          //   audioFileUrl: metadata.audioFileUrl,
-          //   name: metadata.name,
-          //   tokenId: nftData.token_id,
-          //   format: metadata.format,
-          //   tokenUri: nftData.token_uri,
-          // });
-        } else {
-          alert("Unable to retrieve the NFT metadata, please try again later");
-        }
-      } catch (e: any) {
-        alert("Unable to retrieve the NFT metadata, please try again later");
-      } finally {
-        setIsPreviewLoading(false);
-      }
-    }
+  const fetchAllNfts = async () => {
+    // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+    if (!account) return;
+    const _tokens = await getNftsMetadataByWallet(
+      "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+    );
+    setTokens(_tokens);
   };
 
-  const fetchNfts = async () => {
-    console.log("running");
-    // const moralisEndpoint = `https://deep-index.moralis.io/api/v2/${account}/nft?chain=eth&format=decimal&normalizeMetadata=true`;
-    const options = {
-      method: "GET",
-      url: `https://deep-index.moralis.io/api/v2/0xA0cb079D354b66188f533A919d1c58cd67aFe398/nft`,
-      params: {
-        chain: "eth",
-        format: "decimal",
-        limit: "30",
-        // cursor: pageDetails[pageId - 1]?.cursor,
-        normalizeMetadata: "true",
-      },
-      headers: {
-        accept: "application/json",
-        "X-API-Key": process.env.NEXT_PUBLIC_MORALIS_KEY,
-      },
-    };
-    const response = await axios.request(options as any);
-    const json = response.data;
-    if (json.result?.length) {
-      const filteredRecords = (json.result as MoralisNftData[])
-        .filter(
-          (x) => x.contract_type === "ERC721" && x.token_uri
-          // &&
-          // (x.normalized_metadata.name
-          //   ? x.normalized_metadata.animation_url
-          //   : true)
-        )
-        .map((r) => {
-          if (r.normalized_metadata.image) {
-            return {
-              ...r,
-              artworkUrl: createUrlFromCid(r.normalized_metadata.image),
-            };
-          } else {
-            return r;
-          }
-        });
-      console.log(filteredRecords);
-      setTokens(filteredRecords);
-    }
-  };
+  const fetchNewCard = async () => {};
 
   useEffect(() => {
     if (account) {
-      fetchNfts();
+      fetchAllNfts();
     }
   }, [account]);
 
@@ -144,13 +71,13 @@ const NftsByWallet = ({ onConnect, onInsert, onClose }: Props) => {
           alignItems={"center"}
         >
           <Typography variant="h6" fontWeight={700}>
-            Select an NFT from your wallet
+            Try before Purchase
           </Typography>
           <IconButton onClick={onClose}>
             <Close />
           </IconButton>
         </Box>
-        <Box display={"flex"} gap={1} sx={{ overflowX: "auto" }}>
+        <Box display={"flex"} gap={1} sx={{ overflowX: "auto" }} width={600}>
           {tokens.length === 0 && (
             <Typography color={"yellow"} align="center" width={"100%"} my={5}>
               NFTs not found in your wallet
@@ -171,15 +98,15 @@ const NftsByWallet = ({ onConnect, onInsert, onClose }: Props) => {
                   </Typography>
                 </Tooltip>
                 <Tooltip
-                  title={`Token ID: ${nft.token_id}`}
+                  title={`Token ID: ${nft.tokenId}`}
                   placement="bottom-start"
                 >
                   <Typography variant="body1" noWrap>
-                    #{nft.token_id}
+                    #{nft.tokenId}
                   </Typography>
                 </Tooltip>
               </Box>
-              {nft.artworkUrl ? (
+              {nft.image?.mediaEncoding?.thumbnail ? (
                 <Box
                   display={"flex"}
                   alignItems="center"
@@ -188,7 +115,7 @@ const NftsByWallet = ({ onConnect, onInsert, onClose }: Props) => {
                   height={"100%"}
                 >
                   <img
-                    src={nft.artworkUrl}
+                    src={nft.image?.mediaEncoding?.thumbnail}
                     alt=""
                     width={150}
                     height={150}
@@ -232,18 +159,42 @@ const NftsByWallet = ({ onConnect, onInsert, onClose }: Props) => {
                   color="info"
                   size="small"
                   onClick={() => {
-                    if (nft.artworkUrl) {
-                      onInsert(nft);
-                    } else {
-                      onNftSelect(nft);
+                    if (nft.image?.mediaEncoding?.original) {
+                      onInsert(nft.image.mediaEncoding.original);
+                    } else if (nft.image?.mediaEncoding?.thumbnail) {
+                      onInsert(nft.image.mediaEncoding.thumbnail);
                     }
+                    // setInsertUrl(nft.image?.mediaEncoding?.thumbnail);
                   }}
                 >
-                  {nft.artworkUrl ? "Insert" : "Refresh"}
+                  Insert
                 </Button>
               </Box>
             </Stack>
           ))}
+        </Box>
+        <Box
+          sx={{ bgcolor: "#0f0f0f" }}
+          p={4}
+          display={"flex"}
+          justifyContent="center"
+          position={"relative"}
+        >
+          <Box width={{ xs: "100%", md: "400px" }}>
+            {insertUrl ? (
+              <img src={insertUrl} alt="" width={"100%"} />
+            ) : (
+              <img src="/alive/new_card.png" alt="" width={"100%"} />
+            )}
+          </Box>
+        </Box>
+        <Box
+          display={"flex"}
+          justifyContent="center"
+          py={2}
+          sx={{ bgcolor: "#0f0f0f" }}
+        >
+          <Button variant="contained">Inject</Button>
         </Box>
       </Box>
     );
