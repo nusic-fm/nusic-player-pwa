@@ -30,7 +30,7 @@ import {
 import { Injected, CoinbaseWallet } from "../src/hooks/useWalletConnectors";
 import { SelectedNftDetails } from "../src/models";
 import { MoralisNftData } from "../src/models/MoralisNFT";
-import { IZoraData } from "../src/models/zora";
+import { IZoraData } from "../src/models/TypeZora";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useAudioPlayer } from "react-use-audio-player";
 import PauseIcon from "@mui/icons-material/Pause";

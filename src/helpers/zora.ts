@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IZoraData } from "../models/zora";
+import { IZoraData } from "../models/TypeZora";
 import { musicTokensInWalletQuery, tokensInWalletQuery } from "./queries";
 
 export const getMusicNftsMetadataByWallet = async (owner: string) => {

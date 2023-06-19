@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Close from "@mui/icons-material/Close";
 import { getNftsMetadataByWallet } from "../../../helpers/zora";
-import { IZoraData } from "../../../models/zora";
+import { IZoraData } from "../../../models/TypeZora";
 
 type Props = {
   onConnect: () => void;
