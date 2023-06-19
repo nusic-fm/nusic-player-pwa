@@ -23,7 +23,7 @@ const theme = createTheme({
   },
   typography: {
     button: {
-      fontFamily: '"Space Mono" , sans-serif',
+      fontFamily: "Arimo , sans-serif",
     },
     // h4: {
     //   fontFamily: '"BenchNine"',
@@ -31,7 +31,7 @@ const theme = createTheme({
     allVariants: {
       color: "#ffffff",
     },
-    fontFamily: `"Space Mono" , sans-serif`,
+    fontFamily: `Arimo , sans-serif`,
   },
 });
 

@@ -92,7 +92,7 @@ export default function MyApp(props: MyAppProps) {
                 <Player songs={[]} songIndexProps={[0, () => {}]} />
               </Paper>
             )} */}
-            <Paper
+            {/* <Paper
               sx={{
                 position: "fixed",
                 bottom: 0,
@@ -164,7 +164,7 @@ export default function MyApp(props: MyAppProps) {
                   }
                 ></BottomNavigationAction>
               </BottomNavigation>
-            </Paper>
+            </Paper> */}
           </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}
