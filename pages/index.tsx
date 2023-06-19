@@ -59,6 +59,8 @@ const Index = (props: Props) => {
   const [changedBio, setChangedBio] = useState<string>();
   const [updating, setUpdating] = useState<boolean>();
 
+  const [showNftsDrawer, setShowNftsDrawer] = useState<boolean>();
+
   useEffect(() => {
     if (playIndex !== -1) {
       load({
@@ -185,19 +187,19 @@ const Index = (props: Props) => {
     }
   };
 
-  const onInsert = async (nft: SelectedNftDetails | MoralisNftData) => {
-    // setIsLoading(true);
-    const url = nft.artworkUrl;
-    const res = await axios.post(
-      `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`, //TODO
-      {},
-      { responseType: "arraybuffer" }
-    );
-    let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
-    let srcValue = "data:image/png;base64," + base64ImageString;
-    // setImageFromServer(srcValue);
-    // setIsLoading(false);
-  };
+  // const onInsert = async (nft: SelectedNftDetails | MoralisNftData) => {
+  //   // setIsLoading(true);
+  //   const url = nft.artworkUrl;
+  //   const res = await axios.post(
+  //     `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`, //TODO
+  //     {},
+  //     { responseType: "arraybuffer" }
+  //   );
+  //   let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
+  //   let srcValue = "data:image/png;base64," + base64ImageString;
+  //   // setImageFromServer(srcValue);
+  //   // setIsLoading(false);
+  // };
 
   const onUpdateUserDoc = async (obj: { bio?: string; userName?: string }) => {
     if (account) {
@@ -282,7 +284,12 @@ const Index = (props: Props) => {
             <Box m={2}>
               <Box display={"flex"} justifyContent="space-between">
                 <Typography variant="h6">Alive Pass</Typography>
-                <Button variant="outlined" size="small" color="info">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="info"
+                  onClick={() => setShowNftsDrawer(true)}
+                >
                   Inject PFP
                 </Button>
               </Box>
@@ -485,14 +492,14 @@ const Index = (props: Props) => {
       <Drawer
         anchor={"right"}
         hideBackdrop
-        open
-        // onClose={() => setShowNftsDrawer(false)}
+        open={showNftsDrawer}
+        onClose={() => setShowNftsDrawer(false)}
       >
         <NftsByWallet
           onConnect={() => {}}
-          onInsert={(nft: any) => {}}
+          // onInsert={(nft: any) => {}}
           onClose={() => {
-            // setShowNftsDrawer(false);
+            setShowNftsDrawer(false);
           }}
         />
       </Drawer>

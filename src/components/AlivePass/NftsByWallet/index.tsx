@@ -174,29 +174,22 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
             </Stack>
           ))}
         </Box>
-        <Box
-          sx={{ bgcolor: "#0f0f0f" }}
-          p={4}
-          display={"flex"}
-          justifyContent="center"
-          position={"relative"}
-        >
-          <Box width={{ xs: "100%", md: "400px" }}>
-            {insertUrl ? (
-              <img src={insertUrl} alt="" width={"100%"} />
-            ) : (
-              <img src="/alive/new_card.png" alt="" width={"100%"} />
-            )}
+        <Stack sx={{ bgcolor: "#0f0f0f" }} gap={2} p={2}>
+          <Typography variant="subtitle1">Preview</Typography>
+          {/* <Divider /> */}
+          <Box display={"flex"} justifyContent="center" position={"relative"}>
+            <Box width={{ xs: "100%", md: "400px" }}>
+              {insertUrl ? (
+                <img src={insertUrl} alt="" width={"100%"} />
+              ) : (
+                <img src="/alive/new_card.png" alt="" width={"100%"} />
+              )}
+            </Box>
           </Box>
-        </Box>
-        <Box
-          display={"flex"}
-          justifyContent="center"
-          py={2}
-          sx={{ bgcolor: "#0f0f0f" }}
-        >
-          <Button variant="contained">Inject</Button>
-        </Box>
+          <Box display={"flex"} justifyContent="center">
+            <Button variant="contained">Inject</Button>
+          </Box>
+        </Stack>
       </Box>
     );
 };
