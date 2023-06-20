@@ -228,7 +228,7 @@ const Index = (props: Props) => {
   };
 
   return (
-    <Box my={2} sx={{ bgcolor: "black" }}>
+    <Box py={2} sx={{ bgcolor: "black" }}>
       <Box
         display={"flex"}
         justifyContent="space-between"

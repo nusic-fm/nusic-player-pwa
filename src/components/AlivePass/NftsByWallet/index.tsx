@@ -188,7 +188,7 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
           sx={{ bgcolor: "black" }}
           gap={2}
           p={4}
-          mt={"10%"}
+          mt={2}
           borderRadius="6px"
         >
           <Typography variant="subtitle1">Preview</Typography>
