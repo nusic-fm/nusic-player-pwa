@@ -228,7 +228,7 @@ const Index = (props: Props) => {
   };
 
   return (
-    <Box my={2}>
+    <Box my={2} sx={{ bgcolor: "black" }}>
       <Box
         display={"flex"}
         justifyContent="space-between"
@@ -247,6 +247,7 @@ const Index = (props: Props) => {
               alignItems="center"
               gap={2}
               sx={{ backgroundColor: "#141414" }}
+              borderRadius="8px"
             >
               {/* <img src="" alt="pp" /> */}
               <Box
