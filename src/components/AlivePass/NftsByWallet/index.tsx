@@ -51,64 +51,55 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
     }
   }, [account]);
 
-  if (!account)
-    return (
-      <Box display={"flex"} justifyContent="center" my={6}>
-        <Button onClick={onConnect} variant="contained">
-          Connect Wallet
-        </Button>
+  return (
+    <Box sx={{ bgcolor: "#0f0f0f" }} height="100vh" p={2}>
+      <Box
+        p={1}
+        m={1}
+        // borderBottom="1px solid gray"
+        display={"flex"}
+        justifyContent="space-between"
+        alignItems={"center"}
+      >
+        <Typography variant="subtitle1" fontWeight={700}>
+          Inject your pfp
+        </Typography>
+        <IconButton onClick={onClose}>
+          <Close />
+        </IconButton>
       </Box>
-    );
-  else
-    return (
-      <Box sx={{ bgcolor: "#0f0f0f" }} height="100vh" p={2}>
-        <Box
-          p={1}
-          m={1}
-          // borderBottom="1px solid gray"
-          display={"flex"}
-          justifyContent="space-between"
-          alignItems={"center"}
-        >
-          <Typography variant="subtitle1" fontWeight={700}>
-            Inject your pfp
+      <Box
+        display={"flex"}
+        gap={1}
+        sx={{ overflowX: "auto" }}
+        width={{ xs: 350, md: 600 }}
+        mt={4}
+      >
+        {tokens.length === 0 && (
+          <Typography color={"yellow"} align="center" width={"100%"} my={5}>
+            NFTs not found in your wallet
           </Typography>
-          <IconButton onClick={onClose}>
-            <Close />
-          </IconButton>
-        </Box>
-        <Box
-          display={"flex"}
-          gap={1}
-          sx={{ overflowX: "auto" }}
-          width={{ xs: 350, md: 600 }}
-          mt={4}
-        >
-          {tokens.length === 0 && (
-            <Typography color={"yellow"} align="center" width={"100%"} my={5}>
-              NFTs not found in your wallet
-            </Typography>
-          )}
-          {tokens.map((nft, i) => (
-            <Stack
-              key={i}
-              width={180}
-              p={2}
-              gap={1}
-              // borderTop="1px solid #474747"
-            >
-              <Box>
-                <Tooltip title={nft.name} placement="bottom-start">
-                  <Typography
-                    fontWeight={900}
-                    noWrap
-                    variant="subtitle2"
-                    color={"rgba(255,255,255,0.8)"}
-                  >
-                    {nft.collectionName}
-                  </Typography>
-                </Tooltip>
-                {/* <Tooltip
+        )}
+        {tokens.map((nft, i) => (
+          <Stack
+            key={i}
+            width={180}
+            p={2}
+            gap={1}
+            // borderTop="1px solid #474747"
+          >
+            <Box>
+              <Tooltip title={nft.name} placement="bottom-start">
+                <Typography
+                  fontWeight={900}
+                  noWrap
+                  variant="subtitle2"
+                  color={"rgba(255,255,255,0.8)"}
+                >
+                  {nft.collectionName}
+                </Typography>
+              </Tooltip>
+              {/* <Tooltip
                   title={`Token ID: ${nft.tokenId}`}
                   placement="bottom-start"
                 >
@@ -116,97 +107,91 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
                     #{nft.tokenId}
                   </Typography>
                 </Tooltip> */}
-              </Box>
-              {nft.image?.mediaEncoding?.thumbnail ? (
-                <Box
-                  display={"flex"}
-                  alignItems="center"
-                  justifyContent={"center"}
-                  width="100%"
-                  height={"100%"}
-                >
-                  <img
-                    src={nft.image?.mediaEncoding?.thumbnail}
-                    alt=""
-                    width={150}
-                    height={150}
-                    style={{ borderRadius: "10px", objectFit: "cover" }}
-                  ></img>
-                </Box>
-              ) : (
-                <Box
-                  display={"flex"}
-                  alignItems="center"
-                  justifyContent={"center"}
-                  width="100%"
-                  height={"100%"}
-                >
-                  <Box
-                    width={200}
-                    height={200}
-                    display="flex"
-                    alignItems={"center"}
-                  >
-                    <Typography align="center" color={"gray"}>
-                      Image not available at this moment, you can hit Refresh to
-                      see it
-                    </Typography>
-                  </Box>
-                </Box>
-              )}
-              <Box
-                id="isnft"
-                width={"100%"}
-                display="flex"
-                justifyContent={"center"}
-                alignItems="center"
-                gap={4}
-                // mt={4}
-              >
-                {/* <Typography>is it a Music NFT?</Typography> */}
-                <Button
-                  disabled={isPreviewLoading}
-                  variant="outlined"
-                  color="info"
-                  size="small"
-                  onClick={() => {
-                    if (nft.image?.mediaEncoding?.original) {
-                      onInsert(nft.image.mediaEncoding.original);
-                    } else if (nft.image?.mediaEncoding?.thumbnail) {
-                      onInsert(nft.image.mediaEncoding.thumbnail);
-                    }
-                    // setInsertUrl(nft.image?.mediaEncoding?.thumbnail);
-                  }}
-                >
-                  Insert
-                </Button>
-              </Box>
-            </Stack>
-          ))}
-        </Box>
-        <Stack
-          sx={{ bgcolor: "black" }}
-          gap={2}
-          p={4}
-          mt={2}
-          borderRadius="6px"
-        >
-          <Typography variant="subtitle1">Preview</Typography>
-          <Box display={"flex"} justifyContent="center" position={"relative"}>
-            <Box width={{ xs: "100%", md: "400px" }}>
-              {insertUrl ? (
-                <img src={insertUrl} alt="" width={"100%"} />
-              ) : (
-                <img src="/alive/new_card.png" alt="" width={"100%"} />
-              )}
             </Box>
-          </Box>
-          <Box display={"flex"} justifyContent="center">
-            <Button variant="contained">Inject</Button>
-          </Box>
-        </Stack>
+            {nft.image?.mediaEncoding?.thumbnail ? (
+              <Box
+                display={"flex"}
+                alignItems="center"
+                justifyContent={"center"}
+                width="100%"
+                height={"100%"}
+              >
+                <img
+                  src={nft.image?.mediaEncoding?.thumbnail}
+                  alt=""
+                  width={150}
+                  height={150}
+                  style={{ borderRadius: "10px", objectFit: "cover" }}
+                ></img>
+              </Box>
+            ) : (
+              <Box
+                display={"flex"}
+                alignItems="center"
+                justifyContent={"center"}
+                width="100%"
+                height={"100%"}
+              >
+                <Box
+                  width={200}
+                  height={200}
+                  display="flex"
+                  alignItems={"center"}
+                >
+                  <Typography align="center" color={"gray"}>
+                    Image not available at this moment, you can hit Refresh to
+                    see it
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+            <Box
+              id="isnft"
+              width={"100%"}
+              display="flex"
+              justifyContent={"center"}
+              alignItems="center"
+              gap={4}
+              // mt={4}
+            >
+              {/* <Typography>is it a Music NFT?</Typography> */}
+              <Button
+                disabled={isPreviewLoading}
+                variant="outlined"
+                color="info"
+                size="small"
+                onClick={() => {
+                  if (nft.image?.mediaEncoding?.original) {
+                    onInsert(nft.image.mediaEncoding.original);
+                  } else if (nft.image?.mediaEncoding?.thumbnail) {
+                    onInsert(nft.image.mediaEncoding.thumbnail);
+                  }
+                  // setInsertUrl(nft.image?.mediaEncoding?.thumbnail);
+                }}
+              >
+                Insert
+              </Button>
+            </Box>
+          </Stack>
+        ))}
       </Box>
-    );
+      <Stack sx={{ bgcolor: "black" }} gap={2} p={4} mt={2} borderRadius="6px">
+        <Typography variant="subtitle1">Preview</Typography>
+        <Box display={"flex"} justifyContent="center" position={"relative"}>
+          <Box width={{ xs: "100%", md: "400px" }}>
+            {insertUrl ? (
+              <img src={insertUrl} alt="" width={"100%"} />
+            ) : (
+              <img src="/alive/new_card.png" alt="" width={"100%"} />
+            )}
+          </Box>
+        </Box>
+        <Box display={"flex"} justifyContent="center">
+          <Button variant="contained">Inject</Button>
+        </Box>
+      </Stack>
+    </Box>
+  );
 };
 
 export default NftsByWallet;

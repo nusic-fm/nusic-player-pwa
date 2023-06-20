@@ -50,7 +50,7 @@ import { LoadingButton } from "@mui/lab";
 type Props = {};
 
 const Index = (props: Props) => {
-  const { account, activate } = useWeb3React();
+  const { account, activate, library } = useWeb3React();
   const [showConnector, setShowConnector] = useState(false);
   //   const [tokens, setTokens] = useState<MoralisNftData[]>([]);
 
@@ -63,6 +63,7 @@ const Index = (props: Props) => {
   const [changedBio, setChangedBio] = useState<string>();
   const [changedPfp, setChangedPfp] = useState<string>();
   const [updating, setUpdating] = useState<boolean>();
+  // const [errorMsg, setErrorMsg] = useState<string>();
 
   const [showSetPfp, setShowSetPfp] = useState(false);
 
@@ -81,13 +82,47 @@ const Index = (props: Props) => {
     }
   }, [playIndex]);
 
-  useEffect(() => {
-    if (account) {
+  const alivePassOwner = async (account: string) => {
+    const nftContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
+      [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "balanceOf",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      library.getSigner()
+    );
+    const bn = await nftContract.balanceOf(account);
+    if (bn.toNumber()) {
       //   fetcMusicNfts();
       //   fetchNfts();
       setShowConnector(false);
       fetchUserDoc(account);
       fetchAllNfts();
+    } else {
+      alert("Uh oh! You don't have the NUSIC Alive Pass");
+    }
+  };
+
+  useEffect(() => {
+    if (account) {
+      alivePassOwner(account);
     } else {
       checkAutoLogin();
       setShowConnector(true);
