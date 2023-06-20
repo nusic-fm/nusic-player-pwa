@@ -18,5 +18,6 @@ export interface UserDoc {
 export type AliveUserDoc = {
   userName?: string;
   walletAddress: string;
-  bio?: string | undefined;
+  bio?: string;
+  pfp?: string;
 };

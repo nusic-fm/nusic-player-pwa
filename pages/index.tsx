@@ -4,6 +4,9 @@ import {
   Button,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Divider,
   Drawer,
   Fab,
@@ -42,6 +45,7 @@ import {
 } from "../src/services/db/user.service";
 import SaveIcon from "@mui/icons-material/Save";
 import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
+import { LoadingButton } from "@mui/lab";
 
 type Props = {};
 
@@ -57,7 +61,10 @@ const Index = (props: Props) => {
   const [userDoc, setUserDoc] = useState<AliveUserDoc>();
   const [changedName, setChangedName] = useState<string>();
   const [changedBio, setChangedBio] = useState<string>();
+  const [changedPfp, setChangedPfp] = useState<string>();
   const [updating, setUpdating] = useState<boolean>();
+
+  const [showSetPfp, setShowSetPfp] = useState(false);
 
   const [showNftsDrawer, setShowNftsDrawer] = useState<boolean>();
 
@@ -101,7 +108,10 @@ const Index = (props: Props) => {
   const fetchAllNfts = async () => {
     // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
     if (!account) return;
-    const _token = await getNftsMetadataByWallet(account);
+    const _token = await getNftsMetadataByWallet(
+      account
+      // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
+    );
     const _musicNfts = _token.filter((t) => t.metadata?.animation_url);
     const _nfts = _token.filter((t) => !t.metadata?.animation_url);
     setMusicNfts(_musicNfts);
@@ -201,22 +211,33 @@ const Index = (props: Props) => {
   //   // setIsLoading(false);
   // };
 
-  const onUpdateUserDoc = async (obj: { bio?: string; userName?: string }) => {
+  const onUpdateUserDoc = async (obj: {
+    bio?: string;
+    userName?: string;
+    pfp?: string;
+  }) => {
     if (account) {
       setUpdating(true);
       await updateUserDoc(account, obj);
       await fetchUserDoc(account);
-      if (obj.bio) {
-        setChangedBio(undefined);
-      } else if (obj.userName) {
-        setChangedName(undefined);
-      }
+      setChangedName(undefined);
+      setChangedName(undefined);
+      setChangedPfp(undefined);
       setUpdating(false);
     }
   };
 
   return (
     <Box my={2}>
+      <Box
+        display={"flex"}
+        justifyContent="space-between"
+        alignItems={"center"}
+        px={4}
+      >
+        <img src="nusic_purple.png" alt="" width={100} />
+        {/* <Button onClick={}>Logout</Button> */}
+      </Box>
       <Grid container>
         <Grid item xs={12} md={4}>
           <Stack gap={2} p={2}>
@@ -230,28 +251,59 @@ const Index = (props: Props) => {
               {/* <img src="" alt="pp" /> */}
               <Box
                 borderRadius={"50%"}
-                sx={{ backgroundColor: "gray" }}
+                sx={{
+                  background:
+                    changedPfp || userDoc?.pfp
+                      ? `url(${changedPfp || userDoc?.pfp})`
+                      : "rgba(255,255,255,0.1)",
+                  backgroundSize: "cover",
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                }}
                 p={1}
                 width={100}
                 height={100}
+                position="relative"
               >
-                {" "}
+                <Box
+                  position={"absolute"}
+                  left={0}
+                  top={0}
+                  width="100%"
+                  height="100%"
+                  display={"flex"}
+                  justifyContent="center"
+                  alignItems={"center"}
+                  sx={{
+                    ".select": { display: "none" },
+                    ":hover": { ".select": { display: "initial" } },
+                  }}
+                >
+                  <Button
+                    className="select"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => setShowSetPfp(true)}
+                  >
+                    Select
+                  </Button>
+                </Box>{" "}
               </Box>
               <TextField
                 size="small"
                 placeholder="username"
                 value={changedName || userDoc?.userName}
                 onChange={(e) => setChangedName(e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      disabled={!changedName || updating}
-                      onClick={() => onUpdateUserDoc({ userName: changedName })}
-                    >
-                      <SaveIcon fontSize="small" />
-                    </IconButton>
-                  ),
-                }}
+                // InputProps={{
+                //   endAdornment: (
+                //     <IconButton
+                //       disabled={!changedName || updating}
+                //       onClick={() => onUpdateUserDoc({ userName: changedName })}
+                //     >
+                //       <SaveIcon fontSize="small" />
+                //     </IconButton>
+                //   ),
+                // }}
               />
               {account && (
                 <Chip
@@ -268,18 +320,36 @@ const Index = (props: Props) => {
                   onChange={(e) => setChangedBio(e.target.value)}
                   minRows={3}
                   maxRows={8}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        disabled={!changedBio || updating}
-                        onClick={() => onUpdateUserDoc({ bio: changedBio })}
-                      >
-                        <SaveIcon fontSize="small" />
-                      </IconButton>
-                    ),
-                  }}
+                  // InputProps={{
+                  //   endAdornment: (
+                  //     <IconButton
+                  //       disabled={!changedBio || updating}
+                  //       onClick={() => onUpdateUserDoc({ bio: changedBio })}
+                  //     >
+                  //       <SaveIcon fontSize="small" />
+                  //     </IconButton>
+                  //   ),
+                  // }}
                 />
               </Stack>
+              <Box display={"flex"} justifyContent="center">
+                <LoadingButton
+                  loading={updating}
+                  variant="contained"
+                  color="info"
+                  size="small"
+                  disabled={!changedBio && !changedName && !changedPfp}
+                  onClick={() =>
+                    onUpdateUserDoc({
+                      bio: changedBio || userDoc?.bio,
+                      userName: changedName || userDoc?.userName,
+                      pfp: changedPfp || userDoc?.pfp,
+                    })
+                  }
+                >
+                  Save
+                </LoadingButton>
+              </Box>
             </Stack>
             <Box m={2}>
               <Box display={"flex"} justifyContent="space-between">
@@ -303,7 +373,7 @@ const Index = (props: Props) => {
           <Typography sx={{ m: 2 }} variant="h6">
             My Music Collections
           </Typography>
-          <Box display={"flex"} flexWrap="wrap" gap={2}>
+          <Box display={"flex"} gap={2} sx={{ overflowX: "auto" }}>
             {musicNfts.length === 0 && (
               <Typography align="center" px={2} mb={2} color="gray">
                 No Music NFTs found
@@ -382,7 +452,7 @@ const Index = (props: Props) => {
                   <Fab
                     // disabled={isPreviewLoading}
                     // variant="outlined"
-                    color="info"
+                    color="primary"
                     size="small"
                     onClick={() => {
                       if (i === playIndex) {
@@ -398,7 +468,7 @@ const Index = (props: Props) => {
                     }}
                   >
                     {loading && playIndex === i ? (
-                      <CircularProgress />
+                      <CircularProgress color="secondary" />
                     ) : playing && playIndex === i ? (
                       <PauseIcon />
                     ) : (
@@ -413,7 +483,12 @@ const Index = (props: Props) => {
           <Typography variant="h6" sx={{ m: 2 }}>
             Other NFT Collections
           </Typography>
-          <Box display={"flex"} flexWrap="wrap" gap={2}>
+          <Box
+            display={"flex"}
+            // flexWrap="wrap"
+            gap={2}
+            sx={{ overflowX: "auto" }}
+          >
             {nfts.length === 0 && (
               <Typography align="center" px={2} mb={2} color="gray">
                 No NFTs found
@@ -503,6 +578,71 @@ const Index = (props: Props) => {
           }}
         />
       </Drawer>
+      <Dialog open={showSetPfp} onClose={() => setShowSetPfp(false)} fullWidth>
+        <DialogTitle letterSpacing={1}>
+          Select NUSIC pfp from your collections
+        </DialogTitle>
+        <DialogContent>
+          <Box display={"flex"} gap={2} sx={{ overflowX: "auto" }} p={4}>
+            {musicNfts.map((mf) => (
+              <Stack gap={2} key={`${mf.collectionAddress}-${mf.tokenId}`}>
+                <Box
+                  display={"flex"}
+                  alignItems="center"
+                  justifyContent={"center"}
+                  width="100%"
+                  height={"100%"}
+                >
+                  <img
+                    src={mf.image?.mediaEncoding?.thumbnail || ""}
+                    alt=""
+                    //   width={150}
+                    //   height={150}
+                    style={{ borderRadius: "8px", objectFit: "cover" }}
+                  ></img>
+                </Box>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() =>
+                    setChangedPfp(mf.image?.mediaEncoding?.thumbnail || "")
+                  }
+                >
+                  Select
+                </Button>
+              </Stack>
+            ))}
+            {nfts.map((mf) => (
+              <Stack gap={2} key={`${mf.collectionAddress}-${mf.tokenId}`}>
+                <Box
+                  display={"flex"}
+                  alignItems="center"
+                  justifyContent={"center"}
+                  width="100%"
+                  height={"100%"}
+                >
+                  <img
+                    src={mf.image?.mediaEncoding?.thumbnail || ""}
+                    alt=""
+                    //   width={150}
+                    //   height={150}
+                    style={{ borderRadius: "8px", objectFit: "cover" }}
+                  ></img>
+                </Box>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() =>
+                    setChangedPfp(mf.image?.mediaEncoding?.thumbnail || "")
+                  }
+                >
+                  Select
+                </Button>
+              </Stack>
+            ))}
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

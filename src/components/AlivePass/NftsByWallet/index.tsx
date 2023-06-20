@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
@@ -39,12 +40,10 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
     if (!account) return;
     const _tokens = await getNftsMetadataByWallet(
       account
-      // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+      // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
     setTokens(_tokens);
   };
-
-  const fetchNewCard = async () => {};
 
   useEffect(() => {
     if (account) {
@@ -62,23 +61,29 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
     );
   else
     return (
-      <Box>
+      <Box sx={{ bgcolor: "#0f0f0f" }} height="100vh" p={2}>
         <Box
           p={1}
           m={1}
-          borderBottom="1px solid gray"
+          // borderBottom="1px solid gray"
           display={"flex"}
           justifyContent="space-between"
           alignItems={"center"}
         >
-          <Typography variant="h6" fontWeight={700}>
-            Try before Purchase
+          <Typography variant="subtitle1" fontWeight={700}>
+            Inject your pfp
           </Typography>
           <IconButton onClick={onClose}>
             <Close />
           </IconButton>
         </Box>
-        <Box display={"flex"} gap={1} sx={{ overflowX: "auto" }} width={600}>
+        <Box
+          display={"flex"}
+          gap={1}
+          sx={{ overflowX: "auto" }}
+          width={{ xs: 350, md: 600 }}
+          mt={4}
+        >
           {tokens.length === 0 && (
             <Typography color={"yellow"} align="center" width={"100%"} my={5}>
               NFTs not found in your wallet
@@ -87,25 +92,30 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
           {tokens.map((nft, i) => (
             <Stack
               key={i}
-              width={280}
+              width={180}
               p={2}
               gap={1}
               // borderTop="1px solid #474747"
             >
               <Box>
                 <Tooltip title={nft.name} placement="bottom-start">
-                  <Typography fontWeight={900} noWrap>
-                    {nft.name}
+                  <Typography
+                    fontWeight={900}
+                    noWrap
+                    variant="subtitle2"
+                    color={"rgba(255,255,255,0.8)"}
+                  >
+                    {nft.collectionName}
                   </Typography>
                 </Tooltip>
-                <Tooltip
+                {/* <Tooltip
                   title={`Token ID: ${nft.tokenId}`}
                   placement="bottom-start"
                 >
                   <Typography variant="body1" noWrap>
                     #{nft.tokenId}
                   </Typography>
-                </Tooltip>
+                </Tooltip> */}
               </Box>
               {nft.image?.mediaEncoding?.thumbnail ? (
                 <Box
@@ -120,7 +130,7 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
                     alt=""
                     width={150}
                     height={150}
-                    style={{ borderRadius: "50%", objectFit: "cover" }}
+                    style={{ borderRadius: "10px", objectFit: "cover" }}
                   ></img>
                 </Box>
               ) : (
@@ -174,9 +184,14 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
             </Stack>
           ))}
         </Box>
-        <Stack sx={{ bgcolor: "#0f0f0f" }} gap={2} p={2}>
+        <Stack
+          sx={{ bgcolor: "black" }}
+          gap={2}
+          p={4}
+          mt={"10%"}
+          borderRadius="6px"
+        >
           <Typography variant="subtitle1">Preview</Typography>
-          {/* <Divider /> */}
           <Box display={"flex"} justifyContent="center" position={"relative"}>
             <Box width={{ xs: "100%", md: "400px" }}>
               {insertUrl ? (
