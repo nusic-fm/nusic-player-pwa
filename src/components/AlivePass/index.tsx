@@ -418,6 +418,7 @@ const AlivePass = ({ buyRef }: Props) => {
                     >
                       <NftsByWallet
                         onConnect={() => setShowWalletConnector(true)}
+                        tokenId={""}
                         // onInsert={onInsert}
                         onClose={() => {
                           setShowNftsDrawer(false);

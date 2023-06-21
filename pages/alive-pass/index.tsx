@@ -83,7 +83,7 @@ const Metadata = (props: Props) => {
     <WithNavbar>
       <Box>
         <Box width={"calc(100vw - 160px)"}>
-          <NftsByWallet onConnect={() => {}} />
+          <NftsByWallet onConnect={() => {}} tokenId={""} />
           <Stack mt={10} alignItems="center">
             <Box
               my={2}

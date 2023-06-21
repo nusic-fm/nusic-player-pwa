@@ -24,7 +24,7 @@ function Metadata({}: Props) {
     <WithNavbar>
       <Stack>
         <Box width={"calc(100vw - 160px)"} mr={6}>
-          <NftsByWallet onConnect={() => {}} onInsert={() => {}} />
+          <NftsByWallet onConnect={() => {}} onInsert={() => {}} tokenId={""} />
         </Box>
         <Box mt={10} mr={6}>
           <AppBar position="static">
