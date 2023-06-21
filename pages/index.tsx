@@ -72,6 +72,14 @@ const Index = (props: Props) => {
   const [showNftsDrawer, setShowNftsDrawer] = useState<boolean>();
 
   useEffect(() => {
+    if (showNftsDrawer) {
+      document.getElementsByTagName("html")[0].style.overflow = "scroll";
+    } else {
+      document.getElementsByTagName("html")[0].style.overflow = "auto";
+    }
+  }, [showNftsDrawer]);
+
+  useEffect(() => {
     if (playIndex !== -1) {
       load({
         src: musicNfts[playIndex].content?.mediaEncoding?.large,
@@ -461,6 +469,7 @@ const Index = (props: Props) => {
         hideBackdrop
         open={showNftsDrawer}
         onClose={() => setShowNftsDrawer(false)}
+        sx={{ background: "rgba(0,0,0,0.8)" }}
       >
         <NftsByWallet
           onConnect={() => {}}
