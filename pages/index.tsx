@@ -46,6 +46,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
 import { LoadingButton } from "@mui/lab";
+import NftMusicCard from "../src/components/NftMusicCard";
 
 type Props = {};
 
@@ -64,6 +65,7 @@ const Index = (props: Props) => {
   const [changedPfp, setChangedPfp] = useState<string>();
   const [updating, setUpdating] = useState<boolean>();
   // const [errorMsg, setErrorMsg] = useState<string>();
+  const [tokenId, setTokenId] = useState<string>("");
 
   const [showSetPfp, setShowSetPfp] = useState(false);
 
@@ -147,59 +149,15 @@ const Index = (props: Props) => {
       account
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
+    const alivePassIndex = _token.findIndex(
+      (v) => v.collectionAddress === process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS
+    );
+    if (alivePassIndex !== -1) setTokenId(_token[alivePassIndex].tokenId);
     const _musicNfts = _token.filter((t) => t.metadata?.animation_url);
     const _nfts = _token.filter((t) => !t.metadata?.animation_url);
     setMusicNfts(_musicNfts);
     setNfts(_nfts);
   };
-
-  //   const fetchNfts = async () => {
-  //     let cursor;
-  //     do {
-  //       // const moralisEndpoint = `https://deep-index.moralis.io/api/v2/${account}/nft?chain=eth&format=decimal&normalizeMetadata=true`;
-  //       const options = {
-  //         method: "GET",
-  //         url: `https://deep-index.moralis.io/api/v2/0xA0cb079D354b66188f533A919d1c58cd67aFe398/nft`,
-  //         params: {
-  //           chain: "eth",
-  //           format: "decimal",
-  //           limit: "30",
-  //           // cursor: pageDetails[pageId - 1]?.cursor,
-  //           normalizeMetadata: "true",
-  //         },
-  //         headers: {
-  //           accept: "application/json",
-  //           "X-API-Key": process.env.NEXT_PUBLIC_MORALIS_KEY,
-  //         },
-  //       };
-  //       const response = await axios.request(options as any);
-  //       const json = response.data;
-  //       cursor = json.cursor;
-  //       if (json.result?.length) {
-  //         const filteredRecords = (json.result as MoralisNftData[])
-  //           // .filter(
-  //           //   (x) => x.contract_type === "ERC721" && x.token_uri
-  //           //   //   &&
-  //           //   //   x.normalized_metadata?.animation_url
-  //           //   //   (x.normalized_metadata.image
-  //           //   //     ? x.normalized_metadata.animation_url
-  //           //   //     : true)
-  //           // )
-  //           .map((r) => {
-  //             if (r.normalized_metadata.image) {
-  //               return {
-  //                 ...r,
-  //                 artworkUrl: createUrlFromCid(r.normalized_metadata.image),
-  //               };
-  //             } else {
-  //               return r;
-  //             }
-  //           });
-  //         console.log(filteredRecords);
-  //         setTokens(filteredRecords);
-  //       }
-  //     } while (!!cursor);
-  //   };
 
   const onSignInUsingWallet = async (
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
@@ -409,110 +367,28 @@ const Index = (props: Props) => {
           <Typography sx={{ m: 2 }} variant="h6">
             My Music Collections
           </Typography>
-          <Box display={"flex"} gap={2} sx={{ overflowX: "auto" }}>
-            {musicNfts.length === 0 && (
+          <Box
+            display={"flex"}
+            gap={2}
+            sx={{ overflowX: "auto" }}
+            width={"100%"}
+          >
+            {/* {musicNfts.length === 0 && (
               <Typography align="center" px={2} mb={2} color="gray">
                 No Music NFTs found
               </Typography>
-            )}
+            )} */}
             {musicNfts.map((musicNft, i) => (
-              <Stack
+              <NftMusicCard
                 key={i}
-                width={280}
-                p={2}
-                gap={1}
-                // borderTop="1px solid #474747"
-              >
-                <Box>
-                  <Tooltip title={musicNft.name} placement="bottom-start">
-                    <Typography fontWeight={900} noWrap>
-                      {musicNft.collectionName}
-                    </Typography>
-                  </Tooltip>
-                  <Tooltip
-                    title={`Token ID: ${musicNft.tokenId}`}
-                    placement="bottom-start"
-                  >
-                    <Typography variant="body1" noWrap>
-                      #{musicNft.tokenId}
-                    </Typography>
-                  </Tooltip>
-                </Box>
-                {musicNft.image ? (
-                  <Box
-                    display={"flex"}
-                    alignItems="center"
-                    justifyContent={"center"}
-                    width="100%"
-                    height={"100%"}
-                  >
-                    <img
-                      src={musicNft.image.mediaEncoding?.thumbnail || ""}
-                      alt=""
-                      //   width={150}
-                      //   height={150}
-                      style={{ borderRadius: "8px", objectFit: "cover" }}
-                    ></img>
-                  </Box>
-                ) : (
-                  <Box
-                    display={"flex"}
-                    alignItems="center"
-                    justifyContent={"center"}
-                    width="100%"
-                    height={"100%"}
-                  >
-                    <Box
-                      width={200}
-                      height={200}
-                      display="flex"
-                      alignItems={"center"}
-                    >
-                      <Typography align="center" color={"gray"}>
-                        Image not available at this moment, you can hit Refresh
-                        to see it
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-                <Box
-                  id="isnft"
-                  width={"100%"}
-                  display="flex"
-                  justifyContent={"center"}
-                  alignItems="center"
-                  gap={4}
-                  // mt={4}
-                >
-                  {/* <Typography>is it a Music NFT?</Typography> */}
-                  <Fab
-                    // disabled={isPreviewLoading}
-                    // variant="outlined"
-                    color="primary"
-                    size="small"
-                    onClick={() => {
-                      if (i === playIndex) {
-                        togglePlayPause();
-                      } else {
-                        setPlayIndex(i);
-                      }
-                      //   if (nft.artworkUrl) {
-                      //     onInsert(nft);
-                      //   } else {
-                      //     onNftSelect(nft);
-                      //   }
-                    }}
-                  >
-                    {loading && playIndex === i ? (
-                      <CircularProgress color="secondary" />
-                    ) : playing && playIndex === i ? (
-                      <PauseIcon />
-                    ) : (
-                      <PlayArrowIcon />
-                    )}
-                  </Fab>
-                </Box>
-              </Stack>
+                i={i}
+                loading={loading}
+                nft={musicNft}
+                playIndex={playIndex}
+                playing={playing}
+                setPlayIndex={setPlayIndex}
+                togglePlayPause={togglePlayPause}
+              />
             ))}
           </Box>
           <Divider />
@@ -531,66 +407,46 @@ const Index = (props: Props) => {
               </Typography>
             )}
             {nfts.map((nft, i) => (
-              <Stack
+              <Box
                 key={i}
-                width={280}
-                p={2}
-                gap={1}
-                // borderTop="1px solid #474747"
+                width={180}
+                sx={{
+                  background: `url(${nft.image?.mediaEncoding?.thumbnail})`,
+                  backgroundSize: "cover",
+                }}
+                borderRadius="15px"
               >
-                <Box>
-                  <Tooltip title={nft.name} placement="bottom-start">
-                    <Typography fontWeight={900} noWrap>
-                      {nft.collectionName}
-                    </Typography>
-                  </Tooltip>
-                  <Tooltip
-                    title={`Token ID: ${nft.tokenId}`}
-                    placement="bottom-start"
-                  >
-                    <Typography variant="body1" noWrap>
-                      #{nft.tokenId}
-                    </Typography>
-                  </Tooltip>
-                </Box>
-                {nft.image?.mediaEncoding?.thumbnail ? (
+                <Stack
+                  width={180}
+                  height={180}
+                  justifyContent="end"
+                  alignItems={"center"}
+                  position="relative"
+                >
                   <Box
                     display={"flex"}
+                    mb={0.5}
+                    p={0.2}
+                    px={1}
+                    sx={{ background: "rgba(0,0,0,0.8)", borderRadius: "6px" }}
                     alignItems="center"
-                    justifyContent={"center"}
-                    width="100%"
-                    height={"100%"}
+                    justifyContent={"space-between"}
+                    gap={2}
+                    maxWidth="90%"
                   >
-                    <img
-                      src={nft.image?.mediaEncoding?.thumbnail}
-                      alt=""
-                      //   width={150}
-                      //   height={150}
-                      style={{ borderRadius: "8px", objectFit: "cover" }}
-                    ></img>
-                  </Box>
-                ) : (
-                  <Box
-                    display={"flex"}
-                    alignItems="center"
-                    justifyContent={"center"}
-                    width="100%"
-                    height={"100%"}
-                  >
-                    <Box
-                      width={200}
-                      height={200}
-                      display="flex"
-                      alignItems={"center"}
-                    >
-                      <Typography align="center" color={"gray"}>
-                        Image not available at this moment, you can hit Refresh
-                        to see it
+                    <Tooltip title={nft.collectionName}>
+                      <Typography
+                        variant="caption"
+                        noWrap
+                        fontWeight={900}
+                        fontSize={"10px"}
+                      >
+                        {nft.collectionName}
                       </Typography>
-                    </Box>
+                    </Tooltip>
                   </Box>
-                )}
-              </Stack>
+                </Stack>
+              </Box>
             ))}
           </Box>
         </Grid>
@@ -608,6 +464,7 @@ const Index = (props: Props) => {
       >
         <NftsByWallet
           onConnect={() => {}}
+          tokenId={tokenId}
           // onInsert={(nft: any) => {}}
           onClose={() => {
             setShowNftsDrawer(false);

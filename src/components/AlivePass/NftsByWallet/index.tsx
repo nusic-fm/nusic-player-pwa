@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Button,
+  IconButton,
+  LinearProgress,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
@@ -8,31 +15,40 @@ import axios from "axios";
 import Close from "@mui/icons-material/Close";
 import { getNftsMetadataByWallet } from "../../../helpers/zora";
 import { IZoraData } from "../../../models/TypeZora";
+import { ethers } from "ethers";
+import { Web3Storage } from "web3.storage";
 
 type Props = {
   onConnect: () => void;
   onInsert?: (nft: IZoraData) => void;
   onClose?: () => void;
+  tokenId: string;
 };
 
-const NftsByWallet = ({ onConnect, onClose }: Props) => {
-  const { account } = useWeb3React();
+const fileNameForWeb3 = "nusic-pfp.png";
+
+const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
+  const { account, library } = useWeb3React();
   const [tokens, setTokens] = useState<IZoraData[]>([]);
   // const [previewNft, setPreviewNft] = useState<SelectedNftDetails>(); //TODO
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File>();
   const [insertUrl, setInsertUrl] = useState<string>();
 
   const onInsert = async (url: string) => {
-    // setIsLoading(true);
+    setIsPreviewLoading(true);
     const res = await axios.post(
-      `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`,
+      `${process.env.NEXT_PUBLIC_SERVER}/overlay?url=${url}`,
       {},
       { responseType: "arraybuffer" }
     );
-    let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
-    let srcValue = "data:image/png;base64," + base64ImageString;
-    setInsertUrl(srcValue);
-    // setIsLoading(false);
+    // let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
+    // setSelectedBase64(base64ImageString);
+    const blob = new Blob([res.data], { type: "image/png" });
+    const file = new File([blob], fileNameForWeb3, { type: "image/png" });
+    setSelectedFile(file);
+    setInsertUrl(URL.createObjectURL(file));
+    setIsPreviewLoading(false);
   };
 
   const fetchAllNfts = async () => {
@@ -45,6 +61,45 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
     setTokens(_tokens);
   };
 
+  const onInject = async () => {
+    const nftContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
+      [
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "_tokenURI",
+              type: "string",
+            },
+          ],
+          name: "setTokenURI",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      library.getSigner()
+    );
+    if (selectedFile) {
+      const client = new Web3Storage({
+        token: process.env.NEXT_PUBLIC_WEB3_STORAGE as string,
+      });
+      const cid = await client.put([selectedFile]);
+      const tx = await nftContract.setTokenURI(
+        tokenId,
+        `https://ipfs.io/ipfs/${cid}/${fileNameForWeb3}`
+      );
+      await tx.await();
+      alert("Successfully Injected");
+    }
+  };
+
   useEffect(() => {
     if (account) {
       fetchAllNfts();
@@ -54,7 +109,7 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
   return (
     <Box sx={{ bgcolor: "#0f0f0f" }} height="100vh" p={2}>
       <Box
-        p={1}
+        px={1}
         m={1}
         // borderBottom="1px solid gray"
         display={"flex"}
@@ -73,7 +128,7 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
         gap={1}
         sx={{ overflowX: "auto" }}
         width={{ xs: 350, md: 600 }}
-        mt={4}
+        mt={1}
       >
         {tokens.length === 0 && (
           <Typography color={"yellow"} align="center" width={"100%"} my={5}>
@@ -175,8 +230,16 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
           </Stack>
         ))}
       </Box>
-      <Stack sx={{ bgcolor: "black" }} gap={2} p={4} mt={2} borderRadius="6px">
+      <Stack
+        sx={{ bgcolor: "black" }}
+        gap={2}
+        px={4}
+        py={2}
+        mt={1}
+        borderRadius="6px"
+      >
         <Typography variant="subtitle1">Preview</Typography>
+        {isPreviewLoading && <LinearProgress />}
         <Box display={"flex"} justifyContent="center" position={"relative"}>
           <Box width={{ xs: "100%", md: "400px" }}>
             {insertUrl ? (
@@ -187,7 +250,13 @@ const NftsByWallet = ({ onConnect, onClose }: Props) => {
           </Box>
         </Box>
         <Box display={"flex"} justifyContent="center">
-          <Button variant="contained">Inject</Button>
+          <Button
+            variant="contained"
+            disabled={isPreviewLoading}
+            onClick={onInject}
+          >
+            Inject
+          </Button>
         </Box>
       </Stack>
     </Box>
