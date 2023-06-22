@@ -50,3 +50,18 @@ export const checkConnection = async () => {
     }
   }
 };
+export const convertSecondsToHHMMSS = (totalSeconds: number) => {
+  var hours = Math.floor(totalSeconds / 3600);
+  var minutes = Math.floor((totalSeconds % 3600) / 60);
+  var seconds = totalSeconds % 60;
+
+  var hhmmss = "";
+
+  if (hours > 0) {
+    hhmmss += hours + ":";
+  }
+
+  hhmmss += ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2);
+
+  return hhmmss;
+};

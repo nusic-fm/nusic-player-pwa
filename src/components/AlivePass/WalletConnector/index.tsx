@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogContentText,
   Link,
+  Box,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useWeb3React } from "@web3-react/core";
@@ -27,9 +28,15 @@ type Props = {
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
   ) => Promise<void>;
   onClose: () => void;
+  showError?: boolean;
 };
 
-const WalletConnectors = ({ open, onSignInUsingWallet, onClose }: Props) => {
+const WalletConnectors = ({
+  open,
+  onSignInUsingWallet,
+  onClose,
+  showError,
+}: Props) => {
   const { error } = useWeb3React();
 
   return (
@@ -134,6 +141,22 @@ const WalletConnectors = ({ open, onSignInUsingWallet, onClose }: Props) => {
             />
             Mint with CARD
           </Button> */}
+          {showError && (
+            <Box
+              display={"flex"}
+              pt={2}
+              gap={2}
+              alignItems="center"
+              justifyContent={"center"}
+            >
+              <Typography color={"error"} variant="subtitle1">
+                Uh oh! You don&apos;t have the NUSIC Alive Pass
+              </Typography>
+              <Button variant="contained" href="//nusic.fm">
+                Mint Now
+              </Button>
+            </Box>
+          )}
         </Stack>
       </DialogContent>
     </Dialog>

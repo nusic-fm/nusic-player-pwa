@@ -31,7 +31,7 @@ const theme = createTheme({
     allVariants: {
       color: "#ffffff",
     },
-    fontFamily: `Arimo , sans-serif`,
+    fontFamily: `Space Mono , sans-serif`,
   },
 });
 

@@ -3,16 +3,12 @@
 import {
   Button,
   Chip,
-  CircularProgress,
   Dialog,
   DialogContent,
   DialogTitle,
   Divider,
   Drawer,
-  Fab,
   Grid,
-  IconButton,
-  TextareaAutosize,
   TextField,
   Tooltip,
   Typography,
@@ -22,31 +18,23 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { WalletLinkConnector } from "@web3-react/walletlink-connector";
-import axios from "axios";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { checkConnection, createUrlFromCid } from "../src/helpers";
-import {
-  getMusicNftsMetadataByWallet,
-  getNftsMetadataByWallet,
-} from "../src/helpers/zora";
+import { getNftsMetadataByWallet } from "../src/helpers/zora";
 import { Injected, CoinbaseWallet } from "../src/hooks/useWalletConnectors";
-import { SelectedNftDetails } from "../src/models";
-import { MoralisNftData } from "../src/models/MoralisNFT";
 import { IZoraData } from "../src/models/TypeZora";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useAudioPlayer } from "react-use-audio-player";
-import PauseIcon from "@mui/icons-material/Pause";
 import WalletConnectors from "../src/components/AlivePass/WalletConnector";
 import { AliveUserDoc } from "../src/models/User";
 import {
   getOrCreateUserDoc,
   updateUserDoc,
 } from "../src/services/db/user.service";
-import SaveIcon from "@mui/icons-material/Save";
 import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
 import { LoadingButton } from "@mui/lab";
 import NftMusicCard from "../src/components/NftMusicCard";
+import Player from "../src/components/Player";
 
 type Props = {};
 
@@ -57,14 +45,14 @@ const Index = (props: Props) => {
 
   const [musicNfts, setMusicNfts] = useState<IZoraData[]>([]);
   const [nfts, setNfts] = useState<IZoraData[]>([]);
-  const { load, playing, togglePlayPause, loading, pause } = useAudioPlayer();
+  const { playing, togglePlayPause, loading, pause, play } = useAudioPlayer();
   const [playIndex, setPlayIndex] = useState<number>(-1);
   const [userDoc, setUserDoc] = useState<AliveUserDoc>();
   const [changedName, setChangedName] = useState<string>();
   const [changedBio, setChangedBio] = useState<string>();
   const [changedPfp, setChangedPfp] = useState<string>();
   const [updating, setUpdating] = useState<boolean>();
-  // const [errorMsg, setErrorMsg] = useState<string>();
+  const [showError, setShowError] = useState<boolean>();
   const [tokenId, setTokenId] = useState<string>("");
 
   const [showSetPfp, setShowSetPfp] = useState(false);
@@ -79,18 +67,18 @@ const Index = (props: Props) => {
     }
   }, [showNftsDrawer]);
 
-  useEffect(() => {
-    if (playIndex !== -1) {
-      load({
-        src: musicNfts[playIndex].content?.mediaEncoding?.large,
-        html5: true,
-        autoplay: true,
-        format: ["mp3"],
-      });
-    } else {
-      pause();
-    }
-  }, [playIndex]);
+  // useEffect(() => {
+  //   if (playIndex !== -1) {
+  //     load({
+  //       src: musicNfts[playIndex].content?.mediaEncoding?.large,
+  //       html5: true,
+  //       autoplay: true,
+  //       format: ["mp3"],
+  //     });
+  //   } else {
+  //     pause();
+  //   }
+  // }, [playIndex]);
 
   const alivePassOwner = async (account: string) => {
     const nftContract = new ethers.Contract(
@@ -126,7 +114,7 @@ const Index = (props: Props) => {
       fetchUserDoc(account);
       fetchAllNfts();
     } else {
-      alert("Uh oh! You don't have the NUSIC Alive Pass");
+      setShowError(true);
     }
   };
 
@@ -229,7 +217,7 @@ const Index = (props: Props) => {
   };
 
   return (
-    <Box py={2} sx={{ bgcolor: "black" }}>
+    <Box py={2} sx={{ bgcolor: "black" }} position="relative">
       <Box
         display={"flex"}
         justifyContent="space-between"
@@ -463,6 +451,7 @@ const Index = (props: Props) => {
         onClose={() => setShowConnector(false)}
         onSignInUsingWallet={onSignInUsingWallet}
         open={showConnector}
+        showError={showError}
       />
       <Drawer
         anchor={"right"}
@@ -545,6 +534,14 @@ const Index = (props: Props) => {
           </Box>
         </DialogContent>
       </Dialog>
+      {playIndex !== -1 && playIndex < musicNfts.length && (
+        <Box position={"fixed"} bottom={0} left={0} zIndex={9999} width="100%">
+          <Player
+            songs={musicNfts}
+            songIndexProps={[playIndex, setPlayIndex]}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
