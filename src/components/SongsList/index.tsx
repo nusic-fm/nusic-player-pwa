@@ -273,7 +273,7 @@ const SongsList = ({
       /> */}
       {songs?.length > 0 && (
         <Box position={"fixed"} bottom={0} width="100%" left={0}>
-          <Player songs={songs} songIndexProps={[songIndex, setSongIndex]} />
+          {/* <Player songs={songs} songIndexProps={[songIndex, setSongIndex]} /> */}
         </Box>
       )}
       <Popover
