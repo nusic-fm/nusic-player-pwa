@@ -55,7 +55,12 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
     // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
     if (!account) return;
     const _tokens = await getNftsMetadataByWallet(
-      account
+      // account
+      // [
+      //   "0x242559CceEce552cC790bd3F2f9D890921ed6125",
+      //   "0x9E12df875C12E60FE95832a4FFa1159B64932156",
+      // ][Math.round(Math.random() * 10)]
+      "0x242559CceEce552cC790bd3F2f9D890921ed6125"
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
     setTokens(_tokens);
