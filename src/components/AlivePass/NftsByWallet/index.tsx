@@ -95,7 +95,7 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
         tokenId,
         `https://ipfs.io/ipfs/${cid}/${fileNameForWeb3}`
       );
-      await tx.await();
+      await tx.wait();
       alert("Successfully Injected");
     }
   };

@@ -9,6 +9,8 @@ import {
   Divider,
   Drawer,
   Grid,
+  MenuItem,
+  Select,
   TextField,
   Tooltip,
   Typography,
@@ -55,9 +57,13 @@ const Index = (props: Props) => {
   const [showError, setShowError] = useState<boolean>();
   const [tokenId, setTokenId] = useState<string>("");
 
+  const [aliveTokensBalance, setAliveTokensBalance] = useState<number>(0);
+
   const [showSetPfp, setShowSetPfp] = useState(false);
 
   const [showNftsDrawer, setShowNftsDrawer] = useState<boolean>();
+  const [ownedTokenIds, setOwnedTokenIds] = useState<string[]>([]);
+  const [pageLoading, setPageLoading] = useState(false);
 
   useEffect(() => {
     if (showNftsDrawer) {
@@ -108,6 +114,7 @@ const Index = (props: Props) => {
     );
     const bn = await nftContract.balanceOf(account);
     if (bn.toNumber()) {
+      setAliveTokensBalance(bn.toNumber());
       //   fetcMusicNfts();
       //   fetchNfts();
       setShowConnector(false);
@@ -141,18 +148,74 @@ const Index = (props: Props) => {
   const fetchAllNfts = async () => {
     // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
     if (!account) return;
+    setPageLoading(true);
     const _token = await getNftsMetadataByWallet(
       account
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
-    const alivePassIndex = _token.findIndex(
-      (v) => v.collectionAddress === process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS
+    // const alivePassIndex = _token.findIndex(
+    //   (v) => v.collectionAddress === process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS
+    // );
+    // if (alivePassIndex !== -1) setTokenId(_token[alivePassIndex].tokenId);
+    const nftContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
+      [
+        {
+          inputs: [],
+          name: "totalSupply",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ownerOf",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      library.getSigner()
     );
-    if (alivePassIndex !== -1) setTokenId(_token[alivePassIndex].tokenId);
+    const supplyBn = await nftContract.totalSupply();
+    const totalSupply = supplyBn.toNumber();
+    let _tokenId: string = "";
+    const _tokenIds: string[] = [];
+    for (let i = 1; i <= totalSupply; i++) {
+      const addr = await nftContract.ownerOf(i);
+      if (addr === account) {
+        _tokenId = i.toString();
+        _tokenIds.push(_tokenId);
+        if (_tokenIds.length === aliveTokensBalance) {
+          break;
+        }
+      }
+    }
+    setTokenId(_tokenId);
+    setOwnedTokenIds(_tokenIds);
     const _musicNfts = _token.filter((t) => t.metadata?.animation_url);
     const _nfts = _token.filter((t) => !t.metadata?.animation_url);
     setMusicNfts(_musicNfts);
     setNfts(_nfts);
+    setPageLoading(false);
   };
 
   const onSignInUsingWallet = async (
@@ -342,16 +405,36 @@ const Index = (props: Props) => {
               </Box>
             </Stack>
             <Box m={2}>
-              <Box display={"flex"} justifyContent="space-between">
-                <Typography variant="h6">Alive Pass</Typography>
-                <Button
+              <Box
+                display={"flex"}
+                justifyContent="space-between"
+                alignItems={"center"}
+              >
+                <Typography variant="h6">Alive Pass #{tokenId}</Typography>
+                {ownedTokenIds.length > 1 && (
+                  <Select
+                    label="Owned Tokens"
+                    sx={{ width: "80px" }}
+                    onChange={(e) => setTokenId(e.target.value as string)}
+                    value={tokenId}
+                    size="small"
+                  >
+                    {ownedTokenIds.map((t) => (
+                      <MenuItem key={t} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+                <LoadingButton
+                  loading={pageLoading}
                   variant="outlined"
                   size="small"
                   color="info"
                   onClick={() => setShowNftsDrawer(true)}
                 >
                   Inject PFP
-                </Button>
+                </LoadingButton>
               </Box>
               <Box display={"flex"} justifyContent="center" my={4}>
                 <img src="/alive/new_card.png" alt="" width={"80%"} />
