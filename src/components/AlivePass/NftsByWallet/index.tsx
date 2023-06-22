@@ -90,10 +90,24 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
       const client = new Web3Storage({
         token: process.env.NEXT_PUBLIC_WEB3_STORAGE as string,
       });
-      const cid = await client.put([selectedFile]);
+      const imageCid = await client.put([selectedFile]);
+      const jsonFileName = "file.json";
+      const _file = new File(
+        [
+          JSON.stringify({
+            name: "NUSIC Alive Pass",
+            description:
+              "Priority access to the NUSIC decentralized streaming protocol for 1,000 members. Valid from 6/21/2023-6/20/2026.",
+            external_link: "https://nusic.fm/",
+            image: `https://ipfs.io/ipfs/${imageCid}/${fileNameForWeb3}`,
+          }),
+        ],
+        jsonFileName
+      );
+      const jsonCid = await client.put([_file]);
       const tx = await nftContract.setTokenURI(
         tokenId,
-        `https://ipfs.io/ipfs/${cid}/${fileNameForWeb3}`
+        `https://ipfs.io/ipfs/${jsonCid}/${jsonFileName}`
       );
       await tx.wait();
       alert("Successfully Injected");
