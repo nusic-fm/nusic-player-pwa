@@ -3,18 +3,18 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 
 export const CoinbaseWallet = new WalletLinkConnector({
-  url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+  url: process.env.NEXT_PUBLIC_RPC as string,
   appName: "NUSIC Player",
-  supportedChainIds: [1],
+  supportedChainIds: [Number(process.env.NEXT_PUBLIC_CHAIN_ID)],
 });
 
 export const WalletConnect = new WalletConnectConnector({
-  rpc: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+  rpc: process.env.NEXT_PUBLIC_RPC as string,
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
-  supportedChainIds: [1],
+  supportedChainIds: [Number(process.env.NEXT_PUBLIC_CHAIN_ID)],
 });
 
 export const Injected = new InjectedConnector({
-  supportedChainIds: [1],
+  supportedChainIds: [Number(process.env.NEXT_PUBLIC_CHAIN_ID)],
 });
