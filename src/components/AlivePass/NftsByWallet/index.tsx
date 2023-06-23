@@ -123,7 +123,7 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
   }, [account]);
 
   return (
-    <Box sx={{ bgcolor: "#0f0f0f" }} height="100vh" p={2}>
+    <Box sx={{ bgcolor: "#0f0f0f" }} minHeight="100vh" p={2} mb={"130px"}>
       <Box
         px={1}
         m={1}
