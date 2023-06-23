@@ -2,6 +2,10 @@
   "name": "nusic-player-pwa",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Logesh Rajappa",
+    "email": "logesh.r24@gmail.com"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,6 +13,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@crossmint/client-sdk-react-ui": "^0.2.8-alpha.3",
     "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
@@ -42,7 +47,8 @@
     "react-instantsearch-hooks-web": "^6.39.2",
     "react-use-audio-player": "^1.2.6",
     "typescript": "4.9.4",
-    "wavesurfer.js": "^6.4.0"
+    "wavesurfer.js": "^6.4.0",
+    "web3.storage": "^4.5.4"
   },
   "devDependencies": {
     "@types/lodash.get": "^4.4.7",

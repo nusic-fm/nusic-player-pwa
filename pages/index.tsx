@@ -1,63 +1,633 @@
-import { Skeleton, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
+import {
+  Button,
+  Chip,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Drawer,
+  Grid,
+  IconButton,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Box, Stack } from "@mui/system";
+import { useWeb3React } from "@web3-react/core";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { WalletLinkConnector } from "@web3-react/walletlink-connector";
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import { checkConnection, createUrlFromCid } from "../src/helpers";
+import { getNftsMetadataByWallet } from "../src/helpers/zora";
+import { Injected, CoinbaseWallet } from "../src/hooks/useWalletConnectors";
+import { IZoraData } from "../src/models/TypeZora";
 import { useAudioPlayer } from "react-use-audio-player";
-import NftFeed from "../src/components/NftFeed";
-import { SongDoc } from "../src/models/Song";
-import { getSongs } from "../src/services/db/songs.service";
+import WalletConnectors from "../src/components/AlivePass/WalletConnector";
+import { AliveUserDoc } from "../src/models/User";
+import {
+  getOrCreateUserDoc,
+  updateUserDoc,
+} from "../src/services/db/user.service";
+import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
+import { LoadingButton } from "@mui/lab";
+import NftMusicCard from "../src/components/NftMusicCard";
+import Player from "../src/components/Player";
+import CloseIcon from "@mui/icons-material/Close";
 
-const Index = () => {
-  const isMobile = 1 === 1 ? true : false;
-  const [songs, setSongs] = useState<SongDoc[]>([]);
-  const [songsLoading, setSongsLoading] = useState(false);
+type Props = {};
 
-  const { pause } = useAudioPlayer();
+const Index = (props: Props) => {
+  const { account, activate, library } = useWeb3React();
+  const [showConnector, setShowConnector] = useState(false);
+  //   const [tokens, setTokens] = useState<MoralisNftData[]>([]);
 
-  const fetchSongs = async () => {
-    setSongsLoading(true);
-    const _songs = await getSongs();
-    setSongs(_songs);
-    setSongsLoading(false);
+  const [musicNfts, setMusicNfts] = useState<IZoraData[]>([]);
+  const [nfts, setNfts] = useState<IZoraData[]>([]);
+  const { playing, togglePlayPause, loading, pause, play } = useAudioPlayer();
+  const [playIndex, setPlayIndex] = useState<number>(-1);
+  const [userDoc, setUserDoc] = useState<AliveUserDoc>();
+  const [changedName, setChangedName] = useState<string>();
+  const [changedBio, setChangedBio] = useState<string>();
+  const [changedPfp, setChangedPfp] = useState<string>();
+  const [updating, setUpdating] = useState<boolean>();
+  const [showError, setShowError] = useState<boolean>();
+  const [tokenId, setTokenId] = useState<string>("");
+
+  const [aliveTokensBalance, setAliveTokensBalance] = useState<number>(0);
+
+  const [showSetPfp, setShowSetPfp] = useState(false);
+
+  const [showNftsDrawer, setShowNftsDrawer] = useState<boolean>();
+  const [ownedTokenIds, setOwnedTokenIds] = useState<string[]>([]);
+  const [pageLoading, setPageLoading] = useState(false);
+
+  useEffect(() => {
+    if (showNftsDrawer) {
+      document.getElementsByTagName("html")[0].style.overflow = "scroll";
+    } else {
+      document.getElementsByTagName("html")[0].style.overflow = "auto";
+    }
+  }, [showNftsDrawer]);
+
+  // useEffect(() => {
+  //   if (playIndex !== -1) {
+  //     load({
+  //       src: musicNfts[playIndex].content?.mediaEncoding?.large,
+  //       html5: true,
+  //       autoplay: true,
+  //       format: ["mp3"],
+  //     });
+  //   } else {
+  //     pause();
+  //   }
+  // }, [playIndex]);
+
+  const alivePassOwner = async (account: string) => {
+    const nftContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
+      [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "balanceOf",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      library.getSigner()
+    );
+    const bn = await nftContract.balanceOf(account);
+    if (bn.toNumber()) {
+      setAliveTokensBalance(bn.toNumber());
+      //   fetcMusicNfts();
+      //   fetchNfts();
+      setShowConnector(false);
+      fetchUserDoc(account);
+      fetchAllNfts();
+    } else {
+      setShowError(true);
+    }
   };
 
   useEffect(() => {
-    pause();
-    fetchSongs();
-  }, []);
+    if (account) {
+      alivePassOwner(account);
+    } else {
+      checkAutoLogin();
+      setShowConnector(true);
+    }
+  }, [account]);
+
+  //   const fetcMusicNfts = async () => {
+  //     const _musicTokens = await getMusicNftsMetadataByWallet(
+  //       "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+  //     );
+  //     setMusicNfts(_musicTokens);
+  //   };
+  const fetchUserDoc = async (walletAddress: string) => {
+    const _userDoc = await getOrCreateUserDoc(walletAddress);
+    setUserDoc(_userDoc);
+  };
+
+  const fetchAllNfts = async () => {
+    // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+    if (!account) return;
+    setPageLoading(true);
+    const _allTokens = await getNftsMetadataByWallet(
+      account
+      // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+      // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
+    );
+    // const alivePassIndex = _token.findIndex(
+    //   (v) => v.collectionAddress === process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS
+    // );
+    // if (alivePassIndex !== -1) setTokenId(_token[alivePassIndex].tokenId);
+    const nftContract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
+      [
+        {
+          inputs: [],
+          name: "totalSupply",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ownerOf",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ],
+      library.getSigner()
+    );
+    const supplyBn = await nftContract.totalSupply();
+    const totalSupply = supplyBn.toNumber();
+    let _tokenId: string = "";
+    const _tokenIds: string[] = [];
+    for (let i = 1; i <= totalSupply; i++) {
+      const addr = await nftContract.ownerOf(i);
+      if (addr === account) {
+        _tokenId = i.toString();
+        _tokenIds.push(_tokenId);
+        if (_tokenIds.length === aliveTokensBalance) {
+          break;
+        }
+      }
+    }
+    setTokenId(_tokenId);
+    setOwnedTokenIds(_tokenIds);
+    const _musicNfts: IZoraData[] = [];
+    const _nfts: IZoraData[] = [];
+    _allTokens.map((t) => {
+      if (t.metadata?.animation_url) {
+        _musicNfts.push(t);
+      } else {
+        _nfts.push(t);
+      }
+    });
+    setMusicNfts(_musicNfts);
+    setNfts(_nfts);
+    setPageLoading(false);
+  };
+
+  const onSignInUsingWallet = async (
+    connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
+  ) => {
+    await checkConnection();
+    activate(connector, async (e) => {
+      if (e.name === "t" || e.name === "UnsupportedChainIdError") {
+        // setSnackbarMessage("Please switch to Ethereum Mainnet");
+      } else {
+        // setSnackbarMessage(e.message);
+      }
+
+      console.log(e.name, e.message);
+    });
+  };
+
+  const checkAutoLogin = async () => {
+    if (!(window as any).ethereum) return;
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const accounts = await provider.listAccounts();
+    if (accounts.length) {
+      const eth = (window as any).ethereum;
+      if (eth.isMetaMask) {
+        onSignInUsingWallet(Injected);
+      } else if (eth.isCoinbaseBrowser) {
+        onSignInUsingWallet(CoinbaseWallet);
+      }
+    }
+  };
+
+  // const onInsert = async (nft: SelectedNftDetails | MoralisNftData) => {
+  //   // setIsLoading(true);
+  //   const url = nft.artworkUrl;
+  //   const res = await axios.post(
+  //     `https://nusic-image-conversion-ynfarb57wa-uc.a.run.app/overlay?url=${url}`, //TODO
+  //     {},
+  //     { responseType: "arraybuffer" }
+  //   );
+  //   let base64ImageString = Buffer.from(res.data, "binary").toString("base64");
+  //   let srcValue = "data:image/png;base64," + base64ImageString;
+  //   // setImageFromServer(srcValue);
+  //   // setIsLoading(false);
+  // };
+
+  const onUpdateUserDoc = async (obj: {
+    bio?: string;
+    userName?: string;
+    pfp?: string;
+  }) => {
+    if (account) {
+      setUpdating(true);
+      await updateUserDoc(account, obj);
+      await fetchUserDoc(account);
+      setChangedName(undefined);
+      setChangedName(undefined);
+      setChangedPfp(undefined);
+      setUpdating(false);
+    }
+  };
 
   return (
-    <Box display={"flex"} height={"100vh"}>
-      {isMobile === false && <Box height={"100vh"} width={200}></Box>}
-      <Box height={"100vh"} width="100%">
-        {songs.length ? (
-          <NftFeed songs={songs} onFeedClose={() => {}} />
-        ) : songsLoading ? (
+    <Box py={2} sx={{ bgcolor: "black" }} position="relative">
+      <Box
+        display={"flex"}
+        justifyContent="space-between"
+        alignItems={"center"}
+        px={4}
+      >
+        <img src="nusic_purple.png" alt="" width={100} />
+        {/* <Button onClick={}>Logout</Button> */}
+      </Box>
+      <Grid container>
+        <Grid item xs={12} md={4}>
+          <Stack gap={2} p={2}>
+            <Stack
+              m={2}
+              p={4}
+              alignItems="center"
+              gap={2}
+              sx={{ backgroundColor: "#141414" }}
+              borderRadius="8px"
+            >
+              {/* <img src="" alt="pp" /> */}
+              <Box
+                borderRadius={"50%"}
+                sx={{
+                  background:
+                    changedPfp || userDoc?.pfp
+                      ? `url(${changedPfp || userDoc?.pfp})`
+                      : "rgba(255,255,255,0.1)",
+                  backgroundSize: "cover",
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                }}
+                p={1}
+                width={100}
+                height={100}
+                position="relative"
+              >
+                <Box
+                  position={"absolute"}
+                  left={0}
+                  top={0}
+                  width="100%"
+                  height="100%"
+                  display={"flex"}
+                  justifyContent="center"
+                  alignItems={"center"}
+                  sx={{
+                    ".select": { display: "none" },
+                    ":hover": { ".select": { display: "initial" } },
+                  }}
+                >
+                  <Button
+                    className="select"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => setShowSetPfp(true)}
+                  >
+                    Select
+                  </Button>
+                </Box>{" "}
+              </Box>
+              <TextField
+                size="small"
+                placeholder="username"
+                value={changedName || userDoc?.userName}
+                onChange={(e) => setChangedName(e.target.value)}
+                // InputProps={{
+                //   endAdornment: (
+                //     <IconButton
+                //       disabled={!changedName || updating}
+                //       onClick={() => onUpdateUserDoc({ userName: changedName })}
+                //     >
+                //       <SaveIcon fontSize="small" />
+                //     </IconButton>
+                //   ),
+                // }}
+              />
+              {account && (
+                <Chip
+                  label={`${account.slice(0, 6)}...${account.slice(
+                    account.length - 4
+                  )}`}
+                />
+              )}
+              <Stack width={"100%"} gap={1} my={2}>
+                <Typography>Bio</Typography>
+                <TextField
+                  multiline
+                  value={changedBio || userDoc?.bio}
+                  onChange={(e) => setChangedBio(e.target.value)}
+                  minRows={3}
+                  maxRows={8}
+                  // InputProps={{
+                  //   endAdornment: (
+                  //     <IconButton
+                  //       disabled={!changedBio || updating}
+                  //       onClick={() => onUpdateUserDoc({ bio: changedBio })}
+                  //     >
+                  //       <SaveIcon fontSize="small" />
+                  //     </IconButton>
+                  //   ),
+                  // }}
+                />
+              </Stack>
+              <Box display={"flex"} justifyContent="center">
+                <LoadingButton
+                  loading={updating}
+                  variant="contained"
+                  color="info"
+                  size="small"
+                  disabled={!changedBio && !changedName && !changedPfp}
+                  onClick={() =>
+                    onUpdateUserDoc({
+                      bio: changedBio || userDoc?.bio,
+                      userName: changedName || userDoc?.userName,
+                      pfp: changedPfp || userDoc?.pfp,
+                    })
+                  }
+                >
+                  Save
+                </LoadingButton>
+              </Box>
+            </Stack>
+            <Box m={2}>
+              <Box
+                display={"flex"}
+                justifyContent="space-between"
+                alignItems={"center"}
+              >
+                <Typography variant="h6">Alive Pass #{tokenId}</Typography>
+                {ownedTokenIds.length > 1 && (
+                  <Select
+                    label="Owned Tokens"
+                    sx={{ width: "80px" }}
+                    onChange={(e) => setTokenId(e.target.value as string)}
+                    value={tokenId}
+                    size="small"
+                  >
+                    {ownedTokenIds.map((t) => (
+                      <MenuItem key={t} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+                <LoadingButton
+                  loading={pageLoading}
+                  variant="outlined"
+                  size="small"
+                  color="info"
+                  onClick={() => setShowNftsDrawer(true)}
+                >
+                  Inject PFP
+                </LoadingButton>
+              </Box>
+              <Box display={"flex"} justifyContent="center" my={4}>
+                <img src="/alive/new_card.png" alt="" width={"80%"} />
+              </Box>
+            </Box>
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Typography sx={{ m: 2 }} variant="h6">
+            My Music Collections
+          </Typography>
           <Box
             display={"flex"}
-            gap={5}
-            flexDirection="column"
-            alignItems={"center"}
-            justifyContent="center"
-            p={4}
+            gap={2}
+            sx={{ overflowX: "auto" }}
+            width={"100%"}
           >
-            <Skeleton variant="rounded" width={230} height={230} />
-            <Skeleton variant="rounded" width="100%" height={30} />
-            <Skeleton variant="rounded" width="100%" height={80} />
-            <Skeleton variant="circular" width={80} height={80} />
-            <Skeleton variant="rounded" width="80%" height={40} />
-            <Skeleton
-              variant="rounded"
-              width={230}
-              height={60}
-              sx={{ mt: 4 }}
-            />
+            {musicNfts.length === 0 && (
+              <Typography align="center" px={2} mb={2} color="gray">
+                No Music NFTs found
+              </Typography>
+            )}
+            {musicNfts.map((musicNft, i) => (
+              <NftMusicCard
+                key={i}
+                i={i}
+                loading={loading}
+                nft={musicNft}
+                playIndex={playIndex}
+                playing={playing}
+                setPlayIndex={setPlayIndex}
+                togglePlayPause={togglePlayPause}
+              />
+            ))}
           </Box>
-        ) : (
-          <Typography>
-            Network error, please refresh and try again later
+          <Divider />
+          <Typography variant="h6" sx={{ m: 2 }}>
+            Other NFT Collections
           </Typography>
-        )}
-      </Box>
+          <Box
+            display={"flex"}
+            // flexWrap="wrap"
+            gap={2}
+            sx={{ overflowX: "auto" }}
+          >
+            {nfts.length === 0 && (
+              <Typography align="center" px={2} mb={2} color="gray">
+                No NFTs found
+              </Typography>
+            )}
+            {nfts.map((nft, i) => (
+              <Box
+                key={i}
+                width={180}
+                sx={{
+                  background: `url(${createUrlFromCid(nft.image?.url)})`,
+                  backgroundSize: "cover",
+                }}
+                borderRadius="15px"
+              >
+                <Stack
+                  width={180}
+                  height={180}
+                  justifyContent="end"
+                  alignItems={"center"}
+                  position="relative"
+                >
+                  <Box
+                    display={"flex"}
+                    mb={0.5}
+                    p={0.2}
+                    px={1}
+                    sx={{ background: "rgba(0,0,0,0.8)", borderRadius: "6px" }}
+                    alignItems="center"
+                    justifyContent={"space-between"}
+                    gap={2}
+                    maxWidth="90%"
+                  >
+                    <Tooltip title={nft.collectionName}>
+                      <Typography
+                        variant="caption"
+                        noWrap
+                        fontWeight={900}
+                        fontSize={"10px"}
+                      >
+                        {nft.collectionName}
+                      </Typography>
+                    </Tooltip>
+                  </Box>
+                </Stack>
+              </Box>
+            ))}
+          </Box>
+        </Grid>
+      </Grid>
+      <WalletConnectors
+        onClose={() => setShowConnector(false)}
+        onSignInUsingWallet={onSignInUsingWallet}
+        open={showConnector}
+        showError={showError}
+      />
+      <Drawer
+        anchor={"right"}
+        hideBackdrop
+        open={showNftsDrawer}
+        onClose={() => setShowNftsDrawer(false)}
+        sx={{ background: "rgba(0,0,0,0.8)" }}
+      >
+        <NftsByWallet
+          onConnect={() => {}}
+          tokenId={tokenId}
+          // onInsert={(nft: any) => {}}
+          onClose={() => {
+            setShowNftsDrawer(false);
+          }}
+        />
+      </Drawer>
+      <Dialog
+        open={showSetPfp}
+        onClose={() => setShowSetPfp(false)}
+        fullWidth
+        sx={{ background: "rgba(0,0,0,0.8)" }}
+      >
+        <DialogTitle>
+          <Typography>Select NUSIC pfp from your collections</Typography>
+          <IconButton
+            onClick={() => setShowSetPfp(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box display={"flex"} gap={1} sx={{ overflowX: "auto" }} py={4}>
+            {[...musicNfts, ...nfts].length === 0 && (
+              <Typography color="gray">No Music NFTs found</Typography>
+            )}
+            {[...musicNfts, ...nfts].map((mf) => (
+              <Stack key={`${mf.collectionAddress}-${mf.tokenId}`}>
+                <Box
+                  display={"flex"}
+                  alignItems="center"
+                  justifyContent={"center"}
+                  width="100%"
+                  height={"100%"}
+                >
+                  <img
+                    src={createUrlFromCid(mf.image?.url)}
+                    alt=""
+                    width={150}
+                    height={150}
+                    style={{ borderRadius: "2px", objectFit: "cover" }}
+                  ></img>
+                </Box>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setChangedPfp(createUrlFromCid(mf.image?.url));
+                    setShowSetPfp(false);
+                  }}
+                  size="small"
+                >
+                  Select
+                </Button>
+              </Stack>
+            ))}
+          </Box>
+        </DialogContent>
+      </Dialog>
+      {playIndex !== -1 && playIndex < musicNfts.length && (
+        <Box position={"fixed"} bottom={0} left={0} zIndex={9999} width="100%">
+          <Player
+            songs={musicNfts}
+            songIndexProps={[playIndex, setPlayIndex]}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
