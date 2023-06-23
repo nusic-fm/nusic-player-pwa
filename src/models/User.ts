@@ -14,3 +14,10 @@ export interface UserDoc {
   spotifyUrl?: string;
   websiteUrl?: string;
 }
+
+export type AliveUserDoc = {
+  userName?: string;
+  walletAddress: string;
+  bio?: string;
+  pfp?: string;
+};
