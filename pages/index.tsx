@@ -155,8 +155,8 @@ const Index = (props: Props) => {
     if (!account) return;
     setPageLoading(true);
     const _allTokens = await getNftsMetadataByWallet(
-      account
-      // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
+      // account
+      "0x8e374C4C9aeDd9B6ED16acc7b5e613510fBBEC84"
     );
     const _musicNftTokens = await getMusicNftsMetadataByWallet(
       "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
@@ -462,7 +462,7 @@ const Index = (props: Props) => {
         </Grid>
         <Grid item xs={12} md={8}>
           <Typography sx={{ m: 2 }} variant="h6">
-            My Music Collections
+            My Music NFTs
           </Typography>
           <Box
             display={"flex"}
@@ -490,7 +490,7 @@ const Index = (props: Props) => {
           </Box>
           <Divider />
           <Typography variant="h6" sx={{ m: 2 }}>
-            Other NFT Collections
+            Other NFTs
           </Typography>
           <Box
             display={"flex"}
