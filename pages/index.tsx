@@ -152,8 +152,8 @@ const Index = (props: Props) => {
     if (!account) return;
     setPageLoading(true);
     const _allTokens = await getNftsMetadataByWallet(
-      account
-      // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+      // account
+      "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
     // const alivePassIndex = _token.findIndex(
