@@ -10,6 +10,7 @@ import { Box, Stack } from "@mui/system";
 import { IZoraData } from "../../models/TypeZora";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { createUrlFromCid } from "../../helpers";
 
 type Props = {
   i: number;
@@ -34,7 +35,7 @@ const NftCard = ({
     <Box
       width={180}
       sx={{
-        background: `url(${nft.image?.mediaEncoding?.thumbnail})`,
+        background: `url(${createUrlFromCid(nft.image?.url)})`,
         backgroundSize: "cover",
       }}
       borderRadius="15px"

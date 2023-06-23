@@ -4,6 +4,7 @@ export const musicTokensInWalletQuery = `#graphql
         where: {ownerAddresses: $owner}
         filter: {mediaType: AUDIO}
         pagination: {limit: 100, after: $endCursor}
+        networks: [{network: OPTIMISM, chain: OPTIMISM_MAINNET}, {network: ETHEREUM, chain: MAINNET}]
         ){
         nodes{
             token {
@@ -196,6 +197,7 @@ export const tokensInWalletQuery = `#graphql
         where: {ownerAddresses: $owner}
         # filter: {mediaType: AUDIO}
         pagination: {limit: 100, after: $endCursor}
+        networks: [{network: OPTIMISM, chain: OPTIMISM_MAINNET}, {network: ETHEREUM, chain: MAINNET}]
         ){
         nodes{
             token {

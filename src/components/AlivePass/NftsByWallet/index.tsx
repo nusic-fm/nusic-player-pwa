@@ -17,6 +17,7 @@ import { getNftsMetadataByWallet } from "../../../helpers/zora";
 import { IZoraData } from "../../../models/TypeZora";
 import { ethers } from "ethers";
 import { Web3Storage } from "web3.storage";
+import { createUrlFromCid } from "../../../helpers";
 
 type Props = {
   onConnect: () => void;
@@ -57,6 +58,7 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
     const _tokens = await getNftsMetadataByWallet(
       account
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
+      // "0x8e374C4C9aeDd9B6ED16acc7b5e613510fBBEC84"
     );
     setTokens(_tokens);
   };
@@ -145,8 +147,8 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
         mt={1}
       >
         {tokens.length === 0 && (
-          <Typography color={"yellow"} align="center" width={"100%"} my={5}>
-            NFTs not found in your wallet
+          <Typography color={"gray"} align="center" width={"100%"} my={5}>
+            No NFTs found in your wallet
           </Typography>
         )}
         {tokens.map((nft, i) => (
@@ -177,43 +179,21 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
                   </Typography>
                 </Tooltip> */}
             </Box>
-            {nft.image?.mediaEncoding?.thumbnail ? (
-              <Box
-                display={"flex"}
-                alignItems="center"
-                justifyContent={"center"}
-                width="100%"
-                height={"100%"}
-              >
-                <img
-                  src={nft.image?.mediaEncoding?.thumbnail}
-                  alt=""
-                  width={150}
-                  height={150}
-                  style={{ borderRadius: "10px", objectFit: "cover" }}
-                ></img>
-              </Box>
-            ) : (
-              <Box
-                display={"flex"}
-                alignItems="center"
-                justifyContent={"center"}
-                width="100%"
-                height={"100%"}
-              >
-                <Box
-                  width={200}
-                  height={200}
-                  display="flex"
-                  alignItems={"center"}
-                >
-                  <Typography align="center" color={"gray"}>
-                    Image not available at this moment, you can hit Refresh to
-                    see it
-                  </Typography>
-                </Box>
-              </Box>
-            )}
+            <Box
+              display={"flex"}
+              alignItems="center"
+              justifyContent={"center"}
+              width="100%"
+              height={"100%"}
+            >
+              <img
+                src={createUrlFromCid(nft.image?.url)}
+                alt=""
+                width={150}
+                height={150}
+                style={{ borderRadius: "10px", objectFit: "cover" }}
+              ></img>
+            </Box>
             <Box
               id="isnft"
               width={"100%"}
@@ -230,12 +210,9 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
                 color="info"
                 size="small"
                 onClick={() => {
-                  if (nft.image?.mediaEncoding?.original) {
-                    onInsert(nft.image.mediaEncoding.original);
-                  } else if (nft.image?.mediaEncoding?.thumbnail) {
-                    onInsert(nft.image.mediaEncoding.thumbnail);
+                  if (nft.image?.url) {
+                    onInsert(createUrlFromCid(nft.image?.url));
                   }
-                  // setInsertUrl(nft.image?.mediaEncoding?.thumbnail);
                 }}
               >
                 Insert

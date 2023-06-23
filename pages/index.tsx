@@ -9,6 +9,7 @@ import {
   Divider,
   Drawer,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   TextField,
@@ -37,6 +38,7 @@ import NftsByWallet from "../src/components/AlivePass/NftsByWallet";
 import { LoadingButton } from "@mui/lab";
 import NftMusicCard from "../src/components/NftMusicCard";
 import Player from "../src/components/Player";
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {};
 
@@ -149,8 +151,9 @@ const Index = (props: Props) => {
     // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
     if (!account) return;
     setPageLoading(true);
-    const _token = await getNftsMetadataByWallet(
+    const _allTokens = await getNftsMetadataByWallet(
       account
+      // "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
     );
     // const alivePassIndex = _token.findIndex(
@@ -211,8 +214,15 @@ const Index = (props: Props) => {
     }
     setTokenId(_tokenId);
     setOwnedTokenIds(_tokenIds);
-    const _musicNfts = _token.filter((t) => t.metadata?.animation_url);
-    const _nfts = _token.filter((t) => !t.metadata?.animation_url);
+    const _musicNfts: IZoraData[] = [];
+    const _nfts: IZoraData[] = [];
+    _allTokens.map((t) => {
+      if (t.metadata?.animation_url) {
+        _musicNfts.push(t);
+      } else {
+        _nfts.push(t);
+      }
+    });
     setMusicNfts(_musicNfts);
     setNfts(_nfts);
     setPageLoading(false);
@@ -452,11 +462,11 @@ const Index = (props: Props) => {
             sx={{ overflowX: "auto" }}
             width={"100%"}
           >
-            {/* {musicNfts.length === 0 && (
+            {musicNfts.length === 0 && (
               <Typography align="center" px={2} mb={2} color="gray">
                 No Music NFTs found
               </Typography>
-            )} */}
+            )}
             {musicNfts.map((musicNft, i) => (
               <NftMusicCard
                 key={i}
@@ -490,7 +500,7 @@ const Index = (props: Props) => {
                 key={i}
                 width={180}
                 sx={{
-                  background: `url(${nft.image?.mediaEncoding?.thumbnail})`,
+                  background: `url(${createUrlFromCid(nft.image?.url)})`,
                   backgroundSize: "cover",
                 }}
                 borderRadius="15px"
@@ -552,14 +562,33 @@ const Index = (props: Props) => {
           }}
         />
       </Drawer>
-      <Dialog open={showSetPfp} onClose={() => setShowSetPfp(false)} fullWidth>
-        <DialogTitle letterSpacing={1}>
-          Select NUSIC pfp from your collections
+      <Dialog
+        open={showSetPfp}
+        onClose={() => setShowSetPfp(false)}
+        fullWidth
+        sx={{ background: "rgba(0,0,0,0.8)" }}
+      >
+        <DialogTitle>
+          <Typography>Select NUSIC pfp from your collections</Typography>
+          <IconButton
+            onClick={() => setShowSetPfp(false)}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Box display={"flex"} gap={2} sx={{ overflowX: "auto" }} p={4}>
-            {musicNfts.map((mf) => (
-              <Stack gap={2} key={`${mf.collectionAddress}-${mf.tokenId}`}>
+          <Box display={"flex"} gap={1} sx={{ overflowX: "auto" }} py={4}>
+            {[...musicNfts, ...nfts].length === 0 && (
+              <Typography color="gray">No Music NFTs found</Typography>
+            )}
+            {[...musicNfts, ...nfts].map((mf) => (
+              <Stack key={`${mf.collectionAddress}-${mf.tokenId}`}>
                 <Box
                   display={"flex"}
                   alignItems="center"
@@ -568,47 +597,21 @@ const Index = (props: Props) => {
                   height={"100%"}
                 >
                   <img
-                    src={mf.image?.mediaEncoding?.thumbnail || ""}
+                    src={createUrlFromCid(mf.image?.url)}
                     alt=""
-                    //   width={150}
-                    //   height={150}
-                    style={{ borderRadius: "8px", objectFit: "cover" }}
+                    width={150}
+                    height={150}
+                    style={{ borderRadius: "2px", objectFit: "cover" }}
                   ></img>
                 </Box>
                 <Button
                   color="primary"
                   variant="contained"
-                  onClick={() =>
-                    setChangedPfp(mf.image?.mediaEncoding?.thumbnail || "")
-                  }
-                >
-                  Select
-                </Button>
-              </Stack>
-            ))}
-            {nfts.map((mf) => (
-              <Stack gap={2} key={`${mf.collectionAddress}-${mf.tokenId}`}>
-                <Box
-                  display={"flex"}
-                  alignItems="center"
-                  justifyContent={"center"}
-                  width="100%"
-                  height={"100%"}
-                >
-                  <img
-                    src={mf.image?.mediaEncoding?.thumbnail || ""}
-                    alt=""
-                    //   width={150}
-                    //   height={150}
-                    style={{ borderRadius: "8px", objectFit: "cover" }}
-                  ></img>
-                </Box>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={() =>
-                    setChangedPfp(mf.image?.mediaEncoding?.thumbnail || "")
-                  }
+                  onClick={() => {
+                    setChangedPfp(createUrlFromCid(mf.image?.url));
+                    setShowSetPfp(false);
+                  }}
+                  size="small"
                 >
                   Select
                 </Button>

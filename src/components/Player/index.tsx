@@ -20,7 +20,7 @@ import SeekBar from "../SeekBar";
 import { IZoraData } from "../../models/TypeZora";
 import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { convertSecondsToHHMMSS } from "../../helpers";
+import { convertSecondsToHHMMSS, createUrlFromCid } from "../../helpers";
 
 type Props = {
   songs: IZoraData[];
@@ -55,9 +55,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
   useEffect(() => {
     // const src = `${process.env.NEXT_PUBLIC_STREAMING}/stream/${songs[songIndex].tokenAddress}/${songs[songIndex].tokenId}`;
     if (songIndex !== -1) {
-      const src =
-        songs[songIndex].content?.mediaEncoding?.original ||
-        songs[songIndex].content?.mediaEncoding?.large;
+      const src = createUrlFromCid(songs[songIndex].content?.url);
       if (!src) return;
       load({
         src,

@@ -15,8 +15,10 @@ export const getEnsName = (address: string): Promise<string | null> => {
 export const fmtMSS = (s: number) => {
   return (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
 };
-export const createUrlFromCid = (tokenUri: string) => {
-  if (tokenUri.includes("https")) {
+export const createUrlFromCid = (tokenUri: string | null | undefined) => {
+  if (!tokenUri) {
+    return "";
+  } else if (tokenUri.includes("https")) {
     return tokenUri;
   } else if (tokenUri.startsWith("ipfs")) {
     const cid = tokenUri.split("ipfs://")[1];
@@ -24,6 +26,8 @@ export const createUrlFromCid = (tokenUri: string) => {
   } else if (tokenUri.startsWith("ar")) {
     const addressWithTokenId = tokenUri.split("ar://")[1];
     return `https://arweave.net/${addressWithTokenId}`;
+  } else {
+    return "";
   }
 };
 
