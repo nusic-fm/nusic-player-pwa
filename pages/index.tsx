@@ -24,7 +24,10 @@ import { WalletLinkConnector } from "@web3-react/walletlink-connector";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { checkConnection, createUrlFromCid } from "../src/helpers";
-import { getNftsMetadataByWallet } from "../src/helpers/zora";
+import {
+  getMusicNftsMetadataByWallet,
+  getNftsMetadataByWallet,
+} from "../src/helpers/zora";
 import { Injected, CoinbaseWallet } from "../src/hooks/useWalletConnectors";
 import { IZoraData } from "../src/models/TypeZora";
 import { useAudioPlayer } from "react-use-audio-player";
@@ -152,14 +155,29 @@ const Index = (props: Props) => {
     if (!account) return;
     setPageLoading(true);
     const _allTokens = await getNftsMetadataByWallet(
-      // account
-      "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
+      account
       // "0x1f3aECdD7b1c376863d08C5340B1E48Da2961539"
+    );
+    const _musicNftTokens = await getMusicNftsMetadataByWallet(
+      "0xA0cb079D354b66188f533A919d1c58cd67aFe398"
     );
     // const alivePassIndex = _token.findIndex(
     //   (v) => v.collectionAddress === process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS
     // );
     // if (alivePassIndex !== -1) setTokenId(_token[alivePassIndex].tokenId);
+
+    // const _musicNfts: IZoraData[] = [];
+    // const _nfts: IZoraData[] = [];
+    // _allTokens.map((t) => {
+    //   if (t.metadata?.animation_url) {
+    //     _musicNfts.push(t);
+    //   } else {
+    //     _nfts.push(t);
+    //   }
+    // });
+    setMusicNfts(_musicNftTokens);
+    setNfts(_allTokens);
+
     const nftContract = new ethers.Contract(
       process.env.NEXT_PUBLIC_ETH_ALIVE_ADDRESS as string,
       [
@@ -214,17 +232,7 @@ const Index = (props: Props) => {
     }
     setTokenId(_tokenId);
     setOwnedTokenIds(_tokenIds);
-    const _musicNfts: IZoraData[] = [];
-    const _nfts: IZoraData[] = [];
-    _allTokens.map((t) => {
-      if (t.metadata?.animation_url) {
-        _musicNfts.push(t);
-      } else {
-        _nfts.push(t);
-      }
-    });
-    setMusicNfts(_musicNfts);
-    setNfts(_nfts);
+
     setPageLoading(false);
   };
 
