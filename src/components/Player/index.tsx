@@ -94,10 +94,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
           width="60%"
         >
           <img
-            src={`${
-              songs[songIndex].image?.mediaEncoding?.thumbnail ||
-              songs[songIndex].image?.mediaEncoding?.poster
-            }`}
+            src={createUrlFromCid(songs[songIndex].image?.url)}
             alt=""
             width={isMobile ? "40px" : "80px"}
             height={isMobile ? "40px" : "80px"}
@@ -166,34 +163,28 @@ const Player = ({ songs, songIndexProps }: Props) => {
         alignItems={"center"}
         // width={{ xs: "75%", md: "60%" }}
         gap={2}
+        flexBasis="30%"
       >
         <img
-          src={`${
-            songs[songIndex].image?.mediaEncoding?.thumbnail ||
-            songs[songIndex].image?.mediaEncoding?.poster
-          }`}
+          src={createUrlFromCid(songs[songIndex].image?.url)}
           alt=""
           width={"80px"}
           height="80px"
-          style={{ borderRadius: "10px" }}
+          style={{ borderRadius: "10px", border: "2px solid #A3A3A3" }}
         />
-        <Box
-          display="flex"
-          justifyContent={"center"}
-          flexDirection="column"
-          width={"calc(100% - 40px)"}
-        >
+        <Box display="flex" justifyContent={"center"} flexDirection="column">
           <Typography
             noWrap
             fontSize={"italic"}
             fontWeight={900}
             letterSpacing={1}
+            width="100%"
           >
             {songs[songIndex].name}
           </Typography>
         </Box>
       </Box>
-      <Stack width={"40%"} alignItems="center">
+      <Stack flexBasis={"40%"} alignItems="center">
         <SeekBar
           value={localPosition}
           max={duration}
@@ -260,7 +251,7 @@ const Player = ({ songs, songIndexProps }: Props) => {
           {/* )} */}
         </Box>
       </Stack>
-      <Box display={"flex"} alignItems="center" gap={2}>
+      <Box display={"flex"} alignItems="center" gap={2} flexBasis={"20%"}>
         {!isMobile && (
           <Stack spacing={2} direction="row" alignItems="center">
             <VolumeDownRounded htmlColor={"rgba(255,255,255,0.4)"} />

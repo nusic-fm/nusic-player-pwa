@@ -290,7 +290,7 @@ const Index = (props: Props) => {
   };
 
   return (
-    <Box py={2} sx={{ bgcolor: "black" }} position="relative">
+    <Box py={2} sx={{ bgcolor: "black" }} position="relative" mb={"130px"}>
       <Box
         display={"flex"}
         justifyContent="space-between"
@@ -322,6 +322,7 @@ const Index = (props: Props) => {
                   backgroundSize: "cover",
                   boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                 }}
+                border="2px solid #A3A3A3"
                 p={1}
                 width={100}
                 height={100}
@@ -454,7 +455,7 @@ const Index = (props: Props) => {
         </Grid>
         <Grid item xs={12} md={8}>
           <Typography sx={{ m: 2 }} variant="h6">
-            My Music Collections
+            My Music NFTs
           </Typography>
           <Box
             display={"flex"}
@@ -482,7 +483,7 @@ const Index = (props: Props) => {
           </Box>
           <Divider />
           <Typography variant="h6" sx={{ m: 2 }}>
-            Other NFT Collections
+            Other NFTs
           </Typography>
           <Box
             display={"flex"}
