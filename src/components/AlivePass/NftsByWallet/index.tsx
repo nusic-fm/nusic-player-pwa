@@ -18,6 +18,7 @@ import { IZoraData } from "../../../models/TypeZora";
 import { ethers } from "ethers";
 import { Web3Storage } from "web3.storage";
 import { createUrlFromCid } from "../../../helpers";
+import { LoadingButton } from "@mui/lab";
 
 type Props = {
   onConnect: () => void;
@@ -35,6 +36,7 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File>();
   const [insertUrl, setInsertUrl] = useState<string>();
+  const [isTxLoading, setIsTxLoading] = useState(false);
 
   const onInsert = async (url: string) => {
     setIsPreviewLoading(true);
@@ -89,6 +91,7 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
       library.getSigner()
     );
     if (selectedFile) {
+      setIsTxLoading(true);
       const client = new Web3Storage({
         token: process.env.NEXT_PUBLIC_WEB3_STORAGE as string,
       });
@@ -113,6 +116,9 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
       );
       await tx.wait();
       alert("Successfully Injected");
+      setIsTxLoading(false);
+    } else {
+      alert("Select a pfp to inject");
     }
   };
 
@@ -241,13 +247,14 @@ const NftsByWallet = ({ onConnect, onClose, tokenId }: Props) => {
           </Box>
         </Box>
         <Box display={"flex"} justifyContent="center">
-          <Button
+          <LoadingButton
+            loading={isTxLoading}
             variant="contained"
             disabled={isPreviewLoading}
             onClick={onInject}
           >
             Inject
-          </Button>
+          </LoadingButton>
         </Box>
       </Stack>
     </Box>
