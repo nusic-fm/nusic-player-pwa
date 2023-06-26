@@ -60,6 +60,7 @@ const Index = (props: Props) => {
   const [showError, setShowError] = useState<boolean>();
   const [tokenId, setTokenId] = useState<string>("");
   const [isEditProfile, setIsEditProfile] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [aliveTokensBalance, setAliveTokensBalance] = useState<number>(0);
 
@@ -131,10 +132,12 @@ const Index = (props: Props) => {
 
   useEffect(() => {
     if (account) {
+      setAuthLoading(false);
       alivePassOwner(account);
     } else {
-      checkAutoLogin();
+      // setAuthLoading(true);
       setShowConnector(true);
+      checkAutoLogin();
     }
   }, [account]);
 
@@ -240,7 +243,7 @@ const Index = (props: Props) => {
       } else {
         // setSnackbarMessage(e.message);
       }
-
+      setAuthLoading(false);
       console.log(e.name, e.message);
     });
   };
@@ -258,6 +261,8 @@ const Index = (props: Props) => {
       } else if (eth.isCoinbaseBrowser) {
         onSignInUsingWallet(CoinbaseWallet);
       }
+    } else {
+      setAuthLoading(false);
     }
   };
 
@@ -457,14 +462,16 @@ const Index = (props: Props) => {
             <Box m={2}>
               <Box
                 display={"flex"}
-                justifyContent="space-between"
                 alignItems={"center"}
+                flexWrap="wrap"
+                width={"100%"}
+                gap={1}
               >
                 <Typography variant="h6">Alive Pass #{tokenId}</Typography>
                 {ownedTokenIds.length > 1 && (
                   <Select
                     label="Owned Tokens"
-                    sx={{ width: "80px" }}
+                    sx={{ width: "80px", ml: "auto" }}
                     onChange={(e) => setTokenId(e.target.value as string)}
                     value={tokenId}
                     size="small"
@@ -477,6 +484,7 @@ const Index = (props: Props) => {
                   </Select>
                 )}
                 <LoadingButton
+                  sx={{ ml: "auto" }}
                   loading={pageLoading}
                   variant="outlined"
                   size="small"
@@ -581,6 +589,7 @@ const Index = (props: Props) => {
         </Grid>
       </Grid>
       <WalletConnectors
+        isLoading={authLoading}
         onClose={() => setShowConnector(false)}
         onSignInUsingWallet={onSignInUsingWallet}
         open={showConnector}
