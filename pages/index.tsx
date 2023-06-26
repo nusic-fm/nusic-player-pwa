@@ -23,14 +23,14 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { WalletLinkConnector } from "@web3-react/walletlink-connector";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { checkConnection, createUrlFromCid } from "../src/helpers";
 import {
   getMusicNftsMetadataByWallet,
   getNftsMetadataByWallet,
 } from "../src/helpers/zora";
+import { checkAndSwitchConnection, createUrlFromCid } from "../src/helpers";
 import { Injected, CoinbaseWallet } from "../src/hooks/useWalletConnectors";
 import { IZoraData } from "../src/models/TypeZora";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 import WalletConnectors from "../src/components/AlivePass/WalletConnector";
 import { AliveUserDoc } from "../src/models/User";
 import {
@@ -53,7 +53,7 @@ const Index = (props: Props) => {
 
   const [musicNfts, setMusicNfts] = useState<IZoraData[]>([]);
   const [nfts, setNfts] = useState<IZoraData[]>([]);
-  const { playing, togglePlayPause, loading, pause, play } = useAudioPlayer();
+  const { playing, togglePlayPause, isReady } = useGlobalAudioPlayer();
   const [playIndex, setPlayIndex] = useState<number>(-1);
   const [userDoc, setUserDoc] = useState<AliveUserDoc>();
   const [changedName, setChangedName] = useState<string>();
@@ -122,10 +122,11 @@ const Index = (props: Props) => {
     );
     const bn = await nftContract.balanceOf(account);
     if (bn.toNumber()) {
+      setShowConnector(false);
+      setAuthLoading(false);
       setAliveTokensBalance(bn.toNumber());
       //   fetcMusicNfts();
       //   fetchNfts();
-      setShowConnector(false);
       fetchUserDoc(account);
       fetchAllNfts();
     } else {
@@ -135,7 +136,6 @@ const Index = (props: Props) => {
 
   useEffect(() => {
     if (account) {
-      setAuthLoading(false);
       alivePassOwner(account);
     } else {
       // setAuthLoading(true);
@@ -244,7 +244,7 @@ const Index = (props: Props) => {
   const onSignInUsingWallet = async (
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
   ) => {
-    await checkConnection();
+    await checkAndSwitchConnection();
     activate(connector, async (e) => {
       if (e.name === "t" || e.name === "UnsupportedChainIdError") {
         // setSnackbarMessage("Please switch to Ethereum Mainnet");
@@ -527,7 +527,7 @@ const Index = (props: Props) => {
               <NftMusicCard
                 key={i}
                 i={i}
-                loading={loading}
+                loading={!isReady}
                 nft={musicNft}
                 playIndex={playIndex}
                 playing={playing}

@@ -12,7 +12,6 @@ import {
 // import { Head } from "next/document";
 import theme from "../src/theme";
 import { Web3ReactProvider } from "@web3-react/core";
-import { AudioPlayerProvider } from "react-use-audio-player";
 import PlayCircleOutlineRoundedIcon from "@mui/icons-material/PlayCircleOutlineRounded";
 import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
 import { useRouter } from "next/router";
@@ -76,9 +75,8 @@ export default function MyApp(props: MyAppProps) {
         <CssBaseline />
         {/* <Header /> */}
         <Web3ReactProvider getLibrary={getLibrary}>
-          <AudioPlayerProvider>
-            <Component {...pageProps} />
-            {/* {value && (
+          <Component {...pageProps} />
+          {/* {value && (
               <Paper
                 sx={{
                   position: "fixed",
@@ -92,7 +90,7 @@ export default function MyApp(props: MyAppProps) {
                 <Player songs={[]} songIndexProps={[0, () => {}]} />
               </Paper>
             )} */}
-            {/* <Paper
+          {/* <Paper
               sx={{
                 position: "fixed",
                 bottom: 0,
@@ -165,7 +163,6 @@ export default function MyApp(props: MyAppProps) {
                 ></BottomNavigationAction>
               </BottomNavigation>
             </Paper> */}
-          </AudioPlayerProvider>
         </Web3ReactProvider>
         {/* </SessionProvider> */}
       </ThemeProvider>

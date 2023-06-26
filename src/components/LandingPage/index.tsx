@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { WalletLinkConnector } from "@web3-react/walletlink-connector";
-import { checkConnection } from "../../helpers";
+import { checkAndSwitchConnection } from "../../helpers";
 import { Injected, CoinbaseWallet } from "../../hooks/useWalletConnectors";
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/router";
@@ -24,7 +24,7 @@ const LandingPage = (props: Props) => {
   const onSignInUsingWallet = async (
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
   ) => {
-    await checkConnection();
+    await checkAndSwitchConnection();
     activate(connector, async (e) => {
       if (e.name === "t" || e.name === "UnsupportedChainIdError") {
         // setSnackbarMessage("Please switch to Ethereum Mainnet");

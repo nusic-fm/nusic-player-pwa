@@ -45,7 +45,7 @@
     "react-dom": "18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-instantsearch-hooks-web": "^6.39.2",
-    "react-use-audio-player": "^1.2.6",
+    "react-use-audio-player": "^2.0.0",
     "typescript": "4.9.4",
     "wavesurfer.js": "^6.4.0",
     "web3.storage": "^4.5.4"

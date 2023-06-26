@@ -40,7 +40,7 @@ import { MoralisNftData } from "../../models/MoralisNFT";
 // import ArrowRight from "@mui/icons-material/ArrowRight";
 // import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { checkConnection } from "../../helpers";
+import { checkAndSwitchConnection } from "../../helpers";
 import { CoinbaseWallet, Injected } from "../../hooks/useWalletConnectors";
 // import { CoinbaseWallet, Injected } from "./hooks/useWalletConnectors";
 // import { Injected } from "./hooks/useWalletConnectors";
@@ -201,7 +201,7 @@ const AlivePass = ({ buyRef }: Props) => {
   const onSignInUsingWallet = async (
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
   ) => {
-    await checkConnection();
+    await checkAndSwitchConnection();
     activate(connector, async (e) => {
       if (e.name === "t" || e.name === "UnsupportedChainIdError") {
         setSnackbarMessage("Please switch to Ethereum Mainnet");

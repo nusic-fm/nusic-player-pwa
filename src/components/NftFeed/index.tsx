@@ -2,7 +2,6 @@ import { Box } from "@mui/material";
 import { useRef } from "react";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-// import { useAudioPlayer } from "react-use-audio-player";
 // import { useSpring, animated } from "react-spring";
 // import useGesture from "../../hooks/useGesture";
 // import useScan from "../../hooks/useScan";

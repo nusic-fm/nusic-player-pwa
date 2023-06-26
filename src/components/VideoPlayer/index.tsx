@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useEffect, useRef } from "react";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 import { useInViewport } from "../../hooks/useInViewport";
 import { SongDoc } from "../../models/Song";
 
@@ -12,7 +12,7 @@ type Props = {
 
 const VideoPlayer = ({ song, inView, isPlaying }: Props) => {
   const { isInViewport, ref } = useInViewport(song.name);
-  const { pause, togglePlayPause } = useAudioPlayer();
+  const { togglePlayPause } = useGlobalAudioPlayer();
   const videoRef = useRef<HTMLVideoElement>(null);
   // const [isPlaying, setIsPlaying] = useState(false);
 

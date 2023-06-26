@@ -1,7 +1,7 @@
 import { Skeleton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import { useAudioPlayer } from "react-use-audio-player";
+// import { useAudioPlayer } from "react-use-audio-player";
 import LandingPage from "../src/components/LandingPage";
 import NftFeed from "../src/components/NftFeed";
 import { SongDoc } from "../src/models/Song";
@@ -12,7 +12,7 @@ const Index = () => {
   const [songs, setSongs] = useState<SongDoc[]>([]);
   const [songsLoading, setSongsLoading] = useState(false);
 
-  const { pause } = useAudioPlayer();
+  // const { pause } = useAudioPlayer();
 
   const fetchSongs = async () => {
     setSongsLoading(true);

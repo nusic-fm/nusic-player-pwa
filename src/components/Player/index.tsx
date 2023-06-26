@@ -13,14 +13,16 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
+import { useEffect, useRef, useState } from "react";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 import { useTheme } from "@mui/material/styles";
 import SeekBar from "../SeekBar";
 import { IZoraData } from "../../models/TypeZora";
 import FastForwardOutlinedIcon from "@mui/icons-material/FastForwardOutlined";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { convertSecondsToHHMMSS, createUrlFromCid } from "../../helpers";
+import RepeatRoundedIcon from "@mui/icons-material/RepeatRounded";
+import RepeatOneRoundedIcon from "@mui/icons-material/RepeatOneRounded";
 
 type Props = {
   songs: IZoraData[];
@@ -32,23 +34,44 @@ const Player = ({ songs, songIndexProps }: Props) => {
   const theme = useTheme();
   const [localPosition, setLocalPosition] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const frameRef = useRef<NodeJS.Timer>();
 
   const {
-    loading,
+    looping,
+    loop,
     playing,
-    // ready,
     togglePlayPause,
-    // play,
-    // pause,
     volume,
     load,
-    // error,
-  } = useAudioPlayer();
-  const { duration, seek, position } = useAudioPosition();
+    isReady,
+    getPosition,
+    duration,
+    seek,
+    setVolume,
+    error,
+  } = useGlobalAudioPlayer();
+  // const { duration, seek, position } = useAudioPosition();
 
   useEffect(() => {
-    if (!isDragging) setLocalPosition(position);
-  }, [position, isDragging]);
+    const animate = () => {
+      if (!isDragging) setLocalPosition(getPosition());
+      // frameRef.current = requestAnimationFrame(animate);
+    };
+
+    // frameRef.current = window.requestAnimationFrame(animate);
+    frameRef.current = setInterval(animate, 1000);
+
+    return () => {
+      if (frameRef.current) {
+        clearInterval(frameRef.current);
+        // cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [getPosition, localPosition, isDragging]);
+
+  // useEffect(() => {
+  //   if (!isDragging) setLocalPosition(getPosition());
+  // }, [getPosition, isDragging]);
 
   const isMobile = useMediaQuery(() => theme.breakpoints.down("md"));
 
@@ -57,12 +80,16 @@ const Player = ({ songs, songIndexProps }: Props) => {
     if (songIndex !== -1) {
       const src = createUrlFromCid(songs[songIndex].content?.url);
       if (!src) return;
-      load({
-        src,
+
+      load(src, {
         html5: true,
         autoplay: true,
-        format: ["wav", "mp3", "mp4"],
-        onend: () => setSongIndex(songIndex + 1),
+        format: "mp3",
+        onend: () => {
+          if (songs.length - 1 !== songIndex) {
+            setSongIndex(songIndex + 1);
+          }
+        },
       });
     }
     // onPlayIndexChange(songs[songIndex].idx);
@@ -125,8 +152,8 @@ const Player = ({ songs, songIndexProps }: Props) => {
               togglePlayPause();
             }}
           >
-            {loading ? (
-              <CircularProgress size={"small"} />
+            {!isReady ? (
+              <CircularProgress color="secondary" size="15px" />
             ) : playing ? (
               <PauseIcon color="secondary" />
             ) : (
@@ -208,7 +235,6 @@ const Player = ({ songs, songIndexProps }: Props) => {
           }}
         />
         <Box display={"flex"} alignItems="center" gap={2}>
-          {/* {!isMobile && ( */}
           <IconButton
             size="small"
             disabled={songIndex === 0}
@@ -216,7 +242,6 @@ const Player = ({ songs, songIndexProps }: Props) => {
           >
             <FastRewindOutlined />
           </IconButton>
-          {/* )} */}
           <Fab
             size="small"
             color="primary"
@@ -224,23 +249,14 @@ const Player = ({ songs, songIndexProps }: Props) => {
               togglePlayPause();
             }}
           >
-            {loading ? (
-              <CircularProgress size={"small"} />
+            {isReady === false ? (
+              <CircularProgress color="secondary" size="15px" />
             ) : playing ? (
               <PauseIcon color="secondary" />
             ) : (
               <PlayArrowIcon color="secondary" />
             )}
           </Fab>
-          {/* <LoadingButton
-            size="small"
-            // loading={!ready}
-            onClick={() => {
-              togglePlayPause();
-            }}
-            color="primary"
-          ></LoadingButton> */}
-          {/* {!isMobile && ( */}
           <IconButton
             size="small"
             disabled={songIndex === songs.length - 1}
@@ -248,44 +264,55 @@ const Player = ({ songs, songIndexProps }: Props) => {
           >
             <FastForwardOutlinedIcon />
           </IconButton>
-          {/* )} */}
         </Box>
       </Stack>
       <Box display={"flex"} alignItems="center" gap={2} flexBasis={"20%"}>
-        {!isMobile && (
-          <Stack spacing={2} direction="row" alignItems="center">
-            <VolumeDownRounded htmlColor={"rgba(255,255,255,0.4)"} />
-            <Slider
-              aria-label="Volume"
-              min={0}
-              defaultValue={1}
-              step={0.01}
-              max={1}
-              // value={volume()}
-              onChange={(e, newVal) => volume(newVal)}
-              sx={{
-                width: "100px",
-                color:
-                  theme.palette.mode === "dark" ? "#fff" : "rgba(0,0,0,0.87)",
-                "& .MuiSlider-track": {
-                  border: "none",
+        <Box sx={{ bgcolor: "#262626" }} borderRadius={"10px"}>
+          <IconButton
+            onClick={() => loop(!looping)}
+            sx={{ borderRadius: "10px" }}
+            size="small"
+          >
+            {looping ? (
+              <RepeatOneRoundedIcon sx={{ opacity: "0.8" }} fontSize="small" />
+            ) : (
+              <RepeatRoundedIcon sx={{ opacity: "0.8" }} fontSize="small" />
+            )}
+          </IconButton>
+        </Box>
+        <Stack spacing={2} direction="row" alignItems="center">
+          <VolumeDownRounded htmlColor={"rgba(255,255,255,0.4)"} />
+          <Slider
+            aria-label="Volume"
+            min={0}
+            defaultValue={1}
+            step={0.01}
+            max={1}
+            // value={volume()}
+            onChange={(e, newVal) => setVolume(newVal as number)}
+            sx={{
+              opacity: "0.7",
+              width: "100px",
+              color:
+                theme.palette.mode === "dark" ? "#fff" : "rgba(0,0,0,0.87)",
+              "& .MuiSlider-track": {
+                border: "none",
+              },
+              "& .MuiSlider-thumb": {
+                width: 12,
+                height: 12,
+                backgroundColor: "#fff",
+                "&:before": {
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.4)",
                 },
-                "& .MuiSlider-thumb": {
-                  width: 12,
-                  height: 12,
-                  backgroundColor: "#fff",
-                  "&:before": {
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.4)",
-                  },
-                  "&:hover, &.Mui-focusVisible, &.Mui-active": {
-                    boxShadow: "none",
-                  },
+                "&:hover, &.Mui-focusVisible, &.Mui-active": {
+                  boxShadow: "none",
                 },
-              }}
-            />
-            <VolumeUpRounded htmlColor={"rgba(255,255,255,0.4)"} />
-          </Stack>
-        )}
+              },
+            }}
+          />
+          <VolumeUpRounded htmlColor={"rgba(255,255,255,0.4)"} />
+        </Stack>
       </Box>
     </Box>
   );

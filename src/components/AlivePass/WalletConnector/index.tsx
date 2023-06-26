@@ -47,12 +47,12 @@ const WalletConnectors = ({
       open={open}
       onClose={() => {}}
       fullWidth
-      slotProps={{
-        root: {
-          backgroundColor: "rgba(0,0,30,0.4)",
-          backdropFilter: "blur(4px)",
-        } as any,
-      }}
+      // slotProps={{
+      //   root: {
+      //     backgroundColor: "rgba(0,0,30,0.4)",
+      //     backdropFilter: "blur(4px)",
+      //   } as any,
+      // }}
       sx={{
         backgroundColor: "rgba(0,0,30,0.4)",
         backdropFilter: "blur(8px)",
