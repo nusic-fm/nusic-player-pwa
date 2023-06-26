@@ -8,6 +8,7 @@ import {
   DialogContentText,
   Link,
   Box,
+  LinearProgress,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useWeb3React } from "@web3-react/core";
@@ -29,6 +30,7 @@ type Props = {
   ) => Promise<void>;
   onClose: () => void;
   showError?: boolean;
+  isLoading?: boolean;
 };
 
 const WalletConnectors = ({
@@ -36,6 +38,7 @@ const WalletConnectors = ({
   onSignInUsingWallet,
   onClose,
   showError,
+  isLoading,
 }: Props) => {
   const { error } = useWeb3React();
 
@@ -85,9 +88,10 @@ const WalletConnectors = ({
                 alt=""
                 width={24}
                 height={24}
-                style={{ borderRadius: "4px" }}
+                style={{ borderRadius: "4px", opacity: isLoading ? 0.4 : 1 }}
               />
             }
+            disabled={isLoading}
           >
             Coinbase Wallet
           </Button>
@@ -95,8 +99,15 @@ const WalletConnectors = ({
             color="secondary"
             onClick={() => onSignInUsingWallet(WalletConnect)}
             startIcon={
-              <img src="/signin/wc.png" alt="" width={24} height={24} />
+              <img
+                src="/signin/wc.png"
+                alt=""
+                width={24}
+                height={24}
+                style={{ opacity: isLoading ? 0.4 : 1 }}
+              />
             }
+            disabled={isLoading}
           >
             Wallet Connect
           </Button>
@@ -115,8 +126,15 @@ const WalletConnectors = ({
               onSignInUsingWallet(Injected);
             }}
             startIcon={
-              <img src="/signin/mm.png" alt="" width={24} height={24} />
+              <img
+                src="/signin/mm.png"
+                alt=""
+                width={24}
+                height={24}
+                style={{ opacity: isLoading ? 0.4 : 1 }}
+              />
             }
+            disabled={isLoading}
           >
             Metamask
           </Button>
@@ -159,6 +177,7 @@ const WalletConnectors = ({
           )}
         </Stack>
       </DialogContent>
+      {isLoading && <LinearProgress color="info" />}
     </Dialog>
   );
 };
