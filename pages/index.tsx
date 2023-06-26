@@ -39,6 +39,7 @@ import { LoadingButton } from "@mui/lab";
 import NftMusicCard from "../src/components/NftMusicCard";
 import Player from "../src/components/Player";
 import CloseIcon from "@mui/icons-material/Close";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 type Props = {};
 
@@ -58,6 +59,7 @@ const Index = (props: Props) => {
   const [updating, setUpdating] = useState<boolean>();
   const [showError, setShowError] = useState<boolean>();
   const [tokenId, setTokenId] = useState<string>("");
+  const [isEditProfile, setIsEditProfile] = useState(false);
 
   const [aliveTokensBalance, setAliveTokensBalance] = useState<number>(0);
 
@@ -283,9 +285,10 @@ const Index = (props: Props) => {
       await updateUserDoc(account, obj);
       await fetchUserDoc(account);
       setChangedName(undefined);
-      setChangedName(undefined);
+      setChangedBio(undefined);
       setChangedPfp(undefined);
       setUpdating(false);
+      setIsEditProfile(false);
     }
   };
 
@@ -310,8 +313,29 @@ const Index = (props: Props) => {
               gap={2}
               sx={{ backgroundColor: "#141414" }}
               borderRadius="8px"
+              position={"relative"}
             >
-              {/* <img src="" alt="pp" /> */}
+              <Box
+                position={"absolute"}
+                width="100%"
+                height={100}
+                display={"flex"}
+                alignItems="center"
+                justifyContent="end"
+                px={2}
+              >
+                <Box sx={{ bgcolor: "#262626" }} borderRadius="50%">
+                  <IconButton
+                    onClick={() => setIsEditProfile(true)}
+                    disabled={isEditProfile}
+                  >
+                    <SettingsOutlinedIcon
+                      fontSize="small"
+                      sx={{ opacity: "0.7" }}
+                    />
+                  </IconButton>
+                </Box>
+              </Box>
               <Box
                 borderRadius={"50%"}
                 sx={{
@@ -338,8 +362,12 @@ const Index = (props: Props) => {
                   justifyContent="center"
                   alignItems={"center"}
                   sx={{
-                    ".select": { display: "none" },
-                    ":hover": { ".select": { display: "initial" } },
+                    ".select": { display: isEditProfile ? "initial" : "none" },
+                    // ":hover": {
+                    //   ".select": {
+                    //     display: isEditProfile ? "initial" : "none",
+                    //   },
+                    // },
                   }}
                 >
                   <Button
@@ -353,22 +381,17 @@ const Index = (props: Props) => {
                   </Button>
                 </Box>{" "}
               </Box>
-              <TextField
-                size="small"
-                placeholder="username"
-                value={changedName || userDoc?.userName}
-                onChange={(e) => setChangedName(e.target.value)}
-                // InputProps={{
-                //   endAdornment: (
-                //     <IconButton
-                //       disabled={!changedName || updating}
-                //       onClick={() => onUpdateUserDoc({ userName: changedName })}
-                //     >
-                //       <SaveIcon fontSize="small" />
-                //     </IconButton>
-                //   ),
-                // }}
-              />
+              {isEditProfile ? (
+                <TextField
+                  size="small"
+                  placeholder="username"
+                  defaultValue={userDoc?.userName}
+                  value={changedName}
+                  onChange={(e) => setChangedName(e.target.value)}
+                />
+              ) : (
+                <Typography>{userDoc?.userName || "User"}</Typography>
+              )}
               {account && (
                 <Chip
                   label={`${account.slice(0, 6)}...${account.slice(
@@ -377,43 +400,59 @@ const Index = (props: Props) => {
                 />
               )}
               <Stack width={"100%"} gap={1} my={2}>
-                <Typography>Bio</Typography>
-                <TextField
-                  multiline
-                  value={changedBio || userDoc?.bio}
-                  onChange={(e) => setChangedBio(e.target.value)}
-                  minRows={3}
-                  maxRows={8}
-                  // InputProps={{
-                  //   endAdornment: (
-                  //     <IconButton
-                  //       disabled={!changedBio || updating}
-                  //       onClick={() => onUpdateUserDoc({ bio: changedBio })}
-                  //     >
-                  //       <SaveIcon fontSize="small" />
-                  //     </IconButton>
-                  //   ),
-                  // }}
-                />
+                <Typography variant="h6">Bio</Typography>
+                {isEditProfile ? (
+                  <TextField
+                    multiline
+                    defaultValue={userDoc?.bio}
+                    value={changedBio}
+                    onChange={(e) => setChangedBio(e.target.value)}
+                    minRows={3}
+                    maxRows={8}
+                  />
+                ) : (
+                  <Typography variant="body2">
+                    {userDoc?.bio || "User's bio"}
+                  </Typography>
+                )}
               </Stack>
-              <Box display={"flex"} justifyContent="center">
-                <LoadingButton
-                  loading={updating}
-                  variant="contained"
-                  color="info"
-                  size="small"
-                  disabled={!changedBio && !changedName && !changedPfp}
-                  onClick={() =>
-                    onUpdateUserDoc({
-                      bio: changedBio || userDoc?.bio,
-                      userName: changedName || userDoc?.userName,
-                      pfp: changedPfp || userDoc?.pfp,
-                    })
-                  }
-                >
-                  Save
-                </LoadingButton>
-              </Box>
+              {isEditProfile && (
+                <Box display={"flex"} justifyContent="center" gap={2}>
+                  <LoadingButton
+                    loading={updating}
+                    variant="contained"
+                    color="info"
+                    size="small"
+                    disabled={!changedBio && !changedName && !changedPfp}
+                    onClick={() => {
+                      const saveObj: {
+                        userName?: string;
+                        bio?: string;
+                        pfp?: string;
+                      } = {};
+                      if (changedName) {
+                        saveObj.userName = changedName;
+                      }
+                      if (changedBio) {
+                        saveObj.bio = changedBio;
+                      }
+                      if (changedPfp) {
+                        saveObj.pfp = changedPfp;
+                      }
+                      onUpdateUserDoc(saveObj);
+                    }}
+                  >
+                    Save
+                  </LoadingButton>
+                  <Button
+                    size="small"
+                    color="info"
+                    onClick={() => setIsEditProfile(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              )}
             </Stack>
             <Box m={2}>
               <Box
