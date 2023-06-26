@@ -4,11 +4,9 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/react";
 import { Box } from "@mui/material";
-import { useEffect, useRef } from "react";
-import { useInViewport } from "../../hooks/useInViewport";
 import { SongDoc } from "../../models/Song";
 import { keyframes } from "@emotion/react";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 
 const roteteImage = keyframes`
   from {
@@ -31,7 +29,7 @@ const AudioPlaer = ({ song, isPlaying }: Props) => {
   // const { isInViewport, ref } = useInViewport(song.name);
   // const [isPlaying, setIsPlaying] = useState(false);
   // const animationRef = useRef<HTMLImageElement>(null);
-  const { togglePlayPause, pause } = useAudioPlayer();
+  const { togglePlayPause } = useGlobalAudioPlayer();
 
   // const togglePlayPause = () => {
   //   setIsPlaying(!isPlaying);

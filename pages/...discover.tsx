@@ -4,7 +4,7 @@ import algoliasearch from "algoliasearch/lite";
 import { InstantSearch } from "react-instantsearch-hooks-web";
 import SearchBar from "../src/components/SearchBar";
 import { useState, useEffect } from "react";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 import { SongDoc } from "../src/models/Song";
 import {
   getDiscoverSongs,
@@ -22,7 +22,7 @@ const Discover = () => {
   const [songsLoading, setSongsLoading] = useState(false);
   const [songs, setSongs] = useState<SongDoc[]>();
   const [searchResult, setSearchResult] = useState<SongDoc[]>();
-  const { load, playing, togglePlayPause } = useAudioPlayer();
+  const { load, playing, togglePlayPause } = useGlobalAudioPlayer();
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string>();
 
   const router = useRouter();
@@ -40,11 +40,9 @@ const Discover = () => {
 
   const onPlaySong = (song: SongDoc) => {
     const src = song.streamUrl;
-    load({
-      src,
+    load(src, {
       html5: true,
       autoplay: true,
-      format: ["mp3"],
     });
     setCurrentlyPlayingId(song.id);
   };

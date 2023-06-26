@@ -8,7 +8,6 @@ import PlayCircleRounded from "@mui/icons-material/PlayCircleRounded";
 import PauseCircleRounded from "@mui/icons-material/PauseCircleRounded";
 // import StopCircleRounded from "@mui/icons-material/StopCircleRounded";
 // import SeekBar from "../SeekBar";
-// import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 // import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
 // import LoopRoundedIcon from "@mui/icons-material/LoopRounded";

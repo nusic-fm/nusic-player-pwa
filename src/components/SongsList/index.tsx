@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import { SongDoc } from "../../models/Song";
 import { incrementStreamCount } from "../../services/db/songs.service";
 // import Image from "next/image";
-import { useAudioPlayer } from "react-use-audio-player";
+import { useGlobalAudioPlayer } from "react-use-audio-player";
 import Player from "../Player";
 
 type Props = {
@@ -56,7 +56,7 @@ const SongsList = ({
     // togglePlayPause,
     play,
     pause,
-  } = useAudioPlayer();
+  } = useGlobalAudioPlayer();
 
   const resetTimer = (isPlay: boolean = false, playId?: string) => {
     if (timer) {

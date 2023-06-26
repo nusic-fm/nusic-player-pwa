@@ -31,7 +31,7 @@ export const createUrlFromCid = (tokenUri: string | null | undefined) => {
   }
 };
 
-export const checkConnection = async () => {
+export const checkAndSwitchConnection = async () => {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   const accounts = await provider.listAccounts();
   if (accounts.length) {

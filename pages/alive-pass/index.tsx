@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import NftsByWallet from "../../src/components/AlivePass/NftsByWallet";
 import NusicNavBar from "../../src/components/NusicNavBar";
 import WithNavbar from "../../src/components/WithNavbar";
-import { checkConnection } from "../../src/helpers";
+import { checkAndSwitchConnection } from "../../src/helpers";
 import { Injected, CoinbaseWallet } from "../../src/hooks/useWalletConnectors";
 import { SelectedNftDetails } from "../../src/models";
 import { MoralisNftData } from "../../src/models/MoralisNFT";
@@ -34,7 +34,7 @@ const Metadata = (props: Props) => {
   const onSignInUsingWallet = async (
     connector: WalletConnectConnector | WalletLinkConnector | InjectedConnector
   ) => {
-    await checkConnection();
+    await checkAndSwitchConnection();
     activate(connector, async (e) => {
       if (e.name === "t" || e.name === "UnsupportedChainIdError") {
         // setSnackbarMessage("Please switch to Ethereum Mainnet");
