@@ -306,7 +306,15 @@ const Index = (props: Props) => {
         px={4}
       >
         <img src="nusic_purple.png" alt="" width={100} />
-        {/* <Button onClick={}>Logout</Button> */}
+        <Button
+          href="https://testnets.nusic.fm"
+          target={"_blank"}
+          // color="info"
+          variant="contained"
+          size="small"
+        >
+          Launch
+        </Button>
       </Box>
       <Grid container>
         <Grid item xs={12} md={4}>
